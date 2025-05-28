@@ -1,5 +1,7 @@
 import sys
 import os
+from dataclasses import dataclass, field
+from typing import List
 
 project_root = os.path.dirname(os.path.abspath(__file__))
 if project_root not in sys.path:
@@ -14,7 +16,8 @@ from phase1_vm_enhancements import (
     OP_PUSH, _PRIME_IDX, get_prime, _extend_primes_to,
     PRIME_IDX_TRUE, PRIME_IDX_FALSE,
     OP_ADD,
-    OP_NOP
+    OP_NOP,
+    ModificationPlan
 )
 
 FEEDBACK_SUCCESS_IDX = PRIME_IDX_TRUE
@@ -22,8 +25,22 @@ FEEDBACK_FAILURE_IDX = PRIME_IDX_FALSE
 ATTEMPT_MODULUS_IDX = 10
 ATTEMPT_INCREMENT_IDX = 1
 RANDOM_MAX_EXCLUSIVE_IDX_FOR_OFFSET = 3 
-MAX_FAILURES_BEFORE_STUCK_IDX = 3 
+MAX_FAILURES_BEFORE_STUCK_IDX = 3
 STUCK_SIGNAL_PRINT_VALUE_IDX = 99
+
+# --- Data structures for managing modification slots ---
+
+@dataclass
+class ModificationSlot:
+    """Track state for a self-modifiable instruction slot."""
+    address: int
+    last_instruction: int
+    success_history: List[bool] = field(default_factory=list)
+
+    def record(self, success: bool) -> None:
+        self.success_history.append(success)
+        if len(self.success_history) > 10:
+            self.success_history.pop(0)
 
 # --- NEW CONSTANTS FOR DYNAMIC INSTRUCTION REPLACEMENT ---
 MODIFICATION_SLOT_0_ADDR_IDX = 1 # We'll reserve ADDR 0 for the main PUSH, and use new slots
@@ -62,11 +79,33 @@ def update_modification_history(history: list[int], addr: int, max_size: int = 2
     if len(history) > max_size:
         history.pop(0)
 
+
+def apply_modification_plan(program: List[int], plan: List[ModificationPlan]) -> None:
+    """Apply a sequence of modifications to ``program`` in address order."""
+    for item in sorted(plan, key=lambda p: p.slot_address):
+        program[item.slot_address] = item.new_instruction
+
+
+def determine_slots_to_update(slots: List[ModificationSlot], failure_streak: int) -> List[ModificationSlot]:
+    """Return a subset of ``slots`` to modify based on ``failure_streak``."""
+    if not slots:
+        return []
+    num_slots = min(len(slots), 1 + failure_streak // 2)
+    # Prioritize slots with the fewest recent successes
+    ranked = sorted(slots, key=lambda s: sum(s.success_history[-3:]))
+    return ranked[:num_slots]
+
 def generate_goal_seeker_program():
     _extend_primes_to(max(35, STUCK_SIGNAL_PRINT_VALUE_IDX, MAX_FAILURES_BEFORE_STUCK_IDX, RANDOM_MAX_EXCLUSIVE_IDX_FOR_OFFSET, ATTEMPT_MODULUS_IDX, MODIFICATION_SLOT_0_ADDR_IDX, MODIFICATION_SLOT_1_ADDR_IDX, UOR_DECISION_BUILD_NOP_IDX) + 10) # Added new constants and a bit more buffer
 
     program_uor = []
     labels = {}
+
+    modification_slots = [
+        ModificationSlot(MODIFICATION_SLOT_0_ADDR_IDX, chunk_nop()),
+        ModificationSlot(MODIFICATION_SLOT_1_ADDR_IDX, chunk_nop()),
+    ]
+    failure_streak = 0
 
     # ADDR 0: PUSH current_value_to_work_with (This instruction is self-modified by POKE_CHUNK, based on success/failure of PRINTING the target)
     program_uor.append(chunk_push(FEEDBACK_FAILURE_IDX)) # Initial dummy value, will be overwritten by app.py
@@ -609,25 +648,24 @@ def generate_goal_seeker_program():
     modification_history = []
     pointer = MODIFICATION_TARGET_POINTER
 
-    slot_addr = select_next_modification_target(pointer, program_length, protected_addresses)
-    update_modification_history(modification_history, slot_addr)
-    pointer = slot_addr
-    program_uor[addr_idx_push_dynamic_slot_choice] = chunk_push(slot_addr)
+    slots_to_modify = determine_slots_to_update(modification_slots, failure_streak)
+    selected_addresses = []
+    for slot in slots_to_modify:
+        slot_addr = select_next_modification_target(pointer, program_length, protected_addresses)
+        update_modification_history(modification_history, slot_addr)
+        pointer = slot_addr
+        slot.address = slot_addr
+        slot.last_instruction = program_uor[slot_addr]
+        slot.record(False)
+        selected_addresses.append(slot_addr)
 
-    slot_addr = select_next_modification_target(pointer, program_length, protected_addresses)
-    update_modification_history(modification_history, slot_addr)
-    pointer = slot_addr
-    program_uor[addr_idx_push_default_lsc_success] = chunk_push(slot_addr)
+    while len(selected_addresses) < 4:
+        selected_addresses.append(pointer)
 
-    slot_addr = select_next_modification_target(pointer, program_length, protected_addresses)
-    update_modification_history(modification_history, slot_addr)
-    pointer = slot_addr
-    program_uor[addr_idx_push_lsc_carry] = chunk_push(slot_addr)
-
-    slot_addr = select_next_modification_target(pointer, program_length, protected_addresses)
-    update_modification_history(modification_history, slot_addr)
-    pointer = slot_addr
-    program_uor[addr_idx_push_lsc_failure] = chunk_push(slot_addr)
+    program_uor[addr_idx_push_dynamic_slot_choice] = chunk_push(selected_addresses[0])
+    program_uor[addr_idx_push_default_lsc_success] = chunk_push(selected_addresses[1])
+    program_uor[addr_idx_push_lsc_carry] = chunk_push(selected_addresses[2])
+    program_uor[addr_idx_push_lsc_failure] = chunk_push(selected_addresses[3])
 
     # --- Length check (MUST BE UPDATED CAREFULLY) ---
     current_len = len(program_uor)
