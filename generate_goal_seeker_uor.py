@@ -37,6 +37,31 @@ UOR_DECISION_BUILD_NOP_IDX = 2  # Internal representation for deciding to build 
 # And it will need operand for PUSH. For ADD/NOP, no operand needed *in the chunk itself*.
 # --- END NEW CONSTANTS ---
 
+MODIFICATION_TARGET_POINTER = MODIFICATION_SLOT_0_ADDR_IDX
+
+
+def is_safe_to_modify(addr: int, protected: set[int]) -> bool:
+    """Return True if ``addr`` is not in ``protected``."""
+    return addr not in protected
+
+
+def select_next_modification_target(pointer: int, program_len: int, protected: set[int]) -> int:
+    """Return the next address to modify based on ``pointer``.
+
+    The address wraps around ``program_len`` and skips any in ``protected``.
+    """
+    candidate = (pointer + 1) % program_len
+    while not is_safe_to_modify(candidate, protected):
+        candidate = (candidate + 1) % program_len
+    return candidate
+
+
+def update_modification_history(history: list[int], addr: int, max_size: int = 20) -> None:
+    """Track recently modified addresses in ``history`` with a simple ring buffer."""
+    history.append(addr)
+    if len(history) > max_size:
+        history.pop(0)
+
 def generate_goal_seeker_program():
     _extend_primes_to(max(35, STUCK_SIGNAL_PRINT_VALUE_IDX, MAX_FAILURES_BEFORE_STUCK_IDX, RANDOM_MAX_EXCLUSIVE_IDX_FOR_OFFSET, ATTEMPT_MODULUS_IDX, MODIFICATION_SLOT_0_ADDR_IDX, MODIFICATION_SLOT_1_ADDR_IDX, UOR_DECISION_BUILD_NOP_IDX) + 10) # Added new constants and a bit more buffer
 
@@ -228,9 +253,10 @@ def generate_goal_seeker_program():
     # Stack: [OI_A0, VCLP_A0, FC, slot_random_choice, slot_random_choice_to_carry_as_LSC]
 
     program_uor.append(chunk_drop()) # Drop slot_random_choice (we'll use slot_random_choice_to_carry_as_LSC and hardcode slot poke target)
-    # Carry MODIFICATION_SLOT_0_ADDR_IDX as the "chosen slot" for this iteration.
+    # Carry MODIFICATION_TARGET_POINTER value as the chosen slot for this iteration.
 
-    program_uor.append(chunk_push(MODIFICATION_SLOT_0_ADDR_IDX)) # This is LSC
+    program_uor.append(chunk_push(0))  # placeholder for dynamic slot pointer
+    addr_idx_push_dynamic_slot_choice = len(program_uor) - 1
 
     # Stack: [OI_A0, VCLP_A0, FC, slot_random_choice_to_carry_as_LSC(0/1), SLOT_0_ADDR_as_LSC_actual_val]
     program_uor.append(chunk_swap())
@@ -282,7 +308,8 @@ def generate_goal_seeker_program():
     program_uor.append(chunk_poke_chunk()) # Pokes new_UOR_PUSH_chunk to ADDR 0
     # Stack after POKE: [FC_A0, VCLP_A0] (VCLP_A0 is TOS)
 
-    program_uor.append(chunk_push(MODIFICATION_SLOT_0_ADDR_IDX)) # Default LSC_val (e.g., value 1)
+    program_uor.append(chunk_push(0))  # placeholder for default LSC_val via pointer
+    addr_idx_push_default_lsc_success = len(program_uor) - 1
     # Stack: [FC_A0, VCLP_A0, LSC_val]
 
     program_uor.append(chunk_push(UOR_DECISION_BUILD_NOP_IDX))   # Default LIC_val (e.g., value 2)
@@ -432,7 +459,8 @@ def generate_goal_seeker_program():
     program_uor.append(chunk_poke_chunk())
     # Stack: [LIC_val_orig, FC, VCLP_A0] (VCLP_A0 is TOS)
 
-    program_uor.append(chunk_push(MODIFICATION_SLOT_0_ADDR_IDX)) # LSC_val_to_carry
+    program_uor.append(chunk_push(0))  # placeholder for LSC_val via pointer
+    addr_idx_push_lsc_carry = len(program_uor) - 1
     # Stack: [LIC_val_orig(S3), FC(S2), VCLP_A0(S1), LSC_val(S0)] (LSC_val is TOS)
 
     program_uor.append(chunk_swap()) # Swaps LSC_val(S0), VCLP_A0(S1) -> [LIC_orig, FC, LSC_val, VCLP_A0]
@@ -542,7 +570,8 @@ def generate_goal_seeker_program():
     program_uor.append(chunk_poke_chunk())
     # Stack: [LIC, FC, VCLP_A0]
 
-    program_uor.append(chunk_push(MODIFICATION_SLOT_0_ADDR_IDX)) # LSC
+    program_uor.append(chunk_push(0))  # placeholder for LSC via pointer
+    addr_idx_push_lsc_failure = len(program_uor) - 1
     # Stack: [LIC, FC, VCLP_A0, LSC]
 
     program_uor.append(chunk_swap()) # LSC, VCLP_A0
@@ -574,6 +603,31 @@ def generate_goal_seeker_program():
     # Jumps for slot PUSH operand decision inside BUILD_SLOT_CHUNK_COMMON:
     program_uor[addr_idx_jump_if_slot_op_not_push] = chunk_push(labels["JUMP_IF_SLOT_OP_NOT_PUSH_TARGET"])
     program_uor[addr_idx_jump_after_slot_chunk_built_for_push] = chunk_push(labels["AFTER_SLOT_CHUNK_BUILT"])
+
+    program_length = len(program_uor)
+    protected_addresses = {0}
+    modification_history = []
+    pointer = MODIFICATION_TARGET_POINTER
+
+    slot_addr = select_next_modification_target(pointer, program_length, protected_addresses)
+    update_modification_history(modification_history, slot_addr)
+    pointer = slot_addr
+    program_uor[addr_idx_push_dynamic_slot_choice] = chunk_push(slot_addr)
+
+    slot_addr = select_next_modification_target(pointer, program_length, protected_addresses)
+    update_modification_history(modification_history, slot_addr)
+    pointer = slot_addr
+    program_uor[addr_idx_push_default_lsc_success] = chunk_push(slot_addr)
+
+    slot_addr = select_next_modification_target(pointer, program_length, protected_addresses)
+    update_modification_history(modification_history, slot_addr)
+    pointer = slot_addr
+    program_uor[addr_idx_push_lsc_carry] = chunk_push(slot_addr)
+
+    slot_addr = select_next_modification_target(pointer, program_length, protected_addresses)
+    update_modification_history(modification_history, slot_addr)
+    pointer = slot_addr
+    program_uor[addr_idx_push_lsc_failure] = chunk_push(slot_addr)
 
     # --- Length check (MUST BE UPDATED CAREFULLY) ---
     current_len = len(program_uor)
