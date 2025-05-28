@@ -17,6 +17,8 @@ from phase1_vm_enhancements import (
     PRIME_IDX_TRUE, PRIME_IDX_FALSE,
     OP_ADD,
     OP_NOP,
+    OP_JUMP,
+    OP_JUMP_IF_ZERO,
     parse_push_operand,
     parse_jump_target,
     parse_opcode_and_operand,
@@ -124,7 +126,7 @@ def modify_control_flow_target(program: List[int], push_addr: int, jump_addr: in
 def apply_modification_plan(program: List[int], plan: List[ModificationPlan]) -> None:
     """Apply a sequence of modifications to ``program`` in address order."""
     for item in sorted(plan, key=lambda p: p.slot_address):
-        program[item.slot_address] = item.new_instruction
+        program[item.slot_address] = item.new_chunk
 
 
 def determine_slots_to_update(slots: List[ModificationSlot], failure_streak: int) -> List[ModificationSlot]:
@@ -707,6 +709,45 @@ def generate_goal_seeker_program():
     program_uor[addr_idx_push_default_lsc_success] = chunk_push(selected_addresses[1])
     program_uor[addr_idx_push_lsc_carry] = chunk_push(selected_addresses[2])
     program_uor[addr_idx_push_lsc_failure] = chunk_push(selected_addresses[3])
+
+    # ------------------------------------------------------------------
+    # Demonstration of operand and control-flow modification utilities
+    # ------------------------------------------------------------------
+    demo_add_push_addrs = [len(program_uor), len(program_uor) + 1]
+    program_uor.append(chunk_push(0))  # placeholder for ADD operand A
+    program_uor.append(chunk_push(0))  # placeholder for ADD operand B
+    program_uor.append(chunk_add())
+    program_uor.append(chunk_print())
+
+    demo_sub_push_addrs = [len(program_uor), len(program_uor) + 1]
+    program_uor.append(chunk_push(0))  # placeholder for SUB operand A
+    program_uor.append(chunk_push(0))  # placeholder for SUB operand B
+    program_uor.append(chunk_sub())
+    program_uor.append(chunk_print())
+
+    jump_push_addr = len(program_uor)
+    program_uor.append(chunk_push(0))  # placeholder for jump target
+    jump_instr_addr = len(program_uor)
+    program_uor.append(chunk_jump())
+    jump_target_addr = len(program_uor)
+    program_uor.append(chunk_push(99))
+    program_uor.append(chunk_print())
+    program_uor.append(chunk_halt())
+
+    # Prepare and apply modifications using helper utilities
+    modify_arithmetic_operands(program_uor, demo_add_push_addrs, 5)
+    modify_arithmetic_operands(program_uor, demo_sub_push_addrs, 7)
+    modify_control_flow_target(program_uor, jump_push_addr, jump_instr_addr, jump_target_addr)
+
+    demo_plan = [
+        ModificationPlan(demo_add_push_addrs[0], program_uor[demo_add_push_addrs[0]]),
+        ModificationPlan(demo_add_push_addrs[1], program_uor[demo_add_push_addrs[1]]),
+        ModificationPlan(demo_sub_push_addrs[0], program_uor[demo_sub_push_addrs[0]]),
+        ModificationPlan(demo_sub_push_addrs[1], program_uor[demo_sub_push_addrs[1]]),
+        ModificationPlan(jump_push_addr, program_uor[jump_push_addr]),
+    ]
+
+    apply_modification_plan(program_uor, demo_plan)
 
     # --- Length check (MUST BE UPDATED CAREFULLY) ---
     current_len = len(program_uor)
