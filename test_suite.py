@@ -3,7 +3,12 @@ from phase1_vm_enhancements import (
     chunk_push, chunk_print, chunk_halt,
     chunk_add, chunk_sub, chunk_mul,
     chunk_input,
-    vm_execute
+    vm_execute,
+    chunk_jump
+)
+from generate_goal_seeker_uor import (
+    modify_arithmetic_operands,
+    modify_control_flow_target
 )
 from enhanced_vm_interface import EnhancedVMInterface
 
@@ -43,6 +48,32 @@ class TestVMInstructions(unittest.TestCase):
         out, state = self.run_program(prog)
         self.assertEqual(out, str(4 * 3))
         self.assertTrue(state.get('halt_flag'))
+
+    def test_modify_add_operand(self):
+        prog = [chunk_push(1), chunk_push(2), chunk_add(), chunk_print(), chunk_halt()]
+        modify_arithmetic_operands(prog, [0, 1], 5)
+        out, _ = self.run_program(prog)
+        self.assertEqual(out, str(5 + 5))
+
+    def test_modify_sub_operand(self):
+        prog = [chunk_push(5), chunk_push(2), chunk_sub(), chunk_print(), chunk_halt()]
+        modify_arithmetic_operands(prog, [0, 1], 7)
+        out, _ = self.run_program(prog)
+        self.assertEqual(out, str(7 - 7))
+
+    def test_modify_jump_target(self):
+        prog = [
+            chunk_push(1),  # placeholder
+            chunk_jump(),
+            chunk_push(42),
+            chunk_print(),
+            chunk_push(7),
+            chunk_print(),
+            chunk_halt(),
+        ]
+        modify_control_flow_target(prog, 0, 1, 4)
+        out, _ = self.run_program(prog)
+        self.assertEqual(out, '7')
 
 class TestEnhancedInterface(unittest.TestCase):
     def test_bidirectional(self):

@@ -67,6 +67,7 @@ The interaction between the UOR program (Learner) and the Flask backend (Teacher
     *   Modifies its primary `PUSH` instruction's operand at Address 0.
     *   On failure, modifies the instruction *type* at a "modification slot" (Address 1) by POKEing a `PUSH(0)`, `ADD`, or `NOP`.
     *   Persists state (last poked values, failure counts, last chosen slot/instruction type) across modification cycles.
+    *   Provides helpers to modify arithmetic operands and jump targets programmatically.
 *   **Autonomous Goal-Seeking:**
     *   Sophisticated interaction loop with the Teacher via `OP_INPUT`.
     *   Adapts to success by requesting and adopting new goals.
