@@ -1,0 +1,7 @@
+vm:
+  log_file: vm_events.log
+  max_instructions: 1000
+teacher:
+  difficulty: MEDIUM
+benchmark:
+  iterations: 100
