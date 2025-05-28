@@ -26,6 +26,11 @@ class PerformanceMonitor:
         self.successes: int = 0
         self.attempts_per_success: List[int] = []
         self.current_attempts: int = 0
+        # Track recent outputs and error magnitudes
+        self.recent_outputs: List[int] = []
+        self.recent_errors: List[int] = []
+        # Maintain historical success counts per parameter/operand
+        self.param_stats: Dict[int, Dict[str, int]] = {}
 
     def record_attempt(self, success: bool) -> None:
         """Record a single attempt outcome."""
@@ -35,6 +40,37 @@ class PerformanceMonitor:
             self.successes += 1
             self.attempts_per_success.append(self.current_attempts)
             self.current_attempts = 0
+
+    def record_attempt_details(self, operand: int, output: int, target: int) -> None:
+        """Record an attempt with extra context for learning heuristics."""
+        error = abs(target - output)
+        self.recent_outputs.append(output)
+        self.recent_errors.append(error)
+        if len(self.recent_outputs) > 10:
+            self.recent_outputs.pop(0)
+        if len(self.recent_errors) > 10:
+            self.recent_errors.pop(0)
+
+        stats = self.param_stats.setdefault(operand, {"attempts": 0, "successes": 0})
+        stats["attempts"] += 1
+        success = error == 0
+        if success:
+            stats["successes"] += 1
+
+        self.record_attempt(success)
+
+    def success_rate_for_parameter(self, operand: int) -> float:
+        """Return success ratio for a specific operand value."""
+        stats = self.param_stats.get(operand)
+        if not stats or stats["attempts"] == 0:
+            return 0.0
+        return stats["successes"] / stats["attempts"]
+
+    def recent_average_error(self) -> float:
+        """Average of recently observed absolute errors."""
+        if not self.recent_errors:
+            return 0.0
+        return sum(self.recent_errors) / len(self.recent_errors)
 
     def success_rate(self) -> float:
         """Return recent success rate in [0,1]."""
@@ -180,3 +216,16 @@ class AdaptiveTeacher:
             hint = "standard goal"
         self.curriculum.register_goal(self.current_goal, self.goal_type)
         return self.current_goal, hint
+
+    def suggest_operand(self, candidates: List[int]) -> int:
+        """Choose an operand value based on historical success rates."""
+        if not candidates:
+            raise ValueError("candidates cannot be empty")
+        best = candidates[0]
+        best_rate = -1.0
+        for val in candidates:
+            rate = self.monitor.success_rate_for_parameter(val)
+            if rate > best_rate:
+                best_rate = rate
+                best = val
+        return best
