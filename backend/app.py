@@ -415,7 +415,6 @@ def initialize_vm():
     difficulty_params = DIFFICULTY_LEVELS[current_difficulty_level_name]
     current_target_value_idx = random.randint(0, difficulty_params["range_max"])
     append_to_log(f"INIT: Difficulty: {current_difficulty_level_name}. Initial TARGET set by app.py: {current_target_value_idx}")
-    append_to_log(f"INIT: Initial TARGET set by app.py: {current_target_value_idx}")
 
     # app.py creates the PUSH instruction for this initial target/attempt
     # and POKEs it into program memory at address 0.
