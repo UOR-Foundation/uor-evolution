@@ -1,0 +1,48 @@
+# Enhanced UOR Goal-Seeker Pseudocode
+# Addresses 200-299 used for circular buffer of previous failed attempts
+# Algorithms implemented in this design:
+#   STORE_FAILURE      - save a failed guess at current buffer pointer
+#   CHECK_HISTORY      - check buffer to prevent repeat guesses
+#   CALC_ERROR         - |target - attempt| -> categorize (small, medium, large)
+#   ADAPTIVE_STEP      - determine step size based on error magnitude
+#   UPDATE_BOUNDS      - maintain min/max bounds for binary search
+#   ANALYZE_HISTORY    - detect arithmetic/geometric sequence from successes
+#
+# The program cycles through three search strategies and switches after
+# 10 consecutive failures:
+#   1. Random search with step size from ADAPTIVE_STEP
+#   2. Binary search using UPDATE_BOUNDS
+#   3. Pattern recognition search using ANALYZE_HISTORY
+#
+# Memory layout notes:
+#   100-109 : control counters and state (strategy id, failure count, etc.)
+#   110-119 : last known bounds for binary search
+#   120-129 : pattern recognition workspace
+#   200-299 : circular buffer storing last 100 failed attempts
+#
+# Main loop outline:
+#   0:  LOAD current attempt value
+#   1:  EXECUTE selected modification slot
+#   2:  PRINT attempt and request feedback
+#   3:  If success:
+#         - RESET failure count
+#         - STORE successful value for pattern analysis
+#         - UPDATE_BOUNDS with success
+#         - Jump back to start with next target
+#   4:  If failure:
+#         - STORE_FAILURE at buffer pointer
+#         - INCREMENT failure counter
+#         - CALC_ERROR of attempt
+#         - ADAPTIVE_STEP to choose next delta
+#         - CHECK_HISTORY to avoid repeats
+#         - Depending on current strategy, compute next attempt:
+#             a) Random search: random +/- step
+#             b) Binary search: midpoint between bounds
+#             c) Pattern recognition: extrapolate from ANALYZE_HISTORY
+#         - UPDATE_BOUNDS with failed value when needed
+#         - Switch strategy if 10 failures reached
+#         - LOOP
+#
+# The actual numeric UOR chunks are not provided here. This file serves as
+# a high-level reference for implementing the enhanced program in future
+# versions.
