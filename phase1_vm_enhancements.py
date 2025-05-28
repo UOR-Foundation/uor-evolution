@@ -237,6 +237,66 @@ def chunk_sub() -> int:
 def chunk_mul() -> int:
     return _attach_checksum(OP_MUL**4, [(OP_MUL, 4)])
 
+# ----------------------------------------------------------------------
+# Instruction parsing utilities
+# ----------------------------------------------------------------------
+
+def parse_opcode_and_operand(chunk: int) -> Tuple[int | None, int | None]:
+    """Return ``(opcode_prime, operand_idx)`` for a chunk.
+
+    ``operand_idx`` may be ``None`` if the instruction has no immediate operand
+    encoded in the chunk.
+    """
+    try:
+        factors = _factor(chunk)
+    except ValueError:
+        return None, None
+
+    opcode_prime = None
+    operand_idx = None
+    for p, e in factors:
+        if e == 4:
+            opcode_prime = p
+        elif e == 5:
+            operand_idx = _PRIME_IDX.get(p)
+
+    return opcode_prime, operand_idx
+
+
+def parse_push_operand(chunk: int) -> int:
+    op, operand = parse_opcode_and_operand(chunk)
+    if op != OP_PUSH or operand is None:
+        raise ValueError("Chunk is not a PUSH with an operand")
+    return operand
+
+
+def parse_add_operand(chunk: int) -> int | None:
+    op, operand = parse_opcode_and_operand(chunk)
+    if op != OP_ADD:
+        raise ValueError("Chunk is not an ADD instruction")
+    return operand
+
+
+def parse_sub_operand(chunk: int) -> int | None:
+    op, operand = parse_opcode_and_operand(chunk)
+    if op != OP_SUB:
+        raise ValueError("Chunk is not a SUB instruction")
+    return operand
+
+
+def parse_jump_target(chunk: int) -> int | None:
+    op, operand = parse_opcode_and_operand(chunk)
+    if op != OP_JUMP:
+        raise ValueError("Chunk is not a JUMP instruction")
+    return operand
+
+
+def parse_jump_if_zero_target(chunk: int) -> int | None:
+    op, operand = parse_opcode_and_operand(chunk)
+    if op != OP_JUMP_IF_ZERO:
+        raise ValueError("Chunk is not a JUMP_IF_ZERO instruction")
+    return operand
+
 # ──────────────────────────────────────────────────────────────────────
 # Prime factorisation
 # ──────────────────────────────────────────────────────────────────────
