@@ -121,7 +121,7 @@ The interaction between the UOR program (Learner) and the Flask backend (Teacher
 ├── backend/
 │ ├── uor_programs/
 │ │ └── goal_seeker_demo.uor.txt # Generated UOR program
-│ ├── init.py
+│ ├── __init__.py
 │ ├── app.py # Flask backend, "Teacher" logic
 │ └── adaptive_teacher.py # Adaptive teaching classes
 ├── frontend/
