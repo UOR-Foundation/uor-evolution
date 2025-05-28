@@ -17,6 +17,9 @@ from phase1_vm_enhancements import (
     PRIME_IDX_TRUE, PRIME_IDX_FALSE,
     OP_ADD,
     OP_NOP,
+    parse_push_operand,
+    parse_jump_target,
+    parse_opcode_and_operand,
     ModificationPlan
 )
 
@@ -78,6 +81,44 @@ def update_modification_history(history: list[int], addr: int, max_size: int = 2
     history.append(addr)
     if len(history) > max_size:
         history.pop(0)
+
+
+def modify_arithmetic_operands(program: List[int], operand_addresses: List[int], new_operand_idx: int) -> None:
+    """Update PUSH operands used by arithmetic operations.
+
+    Each address in ``operand_addresses`` should contain a PUSH instruction. The
+    operand will be replaced with ``new_operand_idx``.
+    """
+    if new_operand_idx < 0:
+        raise ValueError("new_operand_idx must be non-negative")
+
+    _extend_primes_to(new_operand_idx)
+    for addr in operand_addresses:
+        opcode, _ = parse_opcode_and_operand(program[addr])
+        if opcode != OP_PUSH:
+            raise ValueError(f"Address {addr} does not contain a PUSH instruction")
+        program[addr] = chunk_push(new_operand_idx)
+
+
+def modify_control_flow_target(program: List[int], push_addr: int, jump_addr: int, new_target: int) -> None:
+    """Update the PUSH supplying a JUMP target with ``new_target``.
+
+    ``jump_addr`` must contain a JUMP or JUMP_IF_ZERO instruction. ``push_addr``
+    should be the address of the preceding PUSH instruction that provides the
+    target address on the stack.
+    """
+    if not 0 <= new_target < len(program):
+        raise ValueError("new_target out of program bounds")
+
+    opcode, _ = parse_opcode_and_operand(program[jump_addr])
+    if opcode not in (OP_JUMP, OP_JUMP_IF_ZERO):
+        raise ValueError("jump_addr must contain a JUMP or JUMP_IF_ZERO")
+
+    _extend_primes_to(new_target)
+    opcode_push, _ = parse_opcode_and_operand(program[push_addr])
+    if opcode_push != OP_PUSH:
+        raise ValueError("push_addr must contain a PUSH instruction")
+    program[push_addr] = chunk_push(new_target)
 
 
 def apply_modification_plan(program: List[int], plan: List[ModificationPlan]) -> None:
