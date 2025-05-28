@@ -86,6 +86,10 @@ OP_MOD                    = get_prime(22)
 OP_INPUT                  = get_prime(23)
 OP_RANDOM                 = get_prime(24)
 
+_extend_primes_to(26)  # New instructions for Phase 3
+OP_SUB                    = get_prime(25)
+OP_MUL                    = get_prime(26)
+
 # --- END NEW HALT Opcode ---
 
 PRIME_IDX_TRUE = _PRIME_IDX[get_prime(1)] 
@@ -215,6 +219,12 @@ def chunk_input() -> int:
 
 def chunk_random() -> int:
     return _attach_checksum(OP_RANDOM**4, [(OP_RANDOM, 4)])
+
+def chunk_sub() -> int:
+    return _attach_checksum(OP_SUB**4, [(OP_SUB, 4)])
+
+def chunk_mul() -> int:
+    return _attach_checksum(OP_MUL**4, [(OP_MUL, 4)])
 
 # ──────────────────────────────────────────────────────────────────────
 # Prime factorisation
@@ -545,6 +555,14 @@ def vm_execute(chunks_arg: List[int], initial_stack: List[int] = None) -> Iterat
                 elif op == OP_ADD:
                     if len(stack) < 2: raise ValueError(f"ADD needs 2 values on stack at UOR_addr {current_instruction_pointer_for_processing}")
                     b, a = stack.pop(), stack.pop(); stack.append(a + b)
+                elif op == OP_SUB:
+                    if len(stack) < 2:
+                        raise ValueError(f"SUB needs 2 values on stack at UOR_addr {current_instruction_pointer_for_processing}")
+                    b, a = stack.pop(), stack.pop(); stack.append(a - b)
+                elif op == OP_MUL:
+                    if len(stack) < 2:
+                        raise ValueError(f"MUL needs 2 values on stack at UOR_addr {current_instruction_pointer_for_processing}")
+                    b, a = stack.pop(), stack.pop(); stack.append(a * b)
                 elif op == OP_PRINT:
                     if not stack: raise ValueError(f"PRINT needs 1 value on stack at UOR_addr {current_instruction_pointer_for_processing}")
                     output_for_this_iteration = str(stack.pop()) 
@@ -896,6 +914,32 @@ def _self_tests() -> Tuple[int,int]:
            f"ADD test. Expected '{expected_str_only}' then HALT. Got: '{output_str}', Final state: {final_state}")
     except Exception as e:
         ok(False, f"ADD test failed: {e}")
+
+    # Test SUB
+    try:
+        _extend_primes_to(12)
+        val1_idx = 11
+        val2_idx = 7
+        program_sub = [chunk_push(val1_idx), chunk_push(val2_idx), chunk_sub(), chunk_print(), chunk_halt()]
+        output_str, final_state = run_vm_for_test(program_sub)
+        expected_str_only = str(val1_idx - val2_idx)
+        ok(output_str == expected_str_only and final_state.get('halt_flag') and not final_state.get('error_msg'),
+           f"SUB test. Expected '{expected_str_only}' then HALT. Got: '{output_str}', Final state: {final_state}")
+    except Exception as e:
+        ok(False, f"SUB test failed: {e}")
+
+    # Test MUL
+    try:
+        _extend_primes_to(6)
+        val1_idx = 4
+        val2_idx = 5
+        program_mul = [chunk_push(val1_idx), chunk_push(val2_idx), chunk_mul(), chunk_print(), chunk_halt()]
+        output_str, final_state = run_vm_for_test(program_mul)
+        expected_str_only = str(val1_idx * val2_idx)
+        ok(output_str == expected_str_only and final_state.get('halt_flag') and not final_state.get('error_msg'),
+           f"MUL test. Expected '{expected_str_only}' then HALT. Got: '{output_str}', Final state: {final_state}")
+    except Exception as e:
+        ok(False, f"MUL test failed: {e}")
 
     # Test NTT with HALT
     try:
