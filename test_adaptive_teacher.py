@@ -22,6 +22,13 @@ class TestPerformanceMonitor(unittest.TestCase):
         mon.record_attempt(False)
         self.assertAlmostEqual(mon.success_rate(), 0.75)
 
+    def test_parameter_stats(self):
+        mon = PerformanceMonitor()
+        mon.record_attempt_details(1, 1, 1)  # success
+        mon.record_attempt_details(1, 0, 1)  # failure
+        self.assertAlmostEqual(mon.success_rate_for_parameter(1), 0.5)
+        self.assertGreater(mon.recent_average_error(), 0)
+
 class TestAdaptiveTeacher(unittest.TestCase):
     def test_adjust_difficulty(self):
         teacher = AdaptiveTeacher()
@@ -35,6 +42,13 @@ class TestAdaptiveTeacher(unittest.TestCase):
         teacher.monitor.current_attempts = 10
         teacher._adjust_difficulty()
         self.assertEqual(teacher.difficulty, "EASY")
+
+    def test_suggest_operand(self):
+        teacher = AdaptiveTeacher()
+        teacher.monitor.record_attempt_details(2, 2, 2)
+        teacher.monitor.record_attempt_details(3, 2, 3)  # failure for operand 3
+        choice = teacher.suggest_operand([2, 3])
+        self.assertEqual(choice, 2)
 
 if __name__ == '__main__':
     unittest.main()
