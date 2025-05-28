@@ -13,7 +13,18 @@ from __future__ import annotations
 import sys
 from math import isqrt
 from typing import List, Dict, Tuple, Iterator
+from dataclasses import dataclass
 import random
+
+# ----------------------------------------------------------------------
+# Data structures
+# ----------------------------------------------------------------------
+
+@dataclass
+class ModificationPlan:
+    """Plan detailing how a program should be modified at runtime."""
+    slot_address: int
+    new_chunk: int
 
 # ──────────────────────────────────────────────────────────────────────
 # Prime cache & tags
