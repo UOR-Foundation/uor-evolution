@@ -3,5 +3,6 @@ vm:
   max_instructions: 1000
 teacher:
   difficulty: MEDIUM
+  alert_email: operator@example.com
 benchmark:
   iterations: 100
