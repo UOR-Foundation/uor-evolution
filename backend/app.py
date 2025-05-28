@@ -3,6 +3,7 @@ import os
 import sys
 import random
 import datetime
+from typing import List, Optional, Tuple
 
 PRIME_IDX_SUCCESS = 1 # Represents the prime index for "true" or success
 PRIME_IDX_FAILURE = 0 # Represents the prime index for "false" or failure
@@ -38,6 +39,166 @@ def append_to_log(message: str):
 
 # --- Flask App Setup ---
 app = Flask(__name__, static_folder=os.path.join(PROJECT_ROOT, 'frontend'), static_url_path='')
+
+class AdaptiveTeacher:
+    """Analyzes VM performance and adjusts teaching strategy.
+    Tracks metrics, identifies weaknesses, manages curriculum."""
+
+    def __init__(self):
+        self.monitor = PerformanceMonitor()
+        self.curriculum = AdaptiveCurriculum()
+        self.sequence_gen = SequenceGenerator()
+        self.difficulty = "MEDIUM"
+        self.current_goal = None
+        self.goal_type = None
+
+    def record_attempt(self, target: int, success: bool) -> None:
+        """Update statistics after the VM attempts to hit ``target``."""
+        self.monitor.record_attempt(success)
+        self.curriculum.record_attempt(target, success)
+        self._adjust_difficulty()
+
+    def _adjust_difficulty(self) -> None:
+        """Automatically modify difficulty based on recent performance."""
+        rate = self.monitor.success_rate()
+        if rate > 0.8:
+            self.difficulty = "HARD"
+        elif rate < 0.5:
+            self.difficulty = "EASY"
+        else:
+            self.difficulty = "MEDIUM"
+
+    def next_goal(self) -> Tuple[int, str]:
+        """Determine the next goal and return a hint for the VM."""
+        self.goal_type = self.curriculum.choose_goal_type()
+        if self.goal_type == "sequence":
+            seq = self.sequence_gen.fibonacci(5)
+            self.current_goal = seq[-1]
+            hint = "follow fibonacci pattern"
+        elif self.goal_type == "reinforcement":
+            rng = self.curriculum.weakest_range() or 0
+            self.current_goal = random.randint(rng, rng + 4)
+            hint = "practice weak range"
+        elif self.goal_type == "challenge":
+            self.current_goal = random.randint(0, 20)
+            hint = "challenge mode"
+        else:
+            self.current_goal = random.randint(0, DIFFICULTY_LEVELS[self.difficulty]["range_max"])
+            hint = "standard goal"
+        self.curriculum.register_goal(self.current_goal, self.goal_type)
+        return self.current_goal, hint
+
+
+class SequenceGenerator:
+    """Creates mathematical sequences for pattern learning."""
+
+    @staticmethod
+    def arithmetic(start: int = 0, step: int = 1, length: int = 5) -> List[int]:
+        return [start + step * i for i in range(length)]
+
+    @staticmethod
+    def geometric(start: int = 1, ratio: int = 2, length: int = 5) -> List[int]:
+        seq = [start]
+        for _ in range(1, length):
+            seq.append(seq[-1] * ratio)
+        return seq
+
+    @staticmethod
+    def fibonacci(length: int = 5) -> List[int]:
+        seq = [0, 1]
+        while len(seq) < length:
+            seq.append(seq[-1] + seq[-2])
+        return seq[:length]
+
+    @staticmethod
+    def primes(length: int = 5) -> List[int]:
+        seq = []
+        n = 2
+        while len(seq) < length:
+            for p in range(2, int(n ** 0.5) + 1):
+                if n % p == 0:
+                    break
+            else:
+                seq.append(n)
+            n += 1
+        return seq
+
+
+class AdaptiveCurriculum:
+    """Tracks skill development and generates targeted practice."""
+
+    def __init__(self):
+        self.range_stats: dict[int, dict[str, int]] = {}
+        self.goal_history: List[Tuple[int, str]] = []
+
+    def _range_key(self, value: int) -> int:
+        return (value // 5) * 5
+
+    def register_goal(self, target: int, goal_type: str) -> None:
+        self.goal_history.append((target, goal_type))
+
+    def record_attempt(self, target: int, success: bool) -> None:
+        key = self._range_key(target)
+        stats = self.range_stats.setdefault(key, {"attempts": 0, "successes": 0})
+        stats["attempts"] += 1
+        if success:
+            stats["successes"] += 1
+
+    def weakest_range(self) -> Optional[int]:
+        weakest = None
+        lowest = 1.1
+        for key, data in self.range_stats.items():
+            if data["attempts"] == 0:
+                continue
+            rate = data["successes"] / data["attempts"]
+            if rate < lowest:
+                lowest = rate
+                weakest = key
+        return weakest
+
+    def choose_goal_type(self) -> str:
+        if self.weakest_range() is not None and random.random() < 0.4:
+            return "reinforcement"
+        if random.random() < 0.2:
+            return "sequence"
+        if random.random() > 0.9:
+            return "challenge"
+        return "standard"
+
+
+class PerformanceMonitor:
+    """Real-time tracking and visualization of VM performance."""
+
+    def __init__(self) -> None:
+        self.total_attempts = 0
+        self.successes = 0
+        self.attempts_per_success: List[int] = []
+        self.current_attempts = 0
+
+    def record_attempt(self, success: bool) -> None:
+        self.total_attempts += 1
+        self.current_attempts += 1
+        if success:
+            self.successes += 1
+            self.attempts_per_success.append(self.current_attempts)
+            self.current_attempts = 0
+
+    def success_rate(self) -> float:
+        if self.total_attempts == 0:
+            return 0.0
+        return self.successes / max(1, len(self.attempts_per_success) + (1 if self.current_attempts else 0))
+
+    def average_attempts(self) -> float:
+        if not self.attempts_per_success:
+            return 0.0
+        return sum(self.attempts_per_success) / len(self.attempts_per_success)
+
+    def trend(self) -> float:
+        if len(self.attempts_per_success) < 3:
+            return 0.0
+        recent_avg = sum(self.attempts_per_success[-3:]) / 3
+        overall = self.average_attempts()
+        return overall - recent_avg
 
 # --- Global VM State ---
 current_vm_program = []
