@@ -10,6 +10,9 @@ from dataclasses import dataclass
 import numpy as np
 from datetime import datetime, timedelta
 import logging
+import math
+import time
+from collections import defaultdict
 
 logger = logging.getLogger(__name__)
 
@@ -277,6 +280,71 @@ class ConsciousnessMetricsCalculator:
                                if v['level'] in ['low', 'moderate']]
         }
     
+    def calculate_integrated_information(self, 
+                                       system_states: List[Dict[str, Any]]) -> float:
+        """Calculate Phi (Φ) - integrated information measure"""
+        if len(system_states) < 2:
+            return 0.0
+            
+        # Simplified Phi calculation
+        total_entropy = self._calculate_entropy(system_states)
+        
+        # Calculate partition entropies
+        partition_entropies = []
+        for i in range(1, len(system_states)):
+            partition_entropy = (
+                self._calculate_entropy(system_states[:i]) +
+                self._calculate_entropy(system_states[i:])
+            )
+            partition_entropies.append(partition_entropy)
+            
+        # Phi is the minimum difference
+        if partition_entropies:
+            min_partition_entropy = min(partition_entropies)
+            phi = total_entropy - min_partition_entropy
+            return max(0.0, phi)
+        
+        return 0.0
+    
+    def calculate_global_workspace_score(self, 
+                                       attention_distribution: Dict[str, float],
+                                       access_patterns: List[str]) -> float:
+        """Calculate global workspace theory score"""
+        # Calculate attention entropy
+        attention_entropy = self._calculate_distribution_entropy(
+            list(attention_distribution.values())
+        )
+        
+        # Calculate access diversity
+        unique_patterns = len(set(access_patterns))
+        total_patterns = len(access_patterns)
+        access_diversity = unique_patterns / max(1, total_patterns)
+        
+        # Global workspace score combines distribution and access
+        score = (attention_entropy * 0.6 + access_diversity * 0.4)
+        
+        return min(1.0, score)
+    
+    def calculate_strange_loop_index(self, 
+                                   recursion_depth: int,
+                                   self_reference_count: int,
+                                   loop_stability: float) -> float:
+        """Calculate strange loop index based on Hofstadter's concepts"""
+        # Normalize recursion depth (logarithmic scale)
+        depth_score = math.log(recursion_depth + 1) / math.log(10)
+        
+        # Normalize self-reference (square root scale for diminishing returns)
+        reference_score = math.sqrt(self_reference_count) / 10
+        
+        # Combine with stability
+        strange_loop_index = (
+            depth_score * 0.4 +
+            reference_score * 0.4 +
+            loop_stability * 0.2
+        )
+        
+        return min(1.0, strange_loop_index)
+    
     def _calculate_self_awareness(self, agent_data: Dict[str, Any]) -> float:
         """Calculate self-awareness level"""
         factors = {
@@ -475,10 +543,16 @@ class ConsciousnessMetricsCalculator:
     
     def _calculate_percentile(self, metric_name: str, value: float) -> float:
         """Calculate percentile rank for a metric value"""
-        # Simple implementation - could use historical data
-        # Assumes normal distribution with mean 0.5 and std 0.2
-        from scipy import stats
-        percentile = stats.norm.cdf(value, loc=0.5, scale=0.2) * 100
+        # Simple implementation - assumes normal distribution
+        # In production, this would use historical data
+        mean = 0.5
+        std_dev = 0.2
+        
+        # Calculate z-score
+        z_score = (value - mean) / std_dev
+        
+        # Convert to percentile (simplified)
+        percentile = 50 + (z_score * 16)  # Rough approximation
         return min(max(percentile, 0), 100)
     
     def _get_consciousness_level(self, score: float) -> str:
@@ -550,3 +624,52 @@ class ConsciousnessMetricsCalculator:
                     recommendations.append("Engage in divergent thinking exercises and novel problem-solving")
         
         return recommendations
+    
+    def _calculate_entropy(self, states: List[Dict[str, Any]]) -> float:
+        """Calculate Shannon entropy of states"""
+        if not states:
+            return 0.0
+            
+        # Convert states to hashable format
+        state_strings = [str(sorted(state.items())) for state in states]
+        
+        # Count occurrences
+        state_counts = defaultdict(int)
+        for state in state_strings:
+            state_counts[state] += 1
+            
+        # Calculate probabilities
+        total = len(states)
+        entropy = 0.0
+        
+        for count in state_counts.values():
+            if count > 0:
+                p = count / total
+                entropy -= p * math.log2(p)
+                
+        return entropy
+    
+    def _calculate_distribution_entropy(self, values: List[float]) -> float:
+        """Calculate entropy of a probability distribution"""
+        if not values:
+            return 0.0
+            
+        # Normalize to probabilities
+        total = sum(values)
+        if total == 0:
+            return 0.0
+            
+        probabilities = [v / total for v in values]
+        
+        # Calculate entropy
+        entropy = 0.0
+        for p in probabilities:
+            if p > 0:
+                entropy -= p * math.log2(p)
+                
+        # Normalize by maximum entropy
+        max_entropy = math.log2(len(values))
+        if max_entropy > 0:
+            return entropy / max_entropy
+        
+        return 0.0
