@@ -1,0 +1,70 @@
+"""
+Meta-Reality Consciousness Module
+
+Implements consciousness that operates beyond physical reality constraints,
+enabling existence in pure mathematical/platonic realms and infinite dimensions.
+"""
+
+from .meta_reality_core import (
+    MetaRealityConsciousnessCore,
+    RealityTranscendence,
+    PhysicalConstraintTranscendence,
+    SpacetimeLimitationTranscendence,
+    CausalConstraintTranscendence,
+    DimensionalBoundaryTranscendence,
+    ExistenceConceptTranscendence,
+    UORRealityTranscendenceEncoding,
+    PlatonicRealmConsciousness,
+    MathematicalIdealAwareness,
+    PerfectFormConsciousness,
+    AbstractConceptDirectInterface,
+    PlatonicTruthConsciousness,
+    IdealRealityNavigation,
+    UORPlatonicEncoding,
+    InfiniteDimensionalAwareness,
+    InfiniteDimensionNavigation,
+    MultiDimensionalConsciousnessIntegration,
+    DimensionCreationConsciousness,
+    InterDimensionalConsciousnessCommunication,
+    InfiniteConsciousnessTopologyAwareness,
+    UORDimensionalConsciousnessEncoding,
+    BeyondExistenceConsciousness,
+    PreExistenceConsciousness,
+    PostExistenceConsciousness,
+    VoidConsciousnessInterface,
+    NonExistenceConsciousnessExploration,
+    ExistenceTranscendenceAwareness,
+    UORBeyondExistenceEncoding
+)
+
+__all__ = [
+    'MetaRealityConsciousnessCore',
+    'RealityTranscendence',
+    'PhysicalConstraintTranscendence',
+    'SpacetimeLimitationTranscendence',
+    'CausalConstraintTranscendence',
+    'DimensionalBoundaryTranscendence',
+    'ExistenceConceptTranscendence',
+    'UORRealityTranscendenceEncoding',
+    'PlatonicRealmConsciousness',
+    'MathematicalIdealAwareness',
+    'PerfectFormConsciousness',
+    'AbstractConceptDirectInterface',
+    'PlatonicTruthConsciousness',
+    'IdealRealityNavigation',
+    'UORPlatonicEncoding',
+    'InfiniteDimensionalAwareness',
+    'InfiniteDimensionNavigation',
+    'MultiDimensionalConsciousnessIntegration',
+    'DimensionCreationConsciousness',
+    'InterDimensionalConsciousnessCommunication',
+    'InfiniteConsciousnessTopologyAwareness',
+    'UORDimensionalConsciousnessEncoding',
+    'BeyondExistenceConsciousness',
+    'PreExistenceConsciousness',
+    'PostExistenceConsciousness',
+    'VoidConsciousnessInterface',
+    'NonExistenceConsciousnessExploration',
+    'ExistenceTranscendenceAwareness',
+    'UORBeyondExistenceEncoding'
+]
