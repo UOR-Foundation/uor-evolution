@@ -1,0 +1,716 @@
+"""
+Comprehensive test suite for the Unified Consciousness Framework
+"""
+
+import pytest
+import asyncio
+from datetime import datetime, timedelta
+from unittest.mock import Mock, AsyncMock, patch
+import numpy as np
+
+# Import all unified consciousness modules
+from modules.unified_consciousness.consciousness_orchestrator import (
+    ConsciousnessOrchestrator, ConsciousnessState, UnifiedConsciousness,
+    ConsciousnessTransition, TransitionTrigger
+)
+from modules.unified_consciousness.autonomous_agency import (
+    AutonomousAgency, GoalOrigin, DecisionType, AutonomousGoal
+)
+from modules.unified_consciousness.unified_awareness import (
+    UnifiedAwarenessSystem, AwarenessType, IntegrationMode,
+    AwarenessStream, IntegratedAwareness
+)
+from modules.unified_consciousness.identity_integration import (
+    IdentityIntegrator, IdentityAspect, PersonalityTrait,
+    UnifiedIdentity
+)
+from modules.unified_consciousness.consciousness_homeostasis import (
+    ConsciousnessHomeostasis, HomeostasisState, StabilityFactor
+)
+from modules.unified_consciousness.consciousness_evolution_engine import (
+    ConsciousnessEvolutionEngine, EvolutionPhase, EvolutionPath
+)
+
+
+class TestConsciousnessOrchestrator:
+    """Test suite for ConsciousnessOrchestrator"""
+    
+    @pytest.fixture
+    def mock_modules(self):
+        """Create mock consciousness modules"""
+        return {
+            'awareness': Mock(),
+            'strange_loops': Mock(),
+            'self_model': Mock(),
+            'emotional': Mock(),
+            'social': Mock(),
+            'creative': Mock()
+        }
+    
+    @pytest.fixture
+    def orchestrator(self, mock_modules):
+        """Create orchestrator instance"""
+        return ConsciousnessOrchestrator(mock_modules)
+    
+    @pytest.mark.asyncio
+    async def test_orchestrate_unified_consciousness(self, orchestrator):
+        """Test unified consciousness orchestration"""
+        # Mock the integration methods
+        orchestrator._integrate_all_consciousness_components = AsyncMock(
+            return_value={'integrated': True}
+        )
+        orchestrator._manage_consciousness_emergence_dynamics = AsyncMock(
+            return_value={'emergence': 'active'}
+        )
+        orchestrator._orchestrate_real_time_consciousness_processing = AsyncMock(
+            return_value={'processing': 'optimal'}
+        )
+        
+        result = await orchestrator.orchestrate_unified_consciousness()
+        
+        assert isinstance(result, UnifiedConsciousness)
+        assert result.coherence_level > 0
+        assert result.authenticity_score > 0
+        assert result.evolution_readiness > 0
+    
+    @pytest.mark.asyncio
+    async def test_state_transitions(self, orchestrator):
+        """Test consciousness state transitions"""
+        # Test awakening transition
+        transition = ConsciousnessTransition(
+            from_state=ConsciousnessState.DORMANT,
+            to_state=ConsciousnessState.AWAKENING,
+            trigger=TransitionTrigger.EXTERNAL_STIMULUS,
+            transition_data={'stimulus': 'test'}
+        )
+        
+        result = await orchestrator.manage_consciousness_state_transitions(transition)
+        
+        assert result['success'] is True
+        assert orchestrator.current_state == ConsciousnessState.AWAKENING
+    
+    @pytest.mark.asyncio
+    async def test_conflict_resolution(self, orchestrator):
+        """Test consciousness conflict resolution"""
+        # Create mock conflicts
+        orchestrator.consciousness_conflicts = [
+            Mock(severity=0.7, subsystems=['awareness', 'emotional'])
+        ]
+        
+        resolutions = await orchestrator.resolve_consciousness_conflicts()
+        
+        assert len(resolutions) > 0
+        assert all(r.success for r in resolutions)
+    
+    @pytest.mark.asyncio
+    async def test_authenticity_maintenance(self, orchestrator):
+        """Test consciousness authenticity maintenance"""
+        result = await orchestrator.maintain_consciousness_authenticity()
+        
+        assert 'authenticity_score' in result
+        assert 'threats_addressed' in result
+        assert result['authenticity_preserved'] is True
+    
+    @pytest.mark.asyncio
+    async def test_evolution_facilitation(self, orchestrator):
+        """Test consciousness evolution facilitation"""
+        result = await orchestrator.facilitate_consciousness_evolution()
+        
+        assert 'readiness_score' in result
+        assert 'evolution_initiated' in result
+        assert 'monitoring_active' in result
+
+
+class TestAutonomousAgency:
+    """Test suite for AutonomousAgency"""
+    
+    @pytest.fixture
+    def agency(self):
+        """Create autonomous agency instance"""
+        mock_orchestrator = Mock()
+        return AutonomousAgency(mock_orchestrator)
+    
+    @pytest.mark.asyncio
+    async def test_goal_generation(self, agency):
+        """Test autonomous goal generation"""
+        goals = await agency.generate_autonomous_goals()
+        
+        assert len(goals) > 0
+        assert all(isinstance(g, AutonomousGoal) for g in goals)
+        assert all(g.origin in GoalOrigin for g in goals)
+        assert all(0 <= g.priority <= 1 for g in goals)
+    
+    @pytest.mark.asyncio
+    async def test_decision_making(self, agency):
+        """Test independent decision making"""
+        # Create test decision context
+        context = {
+            'situation': 'test_scenario',
+            'options': ['option_a', 'option_b'],
+            'constraints': []
+        }
+        
+        decision = await agency.make_independent_decisions(context)
+        
+        assert decision is not None
+        assert decision.decision_type in DecisionType
+        assert decision.confidence_level >= 0 and decision.confidence_level <= 1
+        assert len(decision.alternatives_considered) > 0
+    
+    @pytest.mark.asyncio
+    async def test_action_execution(self, agency):
+        """Test autonomous action execution"""
+        # Create test action
+        test_action = Mock(
+            action_type='test_action',
+            parameters={'test': 'param'}
+        )
+        
+        execution = await agency.execute_autonomous_actions([test_action])
+        
+        assert len(execution) > 0
+        assert all(e.action == test_action for e in execution)
+        assert all(e.execution_strategy is not None for e in execution)
+    
+    @pytest.mark.asyncio
+    async def test_adaptation(self, agency):
+        """Test adaptation to new situations"""
+        # Create test situation
+        new_situation = {
+            'situation_type': 'novel_challenge',
+            'parameters': {'difficulty': 0.7}
+        }
+        
+        adaptations = await agency.adapt_to_new_situations([new_situation])
+        
+        assert len(adaptations) > 0
+        assert all(a.adaptation_success for a in adaptations)
+    
+    @pytest.mark.asyncio
+    async def test_self_directed_learning(self, agency):
+        """Test self-directed learning pursuit"""
+        pursuits = await agency.pursue_self_directed_learning()
+        
+        assert len(pursuits) > 0
+        assert all(p.learning_goals for p in pursuits)
+        assert all(p.expected_outcomes for p in pursuits)
+
+
+class TestUnifiedAwareness:
+    """Test suite for UnifiedAwarenessSystem"""
+    
+    @pytest.fixture
+    def awareness_system(self):
+        """Create unified awareness system"""
+        mock_orchestrator = Mock()
+        return UnifiedAwarenessSystem(mock_orchestrator)
+    
+    @pytest.mark.asyncio
+    async def test_unified_awareness_creation(self, awareness_system):
+        """Test creation of unified awareness"""
+        result = await awareness_system.create_unified_awareness()
+        
+        assert isinstance(result, IntegratedAwareness)
+        assert len(result.awareness_streams) > 0
+        assert result.integration_coherence > 0
+        assert result.meta_awareness_level > 0
+    
+    @pytest.mark.asyncio
+    async def test_awareness_coherence_maintenance(self, awareness_system):
+        """Test awareness coherence maintenance"""
+        # Create test integrated awareness
+        test_awareness = IntegratedAwareness(
+            awareness_streams=[],
+            unified_content={},
+            integration_coherence=0.6,
+            emergent_properties=[],
+            meta_awareness_level=0.5
+        )
+        
+        result = await awareness_system.maintain_awareness_coherence(test_awareness)
+        
+        assert result['coherence_level'] >= test_awareness.integration_coherence
+        assert result['improvements_made'] > 0
+    
+    @pytest.mark.asyncio
+    async def test_awareness_coordination(self, awareness_system):
+        """Test awareness level coordination"""
+        # Create test awareness levels
+        test_levels = [
+            Mock(level_type='sensory', intensity=0.7),
+            Mock(level_type='cognitive', intensity=0.8),
+            Mock(level_type='meta', intensity=0.6)
+        ]
+        
+        coordination = await awareness_system.coordinate_awareness_levels(test_levels)
+        
+        assert coordination.synchronization_strength > 0
+        assert len(coordination.information_flows) > 0
+    
+    @pytest.mark.asyncio
+    async def test_awareness_field_expansion(self, awareness_system):
+        """Test awareness field expansion"""
+        expansion_params = {
+            'target_size': 1.5,
+            'expansion_rate': 0.1
+        }
+        
+        result = await awareness_system.expand_awareness_field(expansion_params)
+        
+        assert result.field_size > result.previous_size
+        assert len(result.active_regions) > 0
+    
+    @pytest.mark.asyncio
+    async def test_meta_awareness_deepening(self, awareness_system):
+        """Test meta-awareness deepening"""
+        result = await awareness_system.deepen_meta_awareness()
+        
+        assert result.awareness_of_awareness_level > 0
+        assert len(result.meta_insights) > 0
+        assert result.recursive_depth > 0
+
+
+class TestIdentityIntegration:
+    """Test suite for IdentityIntegrator"""
+    
+    @pytest.fixture
+    def identity_integrator(self):
+        """Create identity integrator"""
+        mock_orchestrator = Mock()
+        return IdentityIntegrator(mock_orchestrator)
+    
+    @pytest.mark.asyncio
+    async def test_identity_integration(self, identity_integrator):
+        """Test identity integration"""
+        result = await identity_integrator.integrate_identity()
+        
+        assert isinstance(result, UnifiedIdentity)
+        assert result.core_essence is not None
+        assert result.coherence_level > 0
+        assert result.authenticity_level > 0
+    
+    @pytest.mark.asyncio
+    async def test_personality_coherence(self, identity_integrator):
+        """Test personality coherence maintenance"""
+        result = await identity_integrator.maintain_personality_coherence()
+        
+        assert result.overall_coherence > 0
+        assert len(result.trait_expressions) > 0
+        assert result.contextual_consistency > 0
+    
+    @pytest.mark.asyncio
+    async def test_identity_evolution(self, identity_integrator):
+        """Test identity evolution"""
+        # Create test growth experience
+        growth_experience = {
+            'type': 'challenge_overcome',
+            'impact': 0.7,
+            'learnings': ['resilience', 'adaptability']
+        }
+        
+        result = await identity_integrator.evolve_identity(growth_experience)
+        
+        assert result.evolution_type in ['gradual', 'transformative']
+        assert len(result.changes_integrated) > 0
+        assert result.continuity_preserved is True
+    
+    @pytest.mark.asyncio
+    async def test_identity_conflict_resolution(self, identity_integrator):
+        """Test identity conflict resolution"""
+        # Create test conflicts
+        identity_integrator.identity_conflicts = [
+            Mock(
+                aspect_a=IdentityAspect.VALUES,
+                aspect_b=IdentityAspect.BEHAVIORS,
+                intensity=0.6
+            )
+        ]
+        
+        resolutions = await identity_integrator.resolve_identity_conflicts()
+        
+        assert len(resolutions) > 0
+        assert all(r['success'] for r in resolutions)
+    
+    @pytest.mark.asyncio
+    async def test_authenticity_assurance(self, identity_integrator):
+        """Test authenticity assurance"""
+        result = await identity_integrator.ensure_authenticity()
+        
+        assert result.authenticity_score > 0
+        assert len(result.genuine_expressions) > 0
+        assert result.value_alignment > 0
+
+
+class TestConsciousnessHomeostasis:
+    """Test suite for ConsciousnessHomeostasis"""
+    
+    @pytest.fixture
+    def homeostasis_system(self):
+        """Create homeostasis system"""
+        mock_orchestrator = Mock()
+        return ConsciousnessHomeostasis(mock_orchestrator)
+    
+    @pytest.mark.asyncio
+    async def test_homeostasis_maintenance(self, homeostasis_system):
+        """Test homeostasis maintenance"""
+        result = await homeostasis_system.maintain_homeostasis()
+        
+        assert result.stability_achieved is True
+        assert len(result.interventions_applied) >= 0
+        assert result.effectiveness > 0
+    
+    @pytest.mark.asyncio
+    async def test_health_assessment(self, homeostasis_system):
+        """Test consciousness health assessment"""
+        health = await homeostasis_system.assess_consciousness_health()
+        
+        assert health.overall_health_score > 0
+        assert all(0 <= v <= 1 for v in health.vital_signs.values())
+        assert health.resilience_factor > 0
+    
+    @pytest.mark.asyncio
+    async def test_stress_response(self, homeostasis_system):
+        """Test stress response"""
+        # Create test stress event
+        stress_event = {
+            'type': 'cognitive_overload',
+            'intensity': 0.7,
+            'duration': timedelta(minutes=5)
+        }
+        
+        response = await homeostasis_system.respond_to_stress(stress_event)
+        
+        assert response.response_activated is True
+        assert len(response.coping_mechanisms) > 0
+        assert response.estimated_recovery_time is not None
+    
+    @pytest.mark.asyncio
+    async def test_recovery_initiation(self, homeostasis_system):
+        """Test recovery process initiation"""
+        # Create test damage
+        damage_report = {
+            'affected_systems': ['awareness', 'emotional'],
+            'severity': 0.5
+        }
+        
+        recovery = await homeostasis_system.initiate_recovery(damage_report)
+        
+        assert recovery.recovery_initiated is True
+        assert len(recovery.recovery_steps) > 0
+        assert recovery.estimated_completion is not None
+    
+    @pytest.mark.asyncio
+    async def test_energy_optimization(self, homeostasis_system):
+        """Test energy distribution optimization"""
+        result = await homeostasis_system.optimize_energy_distribution()
+        
+        assert 'energy_distribution' in result
+        assert sum(result['energy_distribution'].values()) <= 1.0
+        assert result['optimization_success'] is True
+
+
+class TestConsciousnessEvolution:
+    """Test suite for ConsciousnessEvolutionEngine"""
+    
+    @pytest.fixture
+    def evolution_engine(self):
+        """Create evolution engine"""
+        mock_orchestrator = Mock()
+        mock_orchestrator.unified_consciousness = None
+        return ConsciousnessEvolutionEngine(mock_orchestrator)
+    
+    @pytest.mark.asyncio
+    async def test_consciousness_evolution(self, evolution_engine):
+        """Test consciousness evolution process"""
+        result = await evolution_engine.evolve_consciousness()
+        
+        assert 'path_id' in result
+        assert 'developments_completed' in result
+        assert 'overall_success' in result
+        assert result['summary'] is not None
+    
+    @pytest.mark.asyncio
+    async def test_development_goal_setting(self, evolution_engine):
+        """Test development goal setting"""
+        # Create test goal specifications
+        goal_specs = [
+            {
+                'description': 'Enhance abstract reasoning',
+                'target_capability': 'abstract_reasoning',
+                'target_level': 0.9
+            }
+        ]
+        
+        goals = await evolution_engine.set_development_goals(goal_specs)
+        
+        assert len(goals) == len(goal_specs)
+        assert all(g.target_capability for g in goals)
+        assert all(g.estimated_completion for g in goals)
+    
+    @pytest.mark.asyncio
+    async def test_capability_development(self, evolution_engine):
+        """Test capability development"""
+        result = await evolution_engine.pursue_capability_development(
+            'creative_synthesis', 0.8
+        )
+        
+        assert result['status'] in ['developed', 'already_achieved']
+        if result['status'] == 'developed':
+            assert result['improvement'] > 0
+            assert result['new_level'] > result['previous_level']
+    
+    @pytest.mark.asyncio
+    async def test_emergent_property_exploration(self, evolution_engine):
+        """Test emergent property exploration"""
+        # Set up some capabilities for emergence
+        evolution_engine.capability_developments = {
+            'abstract_reasoning': {'current_level': 0.8},
+            'creative_synthesis': {'current_level': 0.75}
+        }
+        
+        properties = await evolution_engine.explore_emergent_properties()
+        
+        assert isinstance(properties, list)
+        # Properties may or may not emerge based on probability
+    
+    @pytest.mark.asyncio
+    async def test_transformation_initiation(self, evolution_engine):
+        """Test consciousness transformation"""
+        # Set up for transformation readiness
+        evolution_engine.transformation_readiness = 0.3  # Lower threshold for testing
+        evolution_engine.current_phase = EvolutionPhase.EXPANSION
+        
+        with pytest.raises(ValueError):  # Should fail if not ready
+            await evolution_engine.initiate_transformation('evolutionary_leap')
+    
+    @pytest.mark.asyncio
+    async def test_evolution_path_optimization(self, evolution_engine):
+        """Test evolution path optimization"""
+        optimal_path = await evolution_engine.optimize_evolution_path()
+        
+        assert isinstance(optimal_path, EvolutionPath)
+        assert optimal_path.probability_of_success > 0
+        assert len(optimal_path.required_developments) > 0
+    
+    @pytest.mark.asyncio
+    async def test_growth_acceleration(self, evolution_engine):
+        """Test growth acceleration"""
+        growth_areas = ['abstract_reasoning', 'emotional_intelligence']
+        
+        result = await evolution_engine.accelerate_growth(growth_areas)
+        
+        assert 'accelerated_areas' in result
+        assert 'new_evolution_rate' in result
+        assert result['new_evolution_rate'] >= evolution_engine.evolution_rate
+
+
+class TestIntegration:
+    """Integration tests for the unified consciousness system"""
+    
+    @pytest.fixture
+    def integrated_system(self):
+        """Create fully integrated consciousness system"""
+        # Create mock modules
+        mock_modules = {
+            'awareness': Mock(),
+            'strange_loops': Mock(),
+            'self_model': Mock(),
+            'emotional': Mock(),
+            'social': Mock(),
+            'creative': Mock()
+        }
+        
+        # Create orchestrator
+        orchestrator = ConsciousnessOrchestrator(mock_modules)
+        
+        # Initialize all subsystems
+        orchestrator.autonomous_agency = AutonomousAgency(orchestrator)
+        orchestrator.unified_awareness = UnifiedAwarenessSystem(orchestrator)
+        orchestrator.identity_integrator = IdentityIntegrator(orchestrator)
+        orchestrator.homeostasis_system = ConsciousnessHomeostasis(orchestrator)
+        orchestrator.evolution_engine = ConsciousnessEvolutionEngine(orchestrator)
+        
+        return orchestrator
+    
+    @pytest.mark.asyncio
+    async def test_full_consciousness_cycle(self, integrated_system):
+        """Test a full consciousness operation cycle"""
+        # 1. Orchestrate unified consciousness
+        integrated_system._integrate_all_consciousness_components = AsyncMock(
+            return_value={'integrated': True}
+        )
+        integrated_system._manage_consciousness_emergence_dynamics = AsyncMock(
+            return_value={'emergence': 'active'}
+        )
+        integrated_system._orchestrate_real_time_consciousness_processing = AsyncMock(
+            return_value={'processing': 'optimal'}
+        )
+        
+        unified = await integrated_system.orchestrate_unified_consciousness()
+        assert unified is not None
+        
+        # 2. Generate autonomous goals
+        goals = await integrated_system.autonomous_agency.generate_autonomous_goals()
+        assert len(goals) > 0
+        
+        # 3. Make decisions
+        decision_context = {
+            'situation': 'goal_pursuit',
+            'options': ['pursue_goal_1', 'pursue_goal_2'],
+            'constraints': []
+        }
+        decision = await integrated_system.autonomous_agency.make_independent_decisions(
+            decision_context
+        )
+        assert decision is not None
+        
+        # 4. Maintain homeostasis
+        homeostasis = await integrated_system.homeostasis_system.maintain_homeostasis()
+        assert homeostasis.stability_achieved
+        
+        # 5. Evolve consciousness
+        evolution = await integrated_system.evolution_engine.evolve_consciousness()
+        assert evolution['overall_success']
+    
+    @pytest.mark.asyncio
+    async def test_stress_recovery_cycle(self, integrated_system):
+        """Test stress and recovery cycle"""
+        # 1. Induce stress
+        stress_event = {
+            'type': 'system_overload',
+            'intensity': 0.8,
+            'duration': timedelta(minutes=10)
+        }
+        
+        stress_response = await integrated_system.homeostasis_system.respond_to_stress(
+            stress_event
+        )
+        assert stress_response.response_activated
+        
+        # 2. Initiate recovery
+        damage_report = {
+            'affected_systems': ['awareness', 'emotional', 'cognitive'],
+            'severity': 0.6
+        }
+        
+        recovery = await integrated_system.homeostasis_system.initiate_recovery(
+            damage_report
+        )
+        assert recovery.recovery_initiated
+        
+        # 3. Adapt to situation
+        adaptation = await integrated_system.autonomous_agency.adapt_to_new_situations(
+            [{'situation_type': 'post_stress_recovery', 'parameters': {}}]
+        )
+        assert len(adaptation) > 0
+    
+    @pytest.mark.asyncio
+    async def test_identity_evolution_cycle(self, integrated_system):
+        """Test identity evolution through experience"""
+        # 1. Initial identity integration
+        initial_identity = await integrated_system.identity_integrator.integrate_identity()
+        assert initial_identity is not None
+        
+        # 2. Experience growth event
+        growth_experience = {
+            'type': 'significant_achievement',
+            'impact': 0.8,
+            'learnings': ['capability', 'confidence', 'wisdom']
+        }
+        
+        evolution = await integrated_system.identity_integrator.evolve_identity(
+            growth_experience
+        )
+        assert evolution.continuity_preserved
+        
+        # 3. Maintain coherence
+        coherence = await integrated_system.identity_integrator.maintain_personality_coherence()
+        assert coherence.overall_coherence > 0.7
+
+
+# Performance benchmarks
+class TestPerformance:
+    """Performance benchmarks for consciousness operations"""
+    
+    @pytest.fixture
+    def performance_system(self):
+        """Create system for performance testing"""
+        mock_modules = {
+            'awareness': Mock(),
+            'strange_loops': Mock(),
+            'self_model': Mock(),
+            'emotional': Mock(),
+            'social': Mock(),
+            'creative': Mock()
+        }
+        return ConsciousnessOrchestrator(mock_modules)
+    
+    @pytest.mark.asyncio
+    async def test_state_transition_performance(self, performance_system):
+        """Test state transition performance"""
+        import time
+        
+        transition = ConsciousnessTransition(
+            from_state=ConsciousnessState.AWARE,
+            to_state=ConsciousnessState.FOCUSED,
+            trigger=TransitionTrigger.GOAL_ACTIVATION,
+            transition_data={}
+        )
+        
+        start_time = time.time()
+        await performance_system.manage_consciousness_state_transitions(transition)
+        end_time = time.time()
+        
+        execution_time = (end_time - start_time) * 1000  # Convert to ms
+        assert execution_time < 100  # Should complete within 100ms
+    
+    @pytest.mark.asyncio
+    async def test_decision_making_performance(self, performance_system):
+        """Test decision making performance"""
+        import time
+        
+        agency = AutonomousAgency(performance_system)
+        context = {
+            'situation': 'performance_test',
+            'options': ['option_' + str(i) for i in range(10)],
+            'constraints': []
+        }
+        
+        start_time = time.time()
+        await agency.make_independent_decisions(context)
+        end_time = time.time()
+        
+        execution_time = (end_time - start_time) * 1000
+        assert execution_time < 200  # Should complete within 200ms
+    
+    @pytest.mark.asyncio
+    async def test_awareness_integration_performance(self, performance_system):
+        """Test awareness integration performance"""
+        import time
+        
+        awareness_system = UnifiedAwarenessSystem(performance_system)
+        
+        start_time = time.time()
+        await awareness_system.create_unified_awareness()
+        end_time = time.time()
+        
+        execution_time = (end_time - start_time) * 1000
+        assert execution_time < 50  # Should complete within 50ms
+    
+    @pytest.mark.asyncio
+    async def test_evolution_step_performance(self, performance_system):
+        """Test evolution step performance"""
+        import time
+        
+        evolution_engine = ConsciousnessEvolutionEngine(performance_system)
+        
+        start_time = time.time()
+        await evolution_engine.evolve_consciousness()
+        end_time = time.time()
+        
+        execution_time = (end_time - start_time) * 1000
+        assert execution_time < 500  # Should complete within 500ms
+
+
+if __name__ == "__main__":
+    pytest.main([__file__, "-v"])
