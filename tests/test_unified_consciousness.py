@@ -30,6 +30,9 @@ from modules.unified_consciousness.consciousness_homeostasis import (
 from modules.unified_consciousness.consciousness_evolution_engine import (
     ConsciousnessEvolutionEngine, EvolutionPhase, EvolutionPath
 )
+from modules.unified_consciousness.performance_optimizer import (
+    PerformanceOptimizer, ResourceLimits, ResourceError
+)
 
 
 class TestConsciousnessOrchestrator:
@@ -747,6 +750,45 @@ class TestPerformance:
         
         execution_time = (end_time - start_time) * 1000
         assert execution_time < 500  # Should complete within 500ms
+
+
+class TestResourceLimits:
+    """Tests for resource limit enforcement in PerformanceOptimizer"""
+
+    @pytest.fixture
+    def strict_optimizer(self):
+        limits = ResourceLimits(max_memory_mb=0.01, max_cpu_percent=1)
+        return PerformanceOptimizer(limits)
+
+    @pytest.fixture
+    def relaxed_optimizer(self):
+        limits = ResourceLimits(max_memory_mb=10000, max_cpu_percent=100)
+        return PerformanceOptimizer(limits)
+
+    @pytest.mark.asyncio
+    async def test_limit_exceeded(self, strict_optimizer):
+        """Ensure ResourceError provides context when limits are hit"""
+
+        @strict_optimizer.performance_monitor("limited")
+        async def op():
+            return True
+
+        with pytest.raises(ResourceError) as exc:
+            await op()
+
+        assert "limited" in str(exc.value)
+        assert "Resource limits exceeded" in str(exc.value)
+
+    @pytest.mark.asyncio
+    async def test_within_limits(self, relaxed_optimizer):
+        """Operations succeed when within limits"""
+
+        @relaxed_optimizer.performance_monitor("okay")
+        async def op():
+            return "ok"
+
+        result = await op()
+        assert result == "ok"
 
 
 if __name__ == "__main__":

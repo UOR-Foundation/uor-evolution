@@ -88,8 +88,7 @@ class PerformanceOptimizer:
                     return await func(*args, **kwargs)
                 
                 # Check resource availability
-                if not self._check_resource_availability():
-                    raise ResourceError("Insufficient resources for operation")
+                self._monitor_operation(operation_name)
                 
                 # Track operation
                 operation_id = f"{operation_name}_{time.time()}"
@@ -434,10 +433,34 @@ class PerformanceOptimizer:
         # Simplified estimation
         return len(self.operation_cache) * 0.1  # Assume 0.1 MB per cached item
 
+    def _monitor_operation(self, operation_name: str) -> None:
+        """Ensure resources are available, raising ResourceError if not."""
+        if not self._check_resource_availability():
+            memory_mb = self.process.memory_info().rss / 1024 / 1024
+            cpu_percent = self.process.cpu_percent(interval=0.1)
+            raise ResourceError(
+                "Resource limits exceeded",
+                operation_name=operation_name,
+                memory_mb=memory_mb,
+                cpu_percent=cpu_percent,
+            )
+
 
 class ResourceError(Exception):
     """Raised when resource limits are exceeded"""
-    pass
+
+    def __init__(self, message: str, operation_name: str, memory_mb: float, cpu_percent: float) -> None:
+        super().__init__(message)
+        self.operation_name = operation_name
+        self.memory_mb = memory_mb
+        self.cpu_percent = cpu_percent
+
+    def __str__(self) -> str:  # pragma: no cover - simple formatting
+        base = super().__str__()
+        return (
+            f"{base} (operation={self.operation_name}, "
+            f"memory={self.memory_mb:.2f} MB, cpu={self.cpu_percent:.1f}%)"
+        )
 
 
 # Predefined optimization profiles
