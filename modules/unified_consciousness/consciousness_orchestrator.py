@@ -894,9 +894,31 @@ class ConsciousnessOrchestrator:
     
     def _calculate_compatibility(self, subsystem_a: Any, subsystem_b: Any) -> float:
         """Calculate compatibility between two subsystems"""
-        # This would implement sophisticated compatibility analysis
-        # For now, return a placeholder value
-        return 0.85
+        numeric_attrs_a = {
+            attr: getattr(subsystem_a, attr)
+            for attr in dir(subsystem_a)
+            if not attr.startswith("_")
+        }
+        numeric_attrs_b = {
+            attr: getattr(subsystem_b, attr)
+            for attr in dir(subsystem_b)
+            if not attr.startswith("_")
+        }
+
+        common = set(numeric_attrs_a.keys()) & set(numeric_attrs_b.keys())
+
+        scores = []
+        for attr in common:
+            val_a = numeric_attrs_a[attr]
+            val_b = numeric_attrs_b[attr]
+            if isinstance(val_a, (int, float)) and isinstance(val_b, (int, float)):
+                diff = min(1.0, abs(val_a - val_b))
+                scores.append(1.0 - diff)
+
+        if not scores:
+            return 0.5
+
+        return float(np.mean(scores))
     
     async def _coordinate_subsystem_pair(
         self,
@@ -905,22 +927,53 @@ class ConsciousnessOrchestrator:
         compatibility: float
     ) -> Dict[str, Any]:
         """Coordinate a pair of subsystems"""
-        # This would implement actual coordination logic
+        metrics = []
+        for sub in (subsystem_a, subsystem_b):
+            for attr in ["coherence_level", "stability_score", "stability_level", "integration_quality"]:
+                val = getattr(sub, attr, None)
+                if isinstance(val, (int, float)):
+                    metrics.append(val)
+
+        avg_metric = np.mean(metrics) if metrics else compatibility
+        quality = float((compatibility + avg_metric) / 2.0)
+
+        emergent_properties = []
+        if quality > 0.9:
+            emergent_properties.append({"type": "synergy", "strength": quality})
+
+        challenges = []
+        if compatibility < 0.6:
+            challenges.append("low_compatibility")
+
         return {
-            'quality': compatibility * 0.9,
-            'emergent_properties': [],
-            'challenges': []
+            'quality': quality,
+            'emergent_properties': emergent_properties,
+            'challenges': challenges
         }
     
     def _calculate_stability(self, subsystems: List[Any]) -> float:
         """Calculate overall system stability"""
-        # Placeholder implementation
-        return 0.87
-    
+        scores = []
+        for sub in subsystems:
+            for attr in ["stability_score", "stability_level"]:
+                val = getattr(sub, attr, None)
+                if isinstance(val, (int, float)):
+                    scores.append(val)
+                    break
+
+        return float(np.mean(scores)) if scores else 0.5
+
     def _calculate_overall_coherence(self, subsystems: List[Any]) -> float:
         """Calculate overall system coherence"""
-        # Placeholder implementation
-        return 0.83
+        scores = []
+        for sub in subsystems:
+            for attr in ["coherence_level", "coherence_score", "coherence"]:
+                val = getattr(sub, attr, None)
+                if isinstance(val, (int, float)):
+                    scores.append(val)
+                    break
+
+        return float(np.mean(scores)) if scores else 0.5
     
     def _validate_transition(self, transition: ConsciousnessTransition) -> bool:
         """Validate if a state transition is valid"""
