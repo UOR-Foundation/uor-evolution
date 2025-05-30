@@ -12,7 +12,12 @@ from enum import Enum
 import random
 
 from modules.natural_language.prime_semantics import PrimeSemantics, Concept, ConceptType
-from modules.analogical_reasoning.analogy_engine import AnalogicalReasoningEngine
+from modules.analogical_reasoning.analogy_engine import (
+    AnalogicalReasoningEngine,
+    Domain,
+    Element,
+    Relation,
+)
 
 
 class VerbalizationStrategy(Enum):
@@ -690,14 +695,45 @@ class ConceptVerbalizer:
     
     def _find_analogous_domains(self, concept: AbstractConcept) -> List[str]:
         """Find domains analogous to concept"""
-        domains = []
-        
-        # Use analogical reasoner to find similar structures
-        if self.analogical_reasoner:
-            # This would use the actual analogical reasoning engine
-            # For now, return heuristic domains
-            pass
-        
+        domains: List[str] = []
+
+        # Use analogical reasoner to find similar structures if available
+        if self.analogical_reasoner and self.analogical_reasoner.domain_cache:
+            try:
+                elements = {
+                    concept.concept_id: Element(
+                        id=concept.concept_id,
+                        type=concept.concept_type.value,
+                        properties=concept.properties,
+                    )
+                }
+                relations = {
+                    f"rel_{i}": Relation(
+                        id=f"rel_{i}",
+                        type=rel_type,
+                        source=concept.concept_id,
+                        target=target,
+                    )
+                    for i, (rel_type, target) in enumerate(concept.relationships)
+                }
+
+                concept_domain = Domain(
+                    name=concept.concept_id,
+                    elements=elements,
+                    relations=relations,
+                    constraints=[],
+                    goals=[],
+                )
+
+                signature = self.analogical_reasoner._extract_structural_signature(
+                    concept_domain
+                )
+                similar = self.analogical_reasoner._find_similar_domains(signature)
+                domains.extend([d.name for d in similar])
+            except Exception:
+                # Fall back to heuristics if reasoning fails
+                domains = []
+
         # Heuristic selection
         if concept.concept_type == ConceptType.RELATIONAL:
             domains.extend(["bridge", "connection", "network"])
