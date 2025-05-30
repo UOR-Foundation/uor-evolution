@@ -1559,8 +1559,24 @@ class EnhancedSelfModification:
     async def _rollback_modifications(self, rollback_stack: List[Dict[str, Any]]):
         """Rollback modifications"""
         for rollback in reversed(rollback_stack):
-            # Rollback implementation
-            pass
+            try:
+                action = rollback.get("action")
+                target = rollback.get("target")
+                original = rollback.get("original")
+                if action == "restore" and target and original is not None:
+                    if (
+                        self.current_implementation
+                        and target in self.current_implementation.consciousness_source_code.code_modules
+                    ):
+                        self.current_implementation.consciousness_source_code.code_modules[target] = original
+                elif action == "remove" and target:
+                    if (
+                        self.current_implementation
+                        and target in self.current_implementation.consciousness_source_code.code_modules
+                    ):
+                        del self.current_implementation.consciousness_source_code.code_modules[target]
+            except Exception as e:
+                logger.error(f"Rollback failed: {e}")
     
     def _count_new_capabilities(self, results: List[Any]) -> int:
         """Count new capabilities added"""

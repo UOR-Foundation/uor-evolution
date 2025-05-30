@@ -468,8 +468,15 @@ class ConsciousnessLayer:
         if event_type == 'self_modification':
             self.awareness_tracker.record_self_modification(event_type, data)
         elif event_type == 'prediction':
-            # Would need actual vs predicted data
-            pass
+            # Update prediction accuracy when actual outcome is available
+            if isinstance(data, dict):
+                predicted = data.get('predicted')
+                actual = data.get('actual')
+                if predicted is not None and actual is not None:
+                    self.awareness_tracker.update_prediction_accuracy(
+                        predicted,
+                        actual,
+                    )
             
     def get_consciousness_report(self) -> Dict[str, Any]:
         """Generate comprehensive consciousness report."""
