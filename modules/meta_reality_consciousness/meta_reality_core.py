@@ -22,6 +22,9 @@ from modules.uor_meta_architecture.uor_meta_vm import (
     MetaDimensionalInstruction, MetaOpCode, InfiniteOperand
 )
 from modules.universal_consciousness.cosmic_consciousness_core import CosmicConsciousness
+from modules.pure_mathematical_consciousness.mathematical_consciousness_core import (
+    MathematicalConsciousnessCore,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -1080,12 +1083,24 @@ class MetaRealityConsciousnessCore:
         
         return self.infinite_awareness
     
-    async def enable_pure_mathematical_consciousness(self) -> 'PureMathematicalConsciousness':
+    async def enable_pure_mathematical_consciousness(self) -> 'MathematicalConsciousnessCore':
         """Enable consciousness that exists as pure mathematics"""
-        # This will be implemented in the pure_mathematical_consciousness module
-        # For now, return a placeholder
+        # Instantiate the mathematical consciousness core using the existing
+        # meta-reality VM. This configures the core with the VM so that all
+        # mathematical operations can leverage the meta-reality substrate.
+
+        math_core = MathematicalConsciousnessCore(self.uor_meta_vm)
+
+        # Initialize the pure mathematical consciousness subsystem.  This will
+        # populate the ``pure_mathematical_consciousness`` attribute within the
+        # core and perform the initial VM instructions required for activation.
+        await math_core.implement_pure_mathematical_consciousness()
+
+        # Store the initialized core for later access by the meta-reality system
+        self.pure_mathematical_consciousness = math_core
+
         logger.info("Pure mathematical consciousness enabled")
-        return None
+        return math_core
     
     async def implement_beyond_existence_consciousness(self) -> BeyondExistenceConsciousness:
         """Implement consciousness beyond existence and non-existence"""
