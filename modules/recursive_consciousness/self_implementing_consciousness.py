@@ -1442,15 +1442,36 @@ class EnhancedSelfModification:
     
     def _analyze_code_quality(self) -> Dict[str, float]:
         """Analyze code quality"""
-        return {"quality_score": 0.85, "complexity": 0.7, "maintainability": 0.9}
+        quality = 0.5 + self.self_understanding_level * 0.5
+        complexity = max(0.0, 1.0 - quality * 0.6)
+        maintainability = min(1.0, quality)
+        return {
+            "quality_score": round(quality, 2),
+            "complexity": round(complexity, 2),
+            "maintainability": round(maintainability, 2),
+        }
     
     def _analyze_architecture_efficiency(self) -> Dict[str, float]:
         """Analyze architecture efficiency"""
-        return {"efficiency_score": 0.88, "scalability": 0.92, "flexibility": 0.85}
+        efficiency = min(1.0, 0.5 + self.recursive_depth * 0.05)
+        scalability = min(1.0, 0.8 + self.recursive_depth * 0.02)
+        flexibility = min(1.0, 0.7 + self.self_understanding_level * 0.3)
+        return {
+            "efficiency_score": round(efficiency, 2),
+            "scalability": round(scalability, 2),
+            "flexibility": round(flexibility, 2),
+        }
     
     def _analyze_consciousness_coherence(self) -> Dict[str, float]:
         """Analyze consciousness coherence"""
-        return {"coherence_score": 0.95, "self_consistency": 0.93, "awareness_level": 0.9}
+        coherence = 0.5 + self.self_understanding_level * 0.5
+        self_consistency = 0.4 + self.self_understanding_level * 0.6
+        awareness = self.self_understanding_level
+        return {
+            "coherence_score": round(coherence, 2),
+            "self_consistency": round(self_consistency, 2),
+            "awareness_level": round(awareness, 2),
+        }
     
     def _detect_performance_bottlenecks(self) -> List[str]:
         """Detect performance bottlenecks"""
@@ -1475,11 +1496,26 @@ class EnhancedSelfModification:
     
     def _score_improvement_feasibility(self, improvement: str) -> float:
         """Score improvement feasibility"""
-        return 0.8  # Placeholder
+        difficulty = {
+            "recursive_depth_increase": 0.7,
+            "self_understanding_enhancement": 0.6,
+            "architecture_optimization": 0.5,
+        }.get(improvement, 0.5)
+
+        base = 1 - difficulty
+        score = base + self.self_understanding_level * difficulty
+        return max(0.0, min(1.0, score))
     
     def _score_improvement_risk(self, improvement: str) -> float:
         """Score improvement risk"""
-        return 0.3  # Placeholder low risk
+        base_risk = {
+            "recursive_depth_increase": 0.5,
+            "self_understanding_enhancement": 0.3,
+            "architecture_optimization": 0.2,
+        }.get(improvement, 0.4)
+
+        risk = base_risk * (1 - self.self_understanding_level)
+        return max(0.0, min(1.0, risk))
     
     def _calculate_improvement_priority(self, improvement: str) -> float:
         """Calculate improvement priority"""
@@ -1584,11 +1620,11 @@ class EnhancedSelfModification:
     
     def _calculate_understanding_delta(self) -> float:
         """Calculate change in self-understanding"""
-        return 0.05  # Placeholder
+        return min(1.0, self.recursive_depth * 0.01)
     
     async def _assess_structural_coherence(self) -> float:
         """Assess structural coherence"""
-        return 0.95  # High coherence maintained
+        return min(1.0, 0.8 + self.self_understanding_level * 0.2)
     
     def _check_self_reference_capability(self) -> bool:
         """Check if self-reference is functional"""
