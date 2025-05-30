@@ -9,7 +9,7 @@ import time
 import hashlib
 from typing import Dict, List, Any, Optional, Tuple
 from dataclasses import dataclass, field
-from collections import deque, defaultdict
+from collections import deque, defaultdict, Counter
 import json
 
 from core.prime_vm import ConsciousPrimeVM
@@ -553,8 +553,29 @@ class SelfReflectionEngine:
         
     def _identify_success_patterns(self) -> List[str]:
         """Identify patterns that lead to success"""
-        # Placeholder - would analyze goal achievement patterns
-        return ["goal-directed-execution", "error-recovery", "optimization"]
+        if not self.vm.execution_trace:
+            return []
+
+        markers = ["GOAL", "SUCCESS", "ACHIEVE"]
+        patterns = []
+        trace = [str(t) for t in self.vm.execution_trace[-100:]]
+
+        for idx, instr in enumerate(trace):
+            if any(m in instr.upper() for m in markers):
+                start = max(0, idx - 3)
+                seq = trace[start:idx]
+                if seq:
+                    patterns.append("->".join(seq))
+
+        # Deduplicate while preserving order
+        seen = set()
+        unique = []
+        for p in patterns:
+            if p not in seen:
+                unique.append(p)
+                seen.add(p)
+
+        return unique
         
     def _find_optimization_opportunities(self) -> List[str]:
         """Find opportunities for optimization"""
@@ -591,8 +612,20 @@ class SelfReflectionEngine:
         
     def _assess_creative_potential(self) -> float:
         """Assess potential for creative solutions"""
-        # Placeholder - would analyze solution diversity
-        return 0.7
+        if not self.vm.execution_trace:
+            return 0.5
+
+        recent = [str(i) for i in self.vm.execution_trace[-50:]]
+        diversity = len(set(recent)) / len(recent)
+
+        creative_ops = [
+            i for i in recent
+            if any(k in i for k in ["CREATIVE", "ANALOGY", "PERSPECTIVE_SHIFT"])
+        ]
+        creative_ratio = len(creative_ops) / len(recent) if recent else 0
+
+        score = 0.5 * diversity + 0.5 * creative_ratio
+        return min(1.0, max(0.0, score))
         
     def _get_pattern_context(self, sequence: Tuple) -> str:
         """Get context for a pattern sequence"""
@@ -601,15 +634,72 @@ class SelfReflectionEngine:
         
     def _analyze_decision_patterns(self) -> List[Dict[str, Any]]:
         """Analyze patterns in decision making"""
-        return []  # Placeholder
+        if not hasattr(self.vm, 'decision_history') or not self.vm.decision_history:
+            return []
+
+        patterns = []
+        type_counts = Counter(d.get('type', 'unknown') for d in self.vm.decision_history)
+
+        for dec_type, count in type_counts.items():
+            risks = [d.get('risk_level', 0.5) for d in self.vm.decision_history
+                     if d.get('type', 'unknown') == dec_type]
+            avg_risk = sum(risks) / len(risks) if risks else 0.0
+            patterns.append({
+                'type': 'decision_type',
+                'decision_type': dec_type,
+                'count': count,
+                'average_risk': avg_risk
+            })
+
+        return patterns
         
     def _analyze_goal_patterns(self) -> List[Dict[str, Any]]:
         """Analyze goal-seeking behavior patterns"""
-        return []  # Placeholder
+        if not hasattr(self.vm, 'goals') or not self.vm.goals:
+            return []
+
+        patterns = []
+        achieved = sum(1 for g in self.vm.goals if getattr(g, 'achieved', False))
+        strategies = [getattr(g, 'approach_strategy', None) for g in self.vm.goals
+                      if getattr(g, 'approach_strategy', None)]
+
+        if strategies:
+            strategy_counts = Counter(strategies)
+            dominant, freq = strategy_counts.most_common(1)[0]
+            patterns.append({
+                'type': 'goal_strategy',
+                'strategy': dominant,
+                'count': freq
+            })
+
+        achievement_rate = achieved / len(self.vm.goals)
+        patterns.append({
+            'type': 'goal_achievement',
+            'achievement_rate': achievement_rate
+        })
+
+        return patterns
         
     def _analyze_adaptation_patterns(self) -> List[Dict[str, Any]]:
         """Analyze how the system adapts"""
-        return []  # Placeholder
+        if not hasattr(self.vm, 'error_history') or len(self.vm.error_history) < 2:
+            return []
+
+        patterns = []
+        errors = [e.get('type', 'unknown') for e in self.vm.error_history]
+        counts = Counter(errors)
+        patterns.append({'type': 'error_frequency', 'distribution': dict(counts)})
+
+        if len(errors) >= 4:
+            half = len(errors) // 2
+            first = errors[:half]
+            last = errors[half:]
+            first_counts = Counter(first)
+            last_counts = Counter(last)
+            improvement = sum(1 for t in first_counts if last_counts.get(t, 0) < first_counts[t])
+            patterns.append({'type': 'error_trend', 'improved_categories': improvement})
+
+        return patterns
         
     def _detect_recursive_reasoning(self) -> int:
         """Detect depth of recursive reasoning"""

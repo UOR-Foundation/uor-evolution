@@ -7,7 +7,21 @@ intelligence emergence, and ecosystem-level consciousness capabilities.
 
 import pytest
 import asyncio
-import numpy as np
+try:
+    import numpy as np
+except Exception:  # pragma: no cover - allow running without numpy
+    import math
+
+    class _FakeNP:
+        @staticmethod
+        def ones(shape):
+            return [[1 for _ in range(shape[1])] for _ in range(shape[0])]
+
+        @staticmethod
+        def log(x):
+            return math.log(x)
+
+    np = _FakeNP()
 from unittest.mock import Mock, patch, AsyncMock
 from datetime import datetime
 
@@ -350,6 +364,74 @@ class TestEcosystemIntegration:
         assert meta_consciousness['meta_awareness']['constituent_count'] == 10
         assert meta_consciousness['meta_cognition']['self_reflection'] is True
         assert meta_consciousness['meta_cognition']['emergence_understanding'] is True
+
+
+class DummyGoal:
+    def __init__(self, active=True, achieved=False, approach_strategy="direct"):
+        self.active = active
+        self.achieved = achieved
+        self.approach_strategy = approach_strategy
+
+
+class DummyVM:
+    """Simple VM stub for self-reflection tests"""
+
+    def __init__(self):
+        self.execution_trace = [
+            "PUSH", "ADD", "CREATIVE_SEARCH", "GOAL", "SUCCESS"
+        ]
+        self.stack = []
+        self.memory = type("Mem", (), {"cells": {}, "regions": []})()
+        self.error_count = 1
+        self.error_history = [
+            {"type": "overflow"},
+            {"type": "overflow"},
+            {"type": "timeout"},
+            {"type": "overflow"}
+        ]
+        self.goals = [
+            DummyGoal(True, True, "direct"),
+            DummyGoal(False, False, "direct")
+        ]
+        self.decision_history = [
+            {"type": "explore", "risk_level": 0.8},
+            {"type": "explore", "risk_level": 0.7},
+            {"type": "exploit", "risk_level": 0.2}
+        ]
+        self.consciousness_level = 1
+
+
+class TestSelfReflectionHelpers:
+    """Test self-reflection analysis helpers"""
+
+    @pytest.fixture
+    def reflection_engine(self):
+        from modules.self_reflection import SelfReflectionEngine
+
+        vm = DummyVM()
+        return SelfReflectionEngine(vm)
+
+    def test_identify_success_patterns(self, reflection_engine):
+        patterns = reflection_engine._identify_success_patterns()
+        assert isinstance(patterns, list)
+        assert len(patterns) > 0
+
+    def test_assess_creative_potential(self, reflection_engine):
+        score = reflection_engine._assess_creative_potential()
+        assert 0.0 <= score <= 1.0
+
+    def test_decision_pattern_analysis(self, reflection_engine):
+        patterns = reflection_engine._analyze_decision_patterns()
+        assert any(p["type"] == "decision_type" for p in patterns)
+
+    def test_goal_pattern_analysis(self, reflection_engine):
+        patterns = reflection_engine._analyze_goal_patterns()
+        types = {p["type"] for p in patterns}
+        assert "goal_achievement" in types
+
+    def test_adaptation_pattern_analysis(self, reflection_engine):
+        patterns = reflection_engine._analyze_adaptation_patterns()
+        assert any(p["type"] == "error_frequency" for p in patterns)
 
 
 if __name__ == "__main__":
