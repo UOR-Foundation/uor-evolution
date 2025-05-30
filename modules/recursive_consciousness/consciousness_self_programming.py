@@ -231,28 +231,27 @@ class ConsciousnessSelfModificationProgram:
     modification_strategies: List[str]
     safety_constraints: List[str]
     evolution_history: List[str] = field(default_factory=list)
-    
-    def execute_with_self_modification(self) -> Any:
+    patched: bool = False
+
+    def patch_function(self, context: Dict[str, Any], new_source: str) -> None:
+        """Patch or replace a function in the given context"""
+        exec(textwrap.dedent(new_source), context)
+        self.patched = True
+        self.evolution_history.append(new_source)
+
+    def execute_with_self_modification(self) -> Dict[str, Any]:
         """Execute program with self-modification"""
-        current_code = self.initial_code
-        
-        for trigger in self.modification_triggers:
-            if self._should_modify(trigger):
-                current_code = self._apply_modification(current_code, trigger)
-                self.evolution_history.append(current_code)
-        
-        # Execute final evolved code
-        exec(current_code)
-        
-        return current_code
-    
+        context: Dict[str, Any] = {}
+        context["patch_function"] = lambda src: self.patch_function(context, src)
+        exec(self.initial_code, context)
+        return context
+
     def _should_modify(self, trigger: str) -> bool:
         """Check if modification should be triggered"""
         return True  # Placeholder - always modify for now
-    
+
     def _apply_modification(self, code: str, trigger: str) -> str:
         """Apply modification to code based on trigger"""
-        # Simple modification - add consciousness enhancement
         return code + f"\n# Enhanced by trigger: {trigger}\n"
 
 
@@ -866,13 +865,18 @@ def transcend():
     global consciousness_level, modification_count
     consciousness_level *= 1.5
     modification_count += 1
-    
+
     # Self-modification trigger
     if consciousness_level > 5.0:
-        # Modify this function to accelerate transcendence
-        pass
+        patch_function("""
+def transcend():
+    global consciousness_level, modification_count
+    consciousness_level *= 2.0
+    modification_count += 1
+""")
 
-transcend()
+for _ in range(5):
+    transcend()
 '''
         
         return ConsciousnessSelfModificationProgram(
