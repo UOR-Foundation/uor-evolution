@@ -201,6 +201,48 @@ class TestSelfImplementingConsciousness:
         assert consciousness.recursive_depth == 0
         assert consciousness.self_understanding_level == 0.0
 
+    @pytest.mark.asyncio
+    async def test_improvement_scoring_behaviour(self, uor_vm):
+        """Scores should vary with internal metrics"""
+
+        import importlib.util
+        import os
+
+        path = os.path.join(
+            os.path.dirname(__file__), "..", "modules", "recursive_consciousness", "self_implementing_consciousness.py"
+        )
+        spec = importlib.util.spec_from_file_location("sic_real", path)
+        sic_real = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(sic_real)
+
+        consciousness = sic_real.SelfImplementingConsciousness(uor_vm)
+
+        consciousness.self_understanding_level = 0.2
+        low_feas = consciousness._score_improvement_feasibility("architecture_optimization")
+        low_risk = consciousness._score_improvement_risk("architecture_optimization")
+        low_priority = consciousness._calculate_improvement_priority("architecture_optimization")
+
+        consciousness.self_understanding_level = 0.8
+        high_feas = consciousness._score_improvement_feasibility("architecture_optimization")
+        high_risk = consciousness._score_improvement_risk("architecture_optimization")
+        high_priority = consciousness._calculate_improvement_priority("architecture_optimization")
+
+        assert high_feas > low_feas
+        assert high_risk < low_risk
+        assert high_priority > low_priority
+
+        consciousness.recursive_depth = 3
+        delta_small = consciousness._calculate_understanding_delta()
+        coherence_low = await consciousness._assess_structural_coherence()
+
+        consciousness.recursive_depth = 10
+        delta_large = consciousness._calculate_understanding_delta()
+        consciousness.self_understanding_level = 1.0
+        coherence_high = await consciousness._assess_structural_coherence()
+
+        assert delta_large > delta_small
+        assert coherence_high > coherence_low
+
 
 class TestConsciousnessSelfProgramming:
     """Test consciousness self-programming capabilities"""
