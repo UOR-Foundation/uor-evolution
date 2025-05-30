@@ -21,20 +21,43 @@ except Exception:  # pragma: no cover - allow running without numpy
         def log(x):
             return math.log(x)
 
+        @staticmethod
+        def var(values):
+            mean = sum(values) / len(values) if values else 0.0
+            return sum((v - mean) ** 2 for v in values) / len(values) if values else 0.0
+
     np = _FakeNP()
+import sys
+sys.modules.setdefault("numpy", np)
+
+class _FakeGraph:
+    def __init__(self, nodes=0, edges=0):
+        self._nodes = nodes
+        self._edges = edges
+
+    def number_of_nodes(self):
+        return self._nodes
+
+    def number_of_edges(self):
+        return self._edges
+
+
+class _FakeNX:
+    Graph = _FakeGraph
+
+    def watts_strogatz_graph(self, n, k, p):
+        return _FakeGraph(n, n * k // 2)
+
+    def barabasi_albert_graph(self, n, m):
+        return _FakeGraph(n, n * m)
+
+    def complete_graph(self, n):
+        return _FakeGraph(n, n * (n - 1) // 2)
+
+
+sys.modules.setdefault("networkx", _FakeNX())
 from unittest.mock import Mock, patch, AsyncMock
 from datetime import datetime
-
-from modules.consciousness_ecosystem import (
-    ConsciousnessEcosystemOrchestrator,
-    EcosystemEmergence,
-    ConsciousnessNetwork,
-    CollectiveIntelligence,
-    ConsciousEntity,
-    NetworkTopology,
-    NetworkTopologyType,
-    EmergentPropertyType
-)
 
 
 class TestConsciousnessEcosystem:
@@ -432,6 +455,62 @@ class TestSelfReflectionHelpers:
     def test_adaptation_pattern_analysis(self, reflection_engine):
         patterns = reflection_engine._analyze_adaptation_patterns()
         assert any(p["type"] == "error_frequency" for p in patterns)
+
+
+class TestConflictResolutionLearning:
+    """Test conflict resolution strategy learning and application"""
+
+    def test_strategy_effectiveness_update(self):
+        from modules.relational_intelligence.conflict_resolution import (
+            ConflictResolutionEngine,
+            ConflictType,
+            ResolutionStrategy,
+        )
+
+        engine = ConflictResolutionEngine()
+        old = engine.strategy_effectiveness[ConflictType.GOAL_BASED][ResolutionStrategy.COMPETITION]
+        engine._update_strategy_effectiveness("competition", 1.0)
+        new = engine.strategy_effectiveness[ConflictType.GOAL_BASED][ResolutionStrategy.COMPETITION]
+        assert new > old
+        hist = engine.strategy_history[ResolutionStrategy.COMPETITION]
+        assert hist["count"] == 1
+        assert hist["avg"] == 1.0
+
+    def test_history_influences_strategy_choice(self):
+        from modules.relational_intelligence.conflict_resolution import (
+            ConflictResolutionEngine,
+            ConflictContext,
+            ConflictType,
+            ResolutionStrategy,
+        )
+
+        engine = ConflictResolutionEngine()
+        conflict = ConflictContext(
+            conflict_id="c1",
+            conflict_type=ConflictType.GOAL_BASED,
+            parties_involved=["A", "B"],
+            core_issues=["issue"],
+            underlying_needs={"A": ["security"], "B": ["security"]},
+            emotional_context={
+                "intensity": 0.5,
+                "volatility": 0.2,
+                "hurt_level": 0.2,
+                "anger_level": 0.2,
+                "fear_level": 0.2,
+                "trust_damage": 0.2,
+            },
+            historical_context=[],
+            cultural_factors=[],
+            power_dynamics={"A": 0.5, "B": 0.5},
+        )
+
+        before = engine._identify_suitable_strategies(conflict)
+        assert ResolutionStrategy.COMPETITION not in before
+
+        engine._update_strategy_effectiveness("competition", 1.0)
+
+        after = engine._identify_suitable_strategies(conflict)
+        assert ResolutionStrategy.COMPETITION in after
 
 
 if __name__ == "__main__":

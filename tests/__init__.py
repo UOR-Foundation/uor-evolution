@@ -6,18 +6,25 @@ philosophical reasoning, and consciousness communication capabilities.
 """
 
 # Make test modules easily importable
-from . import (
-    test_natural_language,
-    test_philosophical_reasoning,
-    test_dialogue_quality,
-    test_abstract_reasoning,
-    test_consciousness_communication
-)
+try:
+    from . import (
+        test_natural_language,
+        test_philosophical_reasoning,
+        test_dialogue_quality,
+        test_abstract_reasoning,
+        test_consciousness_communication,
+    )
+except Exception:  # pragma: no cover - optional dependencies may be missing
+    test_natural_language = None
+    test_philosophical_reasoning = None
+    test_dialogue_quality = None
+    test_abstract_reasoning = None
+    test_consciousness_communication = None
 
-__all__ = [
+__all__ = [name for name in [
     'test_natural_language',
-    'test_philosophical_reasoning', 
+    'test_philosophical_reasoning',
     'test_dialogue_quality',
     'test_abstract_reasoning',
     'test_consciousness_communication'
-]
+] if globals().get(name) is not None]

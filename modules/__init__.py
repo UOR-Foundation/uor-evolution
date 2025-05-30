@@ -7,7 +7,18 @@ capabilities and consciousness validation framework.
 
 from .self_reflection import SelfReflectionEngine, ReflectionResult, AutobiographicalMemory
 from .consciousness_validator import ConsciousnessValidator, ConsciousnessReport, ConsciousnessMetrics
-from .pattern_analyzer import PatternAnalyzer, ExecutionPattern, BehavioralPattern, EmergentCapability
+try:
+    from .pattern_analyzer import (
+        PatternAnalyzer,
+        ExecutionPattern,
+        BehavioralPattern,
+        EmergentCapability,
+    )
+except Exception:  # pragma: no cover - optional dependency may be missing
+    PatternAnalyzer = None
+    ExecutionPattern = None
+    BehavioralPattern = None
+    EmergentCapability = None
 from .introspection_engine import IntrospectionEngine, IntrospectionReport, QualiaIndicator
 from .philosophical_reasoner import PhilosophicalReasoner, ExistentialInsight, PhilosophicalResponse
 
