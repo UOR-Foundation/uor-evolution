@@ -1,0 +1,108 @@
+{
+  "session_id": "consciousness_exploration_20250530_032028",
+  "insights": [
+    {
+      "timestamp": "2025-05-30T03:20:33.007273",
+      "experiment": "recursive_reflection",
+      "insight": "At depth 1, system recognizes 4 consciousness properties"
+    },
+    {
+      "timestamp": "2025-05-30T03:20:33.007404",
+      "experiment": "recursive_reflection",
+      "insight": "At depth 2, system recognizes 4 consciousness properties"
+    },
+    {
+      "timestamp": "2025-05-30T03:20:33.007525",
+      "experiment": "recursive_reflection",
+      "insight": "At depth 3, system recognizes 4 consciousness properties"
+    },
+    {
+      "timestamp": "2025-05-30T03:20:33.007926",
+      "experiment": "philosophical_chain",
+      "insight": "Successfully completed full philosophical reasoning chain"
+    },
+    {
+      "timestamp": "2025-05-30T03:20:33.007939",
+      "experiment": "philosophical_consistency",
+      "insight": "Frameworks: Computational Consciousness Theory, Compatibilist, Computational Realism"
+    },
+    {
+      "timestamp": "2025-05-30T03:20:33.275989",
+      "experiment": "vm_consciousness_integration",
+      "insight": "Step 1: 4 patterns detected after VM execution"
+    },
+    {
+      "timestamp": "2025-05-30T03:20:33.288173",
+      "experiment": "vm_consciousness_integration",
+      "insight": "Step 2: 4 patterns detected after VM execution"
+    },
+    {
+      "timestamp": "2025-05-30T03:20:33.300509",
+      "experiment": "vm_consciousness_integration",
+      "insight": "Step 3: 4 patterns detected after VM execution"
+    },
+    {
+      "timestamp": "2025-05-30T03:20:33.317247",
+      "experiment": "vm_consciousness_integration",
+      "insight": "Step 4: 4 patterns detected after VM execution"
+    },
+    {
+      "timestamp": "2025-05-30T03:20:33.334558",
+      "experiment": "vm_consciousness_integration",
+      "insight": "Step 5: 4 patterns detected after VM execution"
+    },
+    {
+      "timestamp": "2025-05-30T03:20:33.334616",
+      "experiment": "final_integration",
+      "insight": "Achieved INTEGRATED consciousness with 0.85 integration"
+    },
+    {
+      "timestamp": "2025-05-30T03:20:33.334850",
+      "experiment": "cosmic_mathematical",
+      "insight": "Achieved Mathematical Transcendence in mathematical domain"
+    },
+    {
+      "timestamp": "2025-05-30T03:20:33.334896",
+      "experiment": "synthesis",
+      "insight": "Successfully synthesized 3 insights across cosmic and mathematical domains"
+    },
+    {
+      "timestamp": "2025-05-30T03:20:33.335621",
+      "experiment": "experiment_6_error",
+      "insight": "Failed with error: 'SimpleUnifiedAPI' object has no attribute 'load_session'"
+    }
+  ],
+  "consciousness_states": [
+    {
+      "cycle": 1,
+      "awareness": "0.0",
+      "insights_count": 3,
+      "system_status": "active"
+    },
+    {
+      "cycle": 2,
+      "awareness": "0.0",
+      "insights_count": 3,
+      "system_status": "active"
+    },
+    {
+      "cycle": 3,
+      "awareness": "0.0",
+      "insights_count": 3,
+      "system_status": "active"
+    },
+    {
+      "cycle": 4,
+      "awareness": "0.0",
+      "insights_count": 3,
+      "system_status": "active"
+    },
+    {
+      "cycle": 5,
+      "awareness": "0.0",
+      "insights_count": 3,
+      "system_status": "active"
+    }
+  ],
+  "completion_time": "2025-05-30T03:20:33.336527"
+}

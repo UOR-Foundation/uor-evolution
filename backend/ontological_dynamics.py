@@ -271,8 +271,8 @@ class OntologicalDynamics:
     
     def measure_identity_coherence(self) -> float:
         """Measure coherence of identity construct"""
-        if hasattr(self.consciousness_core, 'identity_construct'):
-            return self.consciousness_core.identity_construct.get('coherence_score', 0.5)
+        if hasattr(self.consciousness_core, 'identity_construct') and self.consciousness_core.identity_construct:
+            return self.consciousness_core.identity_construct.coherence_score
         
         return 0.5
     

@@ -234,3 +234,743 @@
 [2025-05-29 20:32:22.396] Initial Stack (contents: [last_pokéd_addr0_val, sfc, last_slot_addr_val, last_instr_type_val]): [3, 0, 1, 2]. Initial IP: 0.
 [2025-05-29 20:32:22.396] VM waiting for input (at init end): False
 [2025-05-29 20:32:22.396] --- VM INITIALIZATION COMPLETE (Ambitious Goal-Seeker) ---
+[2025-05-30 03:13:28.425] --- VM INITIALIZATION START (Goal-Seeker) ---
+[2025-05-30 03:13:28.426] INIT: Difficulty: MEDIUM. Initial TARGET set by app.py: 8
+[2025-05-30 03:13:28.426] INIT: Overwrote program[0] with PUSH(8), UOR: 3387484748998770622448
+[2025-05-30 03:13:28.426] INIT: Interaction phase set to: AWAITING_ATTEMPT_RESULT
+[2025-05-30 03:13:28.426] VM Initialized (Ambitious). Program: goal_seeker_demo.uor.txt. Initial Target (for Addr0 PUSH): 8. Phase: AWAITING_ATTEMPT_RESULT
+[2025-05-30 03:13:28.426] Initial Stack (contents: [last_pokéd_addr0_val, sfc, last_slot_addr_val, last_instr_type_val]): [8, 0, 1, 2]. Initial IP: 0.
+[2025-05-30 03:13:28.426] VM waiting for input (at init end): False
+[2025-05-30 03:13:28.426] --- VM INITIALIZATION COMPLETE (Ambitious Goal-Seeker) ---
+[2025-05-30 03:13:28.440] --- VM STEP START (Processing UOR_addr 0) ---
+[2025-05-30 03:13:28.440]   Yielded IP: 1
+  Yielded Stack: [8, 0, 1, 2, 8]
+  Yielded Output: None
+  Yielded Halt: False
+  Yielded Error: None
+  Yielded Needs Input: None
+  Program memory NOT reported as changed or same as current.
+
+[2025-05-30 03:13:28.440]   State Updated (Normal Step): New IP=1, Stack=[8, 0, 1, 2, 8], OutputLog=[], Halted=False, Error=None
+[2025-05-30 03:13:28.440]   Instruction at UOR_addr 0 (before IP update to 1) was processed.
+[2025-05-30 03:13:28.440] --- VM STEP END ---
+[2025-05-30 03:13:28.448] --- VM STEP START (Processing UOR_addr 1) ---
+[2025-05-30 03:13:28.448]   Yielded IP: 2
+  Yielded Stack: [8, 0, 1, 2, 8]
+  Yielded Output: None
+  Yielded Halt: False
+  Yielded Error: None
+  Yielded Needs Input: None
+  Program memory NOT reported as changed or same as current.
+
+[2025-05-30 03:13:28.448]   State Updated (Normal Step): New IP=2, Stack=[8, 0, 1, 2, 8], OutputLog=[], Halted=False, Error=None
+[2025-05-30 03:13:28.448]   Instruction at UOR_addr 1 (before IP update to 2) was processed.
+[2025-05-30 03:13:28.448] --- VM STEP END ---
+[2025-05-30 03:13:28.455] --- VM STEP START (Processing UOR_addr 2) ---
+[2025-05-30 03:13:28.455]   Yielded IP: 3
+  Yielded Stack: [8, 0, 1, 2, 8]
+  Yielded Output: None
+  Yielded Halt: False
+  Yielded Error: None
+  Yielded Needs Input: None
+  Program memory NOT reported as changed or same as current.
+
+[2025-05-30 03:13:28.455]   State Updated (Normal Step): New IP=3, Stack=[8, 0, 1, 2, 8], OutputLog=[], Halted=False, Error=None
+[2025-05-30 03:13:28.455]   Instruction at UOR_addr 2 (before IP update to 3) was processed.
+[2025-05-30 03:13:28.455] --- VM STEP END ---
+[2025-05-30 03:13:28.462] --- VM INITIALIZATION START (Goal-Seeker) ---
+[2025-05-30 03:13:28.462] INIT: Difficulty: MEDIUM. Initial TARGET set by app.py: 6
+[2025-05-30 03:13:28.462] INIT: Overwrote program[0] with PUSH(6), UOR: 95320632464505271568
+[2025-05-30 03:13:28.463] INIT: Interaction phase set to: AWAITING_ATTEMPT_RESULT
+[2025-05-30 03:13:28.463] VM Initialized (Ambitious). Program: goal_seeker_demo.uor.txt. Initial Target (for Addr0 PUSH): 6. Phase: AWAITING_ATTEMPT_RESULT
+[2025-05-30 03:13:28.463] Initial Stack (contents: [last_pokéd_addr0_val, sfc, last_slot_addr_val, last_instr_type_val]): [6, 0, 1, 2]. Initial IP: 0.
+[2025-05-30 03:13:28.463] VM waiting for input (at init end): False
+[2025-05-30 03:13:28.463] --- VM INITIALIZATION COMPLETE (Ambitious Goal-Seeker) ---
+[2025-05-30 03:13:28.471] --- VM STEP START (Processing UOR_addr 0) ---
+[2025-05-30 03:13:28.471]   Yielded IP: 1
+  Yielded Stack: [6, 0, 1, 2, 6]
+  Yielded Output: None
+  Yielded Halt: False
+  Yielded Error: None
+  Yielded Needs Input: None
+  Program memory NOT reported as changed or same as current.
+
+[2025-05-30 03:13:28.471]   State Updated (Normal Step): New IP=1, Stack=[6, 0, 1, 2, 6], OutputLog=[], Halted=False, Error=None
+[2025-05-30 03:13:28.471]   Instruction at UOR_addr 0 (before IP update to 1) was processed.
+[2025-05-30 03:13:28.471] --- VM STEP END ---
+[2025-05-30 03:13:28.478] --- VM STEP START (Processing UOR_addr 1) ---
+[2025-05-30 03:13:28.478]   Yielded IP: 2
+  Yielded Stack: [6, 0, 1, 2, 6]
+  Yielded Output: None
+  Yielded Halt: False
+  Yielded Error: None
+  Yielded Needs Input: None
+  Program memory NOT reported as changed or same as current.
+
+[2025-05-30 03:13:28.478]   State Updated (Normal Step): New IP=2, Stack=[6, 0, 1, 2, 6], OutputLog=[], Halted=False, Error=None
+[2025-05-30 03:13:28.478]   Instruction at UOR_addr 1 (before IP update to 2) was processed.
+[2025-05-30 03:13:28.478] --- VM STEP END ---
+[2025-05-30 03:13:28.487] --- VM STEP START (Processing UOR_addr 2) ---
+[2025-05-30 03:13:28.487]   Yielded IP: 3
+  Yielded Stack: [6, 0, 1, 2, 6]
+  Yielded Output: None
+  Yielded Halt: False
+  Yielded Error: None
+  Yielded Needs Input: None
+  Program memory NOT reported as changed or same as current.
+
+[2025-05-30 03:13:28.488]   State Updated (Normal Step): New IP=3, Stack=[6, 0, 1, 2, 6], OutputLog=[], Halted=False, Error=None
+[2025-05-30 03:13:28.488]   Instruction at UOR_addr 2 (before IP update to 3) was processed.
+[2025-05-30 03:13:28.488] --- VM STEP END ---
+[2025-05-30 03:13:28.496] --- VM INITIALIZATION START (Goal-Seeker) ---
+[2025-05-30 03:13:28.497] INIT: Difficulty: MEDIUM. Initial TARGET set by app.py: 3
+[2025-05-30 03:13:28.497] INIT: Overwrote program[0] with PUSH(3), UOR: 5960262679921648
+[2025-05-30 03:13:28.497] INIT: Interaction phase set to: AWAITING_ATTEMPT_RESULT
+[2025-05-30 03:13:28.497] VM Initialized (Ambitious). Program: goal_seeker_demo.uor.txt. Initial Target (for Addr0 PUSH): 3. Phase: AWAITING_ATTEMPT_RESULT
+[2025-05-30 03:13:28.497] Initial Stack (contents: [last_pokéd_addr0_val, sfc, last_slot_addr_val, last_instr_type_val]): [3, 0, 1, 2]. Initial IP: 0.
+[2025-05-30 03:13:28.497] VM waiting for input (at init end): False
+[2025-05-30 03:13:28.497] --- VM INITIALIZATION COMPLETE (Ambitious Goal-Seeker) ---
+[2025-05-30 03:15:37.939] --- VM INITIALIZATION START (Goal-Seeker) ---
+[2025-05-30 03:15:37.939] INIT: Difficulty: MEDIUM. Initial TARGET set by app.py: 5
+[2025-05-30 03:15:37.939] INIT: Overwrote program[0] with PUSH(5), UOR: 6306160020433553488
+[2025-05-30 03:15:37.939] INIT: Interaction phase set to: AWAITING_ATTEMPT_RESULT
+[2025-05-30 03:15:37.939] VM Initialized (Ambitious). Program: goal_seeker_demo.uor.txt. Initial Target (for Addr0 PUSH): 5. Phase: AWAITING_ATTEMPT_RESULT
+[2025-05-30 03:15:37.939] Initial Stack (contents: [last_pokéd_addr0_val, sfc, last_slot_addr_val, last_instr_type_val]): [5, 0, 1, 2]. Initial IP: 0.
+[2025-05-30 03:15:37.940] VM waiting for input (at init end): False
+[2025-05-30 03:15:37.940] --- VM INITIALIZATION COMPLETE (Ambitious Goal-Seeker) ---
+[2025-05-30 03:15:37.951] --- VM STEP START (Processing UOR_addr 0) ---
+[2025-05-30 03:15:37.952]   Yielded IP: 1
+  Yielded Stack: [5, 0, 1, 2, 5]
+  Yielded Output: None
+  Yielded Halt: False
+  Yielded Error: None
+  Yielded Needs Input: None
+  Program memory NOT reported as changed or same as current.
+
+[2025-05-30 03:15:37.952]   State Updated (Normal Step): New IP=1, Stack=[5, 0, 1, 2, 5], OutputLog=[], Halted=False, Error=None
+[2025-05-30 03:15:37.952]   Instruction at UOR_addr 0 (before IP update to 1) was processed.
+[2025-05-30 03:15:37.952] --- VM STEP END ---
+[2025-05-30 03:15:53.237] --- VM INITIALIZATION START (Goal-Seeker) ---
+[2025-05-30 03:15:53.237] INIT: Difficulty: MEDIUM. Initial TARGET set by app.py: 5
+[2025-05-30 03:15:53.237] INIT: Overwrote program[0] with PUSH(5), UOR: 6306160020433553488
+[2025-05-30 03:15:53.237] INIT: Interaction phase set to: AWAITING_ATTEMPT_RESULT
+[2025-05-30 03:15:53.237] VM Initialized (Ambitious). Program: goal_seeker_demo.uor.txt. Initial Target (for Addr0 PUSH): 5. Phase: AWAITING_ATTEMPT_RESULT
+[2025-05-30 03:15:53.237] Initial Stack (contents: [last_pokéd_addr0_val, sfc, last_slot_addr_val, last_instr_type_val]): [5, 0, 1, 2]. Initial IP: 0.
+[2025-05-30 03:15:53.237] VM waiting for input (at init end): False
+[2025-05-30 03:15:53.237] --- VM INITIALIZATION COMPLETE (Ambitious Goal-Seeker) ---
+[2025-05-30 03:15:53.248] --- VM STEP START (Processing UOR_addr 0) ---
+[2025-05-30 03:15:53.248]   Yielded IP: 1
+  Yielded Stack: [5, 0, 1, 2, 5]
+  Yielded Output: None
+  Yielded Halt: False
+  Yielded Error: None
+  Yielded Needs Input: None
+  Program memory NOT reported as changed or same as current.
+
+[2025-05-30 03:15:53.248]   State Updated (Normal Step): New IP=1, Stack=[5, 0, 1, 2, 5], OutputLog=[], Halted=False, Error=None
+[2025-05-30 03:15:53.248]   Instruction at UOR_addr 0 (before IP update to 1) was processed.
+[2025-05-30 03:15:53.248] --- VM STEP END ---
+[2025-05-30 03:15:53.255] --- VM STEP START (Processing UOR_addr 1) ---
+[2025-05-30 03:15:53.255]   Yielded IP: 2
+  Yielded Stack: [5, 0, 1, 2, 5]
+  Yielded Output: None
+  Yielded Halt: False
+  Yielded Error: None
+  Yielded Needs Input: None
+  Program memory NOT reported as changed or same as current.
+
+[2025-05-30 03:15:53.255]   State Updated (Normal Step): New IP=2, Stack=[5, 0, 1, 2, 5], OutputLog=[], Halted=False, Error=None
+[2025-05-30 03:15:53.255]   Instruction at UOR_addr 1 (before IP update to 2) was processed.
+[2025-05-30 03:15:53.255] --- VM STEP END ---
+[2025-05-30 03:15:53.264] --- VM STEP START (Processing UOR_addr 2) ---
+[2025-05-30 03:15:53.264]   Yielded IP: 3
+  Yielded Stack: [5, 0, 1, 2, 5]
+  Yielded Output: None
+  Yielded Halt: False
+  Yielded Error: None
+  Yielded Needs Input: None
+  Program memory NOT reported as changed or same as current.
+
+[2025-05-30 03:15:53.264]   State Updated (Normal Step): New IP=3, Stack=[5, 0, 1, 2, 5], OutputLog=[], Halted=False, Error=None
+[2025-05-30 03:15:53.264]   Instruction at UOR_addr 2 (before IP update to 3) was processed.
+[2025-05-30 03:15:53.264] --- VM STEP END ---
+[2025-05-30 03:15:53.272] --- VM INITIALIZATION START (Goal-Seeker) ---
+[2025-05-30 03:15:53.272] INIT: Difficulty: MEDIUM. Initial TARGET set by app.py: 4
+[2025-05-30 03:15:53.273] INIT: Overwrote program[0] with PUSH(4), UOR: 389960455649115824
+[2025-05-30 03:15:53.273] INIT: Interaction phase set to: AWAITING_ATTEMPT_RESULT
+[2025-05-30 03:15:53.273] VM Initialized (Ambitious). Program: goal_seeker_demo.uor.txt. Initial Target (for Addr0 PUSH): 4. Phase: AWAITING_ATTEMPT_RESULT
+[2025-05-30 03:15:53.273] Initial Stack (contents: [last_pokéd_addr0_val, sfc, last_slot_addr_val, last_instr_type_val]): [4, 0, 1, 2]. Initial IP: 0.
+[2025-05-30 03:15:53.273] VM waiting for input (at init end): False
+[2025-05-30 03:15:53.273] --- VM INITIALIZATION COMPLETE (Ambitious Goal-Seeker) ---
+[2025-05-30 03:15:53.278] --- VM STEP START (Processing UOR_addr 0) ---
+[2025-05-30 03:15:53.278]   Yielded IP: 1
+  Yielded Stack: [4, 0, 1, 2, 4]
+  Yielded Output: None
+  Yielded Halt: False
+  Yielded Error: None
+  Yielded Needs Input: None
+  Program memory NOT reported as changed or same as current.
+
+[2025-05-30 03:15:53.279]   State Updated (Normal Step): New IP=1, Stack=[4, 0, 1, 2, 4], OutputLog=[], Halted=False, Error=None
+[2025-05-30 03:15:53.279]   Instruction at UOR_addr 0 (before IP update to 1) was processed.
+[2025-05-30 03:15:53.279] --- VM STEP END ---
+[2025-05-30 03:15:53.286] --- VM STEP START (Processing UOR_addr 1) ---
+[2025-05-30 03:15:53.286]   Yielded IP: 2
+  Yielded Stack: [4, 0, 1, 2, 4]
+  Yielded Output: None
+  Yielded Halt: False
+  Yielded Error: None
+  Yielded Needs Input: None
+  Program memory NOT reported as changed or same as current.
+
+[2025-05-30 03:15:53.286]   State Updated (Normal Step): New IP=2, Stack=[4, 0, 1, 2, 4], OutputLog=[], Halted=False, Error=None
+[2025-05-30 03:15:53.286]   Instruction at UOR_addr 1 (before IP update to 2) was processed.
+[2025-05-30 03:15:53.286] --- VM STEP END ---
+[2025-05-30 03:15:53.292] --- VM STEP START (Processing UOR_addr 2) ---
+[2025-05-30 03:15:53.292]   Yielded IP: 3
+  Yielded Stack: [4, 0, 1, 2, 4]
+  Yielded Output: None
+  Yielded Halt: False
+  Yielded Error: None
+  Yielded Needs Input: None
+  Program memory NOT reported as changed or same as current.
+
+[2025-05-30 03:15:53.292]   State Updated (Normal Step): New IP=3, Stack=[4, 0, 1, 2, 4], OutputLog=[], Halted=False, Error=None
+[2025-05-30 03:15:53.293]   Instruction at UOR_addr 2 (before IP update to 3) was processed.
+[2025-05-30 03:15:53.293] --- VM STEP END ---
+[2025-05-30 03:15:53.298] --- VM INITIALIZATION START (Goal-Seeker) ---
+[2025-05-30 03:15:53.298] INIT: Difficulty: MEDIUM. Initial TARGET set by app.py: 8
+[2025-05-30 03:15:53.298] INIT: Overwrote program[0] with PUSH(8), UOR: 3387484748998770622448
+[2025-05-30 03:15:53.298] INIT: Interaction phase set to: AWAITING_ATTEMPT_RESULT
+[2025-05-30 03:15:53.298] VM Initialized (Ambitious). Program: goal_seeker_demo.uor.txt. Initial Target (for Addr0 PUSH): 8. Phase: AWAITING_ATTEMPT_RESULT
+[2025-05-30 03:15:53.298] Initial Stack (contents: [last_pokéd_addr0_val, sfc, last_slot_addr_val, last_instr_type_val]): [8, 0, 1, 2]. Initial IP: 0.
+[2025-05-30 03:15:53.298] VM waiting for input (at init end): False
+[2025-05-30 03:15:53.298] --- VM INITIALIZATION COMPLETE (Ambitious Goal-Seeker) ---
+[2025-05-30 03:20:33.233] --- VM INITIALIZATION START (Goal-Seeker) ---
+[2025-05-30 03:20:33.233] INIT: Difficulty: MEDIUM. Initial TARGET set by app.py: 1
+[2025-05-30 03:20:33.233] INIT: Overwrote program[0] with PUSH(1), UOR: 18766633392
+[2025-05-30 03:20:33.233] INIT: Interaction phase set to: AWAITING_ATTEMPT_RESULT
+[2025-05-30 03:20:33.233] VM Initialized (Ambitious). Program: goal_seeker_demo.uor.txt. Initial Target (for Addr0 PUSH): 1. Phase: AWAITING_ATTEMPT_RESULT
+[2025-05-30 03:20:33.234] Initial Stack (contents: [last_pokéd_addr0_val, sfc, last_slot_addr_val, last_instr_type_val]): [1, 0, 1, 2]. Initial IP: 0.
+[2025-05-30 03:20:33.234] VM waiting for input (at init end): False
+[2025-05-30 03:20:33.235] --- VM INITIALIZATION COMPLETE (Ambitious Goal-Seeker) ---
+[2025-05-30 03:20:33.260] --- VM STEP START (Processing UOR_addr 0) ---
+[2025-05-30 03:20:33.261]   Yielded IP: 1
+  Yielded Stack: [1, 0, 1, 2, 1]
+  Yielded Output: None
+  Yielded Halt: False
+  Yielded Error: None
+  Yielded Needs Input: None
+  Program memory NOT reported as changed or same as current.
+
+[2025-05-30 03:20:33.261]   State Updated (Normal Step): New IP=1, Stack=[1, 0, 1, 2, 1], OutputLog=[], Halted=False, Error=None
+[2025-05-30 03:20:33.261]   Instruction at UOR_addr 0 (before IP update to 1) was processed.
+[2025-05-30 03:20:33.261] --- VM STEP END ---
+[2025-05-30 03:20:33.277] --- VM STEP START (Processing UOR_addr 1) ---
+[2025-05-30 03:20:33.277]   Yielded IP: 2
+  Yielded Stack: [1, 0, 1, 2, 1]
+  Yielded Output: None
+  Yielded Halt: False
+  Yielded Error: None
+  Yielded Needs Input: None
+  Program memory NOT reported as changed or same as current.
+
+[2025-05-30 03:20:33.277]   State Updated (Normal Step): New IP=2, Stack=[1, 0, 1, 2, 1], OutputLog=[], Halted=False, Error=None
+[2025-05-30 03:20:33.277]   Instruction at UOR_addr 1 (before IP update to 2) was processed.
+[2025-05-30 03:20:33.277] --- VM STEP END ---
+[2025-05-30 03:20:33.289] --- VM STEP START (Processing UOR_addr 2) ---
+[2025-05-30 03:20:33.289]   Yielded IP: 3
+  Yielded Stack: [1, 0, 1, 2, 1]
+  Yielded Output: None
+  Yielded Halt: False
+  Yielded Error: None
+  Yielded Needs Input: None
+  Program memory NOT reported as changed or same as current.
+
+[2025-05-30 03:20:33.289]   State Updated (Normal Step): New IP=3, Stack=[1, 0, 1, 2, 1], OutputLog=[], Halted=False, Error=None
+[2025-05-30 03:20:33.289]   Instruction at UOR_addr 2 (before IP update to 3) was processed.
+[2025-05-30 03:20:33.289] --- VM STEP END ---
+[2025-05-30 03:20:33.301] --- VM STEP START (Processing UOR_addr 3) ---
+[2025-05-30 03:20:33.301]   Yielded IP: 4
+  Yielded Stack: [1, 0, 1, 2, 1, 1]
+  Yielded Output: None
+  Yielded Halt: False
+  Yielded Error: None
+  Yielded Needs Input: None
+  Program memory NOT reported as changed or same as current.
+
+[2025-05-30 03:20:33.302]   State Updated (Normal Step): New IP=4, Stack=[1, 0, 1, 2, 1, 1], OutputLog=[], Halted=False, Error=None
+[2025-05-30 03:20:33.302]   Instruction at UOR_addr 3 (before IP update to 4) was processed.
+[2025-05-30 03:20:33.302] --- VM STEP END ---
+[2025-05-30 03:20:33.318] --- VM STEP START (Processing UOR_addr 4) ---
+[2025-05-30 03:20:33.319]   Yielded IP: 5
+  Yielded Stack: [1, 0, 1, 2, 1]
+  Yielded Output: 1
+  Yielded Halt: False
+  Yielded Error: None
+  Yielded Needs Input: None
+  Program memory NOT reported as changed or same as current.
+
+[2025-05-30 03:20:33.319]   PRINT Output: 1
+[2025-05-30 03:20:33.319]   State Updated (Normal Step): New IP=5, Stack=[1, 0, 1, 2, 1], OutputLog=['1'], Halted=False, Error=None
+[2025-05-30 03:20:33.320]   Instruction at UOR_addr 4 (before IP update to 5) was processed.
+[2025-05-30 03:20:33.320] --- VM STEP END ---
+[2025-05-30 03:21:41.897] --- VM INITIALIZATION START (Goal-Seeker) ---
+[2025-05-30 03:21:41.898] INIT: Difficulty: MEDIUM. Initial TARGET set by app.py: 8
+[2025-05-30 03:21:41.898] INIT: Overwrote program[0] with PUSH(8), UOR: 3387484748998770622448
+[2025-05-30 03:21:41.898] INIT: Interaction phase set to: AWAITING_ATTEMPT_RESULT
+[2025-05-30 03:21:41.898] VM Initialized (Ambitious). Program: goal_seeker_demo.uor.txt. Initial Target (for Addr0 PUSH): 8. Phase: AWAITING_ATTEMPT_RESULT
+[2025-05-30 03:21:41.898] Initial Stack (contents: [last_pokéd_addr0_val, sfc, last_slot_addr_val, last_instr_type_val]): [8, 0, 1, 2]. Initial IP: 0.
+[2025-05-30 03:21:41.898] VM waiting for input (at init end): False
+[2025-05-30 03:21:41.898] --- VM INITIALIZATION COMPLETE (Ambitious Goal-Seeker) ---
+[2025-05-30 03:21:41.910] --- VM STEP START (Processing UOR_addr 0) ---
+[2025-05-30 03:21:41.910]   Yielded IP: 1
+  Yielded Stack: [8, 0, 1, 2, 8]
+  Yielded Output: None
+  Yielded Halt: False
+  Yielded Error: None
+  Yielded Needs Input: None
+  Program memory NOT reported as changed or same as current.
+
+[2025-05-30 03:21:41.910]   State Updated (Normal Step): New IP=1, Stack=[8, 0, 1, 2, 8], OutputLog=[], Halted=False, Error=None
+[2025-05-30 03:21:41.910]   Instruction at UOR_addr 0 (before IP update to 1) was processed.
+[2025-05-30 03:21:41.910] --- VM STEP END ---
+[2025-05-30 03:21:42.019] --- VM STEP START (Processing UOR_addr 1) ---
+[2025-05-30 03:21:42.019]   Yielded IP: 2
+  Yielded Stack: [8, 0, 1, 2, 8]
+  Yielded Output: None
+  Yielded Halt: False
+  Yielded Error: None
+  Yielded Needs Input: None
+  Program memory NOT reported as changed or same as current.
+
+[2025-05-30 03:21:42.019]   State Updated (Normal Step): New IP=2, Stack=[8, 0, 1, 2, 8], OutputLog=[], Halted=False, Error=None
+[2025-05-30 03:21:42.019]   Instruction at UOR_addr 1 (before IP update to 2) was processed.
+[2025-05-30 03:21:42.019] --- VM STEP END ---
+[2025-05-30 03:21:42.025] --- VM STEP START (Processing UOR_addr 2) ---
+[2025-05-30 03:21:42.026]   Yielded IP: 3
+  Yielded Stack: [8, 0, 1, 2, 8]
+  Yielded Output: None
+  Yielded Halt: False
+  Yielded Error: None
+  Yielded Needs Input: None
+  Program memory NOT reported as changed or same as current.
+
+[2025-05-30 03:21:42.026]   State Updated (Normal Step): New IP=3, Stack=[8, 0, 1, 2, 8], OutputLog=[], Halted=False, Error=None
+[2025-05-30 03:21:42.026]   Instruction at UOR_addr 2 (before IP update to 3) was processed.
+[2025-05-30 03:21:42.026] --- VM STEP END ---
+[2025-05-30 03:21:42.032] --- VM STEP START (Processing UOR_addr 3) ---
+[2025-05-30 03:21:42.032]   Yielded IP: 4
+  Yielded Stack: [8, 0, 1, 2, 8, 8]
+  Yielded Output: None
+  Yielded Halt: False
+  Yielded Error: None
+  Yielded Needs Input: None
+  Program memory NOT reported as changed or same as current.
+
+[2025-05-30 03:21:42.032]   State Updated (Normal Step): New IP=4, Stack=[8, 0, 1, 2, 8, 8], OutputLog=[], Halted=False, Error=None
+[2025-05-30 03:21:42.032]   Instruction at UOR_addr 3 (before IP update to 4) was processed.
+[2025-05-30 03:21:42.032] --- VM STEP END ---
+[2025-05-30 03:21:42.039] --- VM STEP START (Processing UOR_addr 4) ---
+[2025-05-30 03:21:42.039]   Yielded IP: 5
+  Yielded Stack: [8, 0, 1, 2, 8]
+  Yielded Output: 8
+  Yielded Halt: False
+  Yielded Error: None
+  Yielded Needs Input: None
+  Program memory NOT reported as changed or same as current.
+
+[2025-05-30 03:21:42.039]   PRINT Output: 8
+[2025-05-30 03:21:42.039]   State Updated (Normal Step): New IP=5, Stack=[8, 0, 1, 2, 8], OutputLog=['8'], Halted=False, Error=None
+[2025-05-30 03:21:42.039]   Instruction at UOR_addr 4 (before IP update to 5) was processed.
+[2025-05-30 03:21:42.039] --- VM STEP END ---
+[2025-05-30 03:21:42.045] --- VM STEP START (Processing UOR_addr 5) ---
+[2025-05-30 03:21:42.045]   Yielded IP: 6
+  Yielded Stack: [8, 0, 1, 2, 8]
+  Yielded Output: None
+  Yielded Halt: False
+  Yielded Error: None
+  Yielded Needs Input: True
+  Program memory NOT reported as changed or same as current.
+
+[2025-05-30 03:21:42.045]   VM NOW WAITING FOR INPUT. State reported by OP_INPUT: IP=6, Stack=[8, 0, 1, 2, 8]
+[2025-05-30 03:21:42.045]   Instruction at UOR_addr 5 (OP_INPUT) was processed.
+[2025-05-30 03:21:42.045] --- VM STEP END ---
+[2025-05-30 03:21:42.151] --- VM STEP Attempted while WAITING FOR INPUT (IP: 6) ---
+[2025-05-30 03:21:42.158] --- VM INITIALIZATION START (Goal-Seeker) ---
+[2025-05-30 03:21:42.158] INIT: Difficulty: MEDIUM. Initial TARGET set by app.py: 3
+[2025-05-30 03:21:42.158] INIT: Overwrote program[0] with PUSH(3), UOR: 5960262679921648
+[2025-05-30 03:21:42.158] INIT: Interaction phase set to: AWAITING_ATTEMPT_RESULT
+[2025-05-30 03:21:42.158] VM Initialized (Ambitious). Program: goal_seeker_demo.uor.txt. Initial Target (for Addr0 PUSH): 3. Phase: AWAITING_ATTEMPT_RESULT
+[2025-05-30 03:21:42.158] Initial Stack (contents: [last_pokéd_addr0_val, sfc, last_slot_addr_val, last_instr_type_val]): [3, 0, 1, 2]. Initial IP: 0.
+[2025-05-30 03:21:42.158] VM waiting for input (at init end): False
+[2025-05-30 03:21:42.159] --- VM INITIALIZATION COMPLETE (Ambitious Goal-Seeker) ---
+[2025-05-30 03:21:42.165] --- VM STEP START (Processing UOR_addr 0) ---
+[2025-05-30 03:21:42.165]   Yielded IP: 1
+  Yielded Stack: [3, 0, 1, 2, 3]
+  Yielded Output: None
+  Yielded Halt: False
+  Yielded Error: None
+  Yielded Needs Input: None
+  Program memory NOT reported as changed or same as current.
+
+[2025-05-30 03:21:42.165]   State Updated (Normal Step): New IP=1, Stack=[3, 0, 1, 2, 3], OutputLog=[], Halted=False, Error=None
+[2025-05-30 03:21:42.165]   Instruction at UOR_addr 0 (before IP update to 1) was processed.
+[2025-05-30 03:21:42.165] --- VM STEP END ---
+[2025-05-30 03:21:42.672] --- VM STEP START (Processing UOR_addr 1) ---
+[2025-05-30 03:21:42.672]   Yielded IP: 2
+  Yielded Stack: [3, 0, 1, 2, 3]
+  Yielded Output: None
+  Yielded Halt: False
+  Yielded Error: None
+  Yielded Needs Input: None
+  Program memory NOT reported as changed or same as current.
+
+[2025-05-30 03:21:42.672]   State Updated (Normal Step): New IP=2, Stack=[3, 0, 1, 2, 3], OutputLog=[], Halted=False, Error=None
+[2025-05-30 03:21:42.672]   Instruction at UOR_addr 1 (before IP update to 2) was processed.
+[2025-05-30 03:21:42.672] --- VM STEP END ---
+[2025-05-30 03:21:43.179] --- VM STEP START (Processing UOR_addr 2) ---
+[2025-05-30 03:21:43.180]   Yielded IP: 3
+  Yielded Stack: [3, 0, 1, 2, 3]
+  Yielded Output: None
+  Yielded Halt: False
+  Yielded Error: None
+  Yielded Needs Input: None
+  Program memory NOT reported as changed or same as current.
+
+[2025-05-30 03:21:43.180]   State Updated (Normal Step): New IP=3, Stack=[3, 0, 1, 2, 3], OutputLog=[], Halted=False, Error=None
+[2025-05-30 03:21:43.180]   Instruction at UOR_addr 2 (before IP update to 3) was processed.
+[2025-05-30 03:21:43.180] --- VM STEP END ---
+[2025-05-30 03:21:43.687] --- VM STEP START (Processing UOR_addr 3) ---
+[2025-05-30 03:21:43.687]   Yielded IP: 4
+  Yielded Stack: [3, 0, 1, 2, 3, 3]
+  Yielded Output: None
+  Yielded Halt: False
+  Yielded Error: None
+  Yielded Needs Input: None
+  Program memory NOT reported as changed or same as current.
+
+[2025-05-30 03:21:43.687]   State Updated (Normal Step): New IP=4, Stack=[3, 0, 1, 2, 3, 3], OutputLog=[], Halted=False, Error=None
+[2025-05-30 03:21:43.688]   Instruction at UOR_addr 3 (before IP update to 4) was processed.
+[2025-05-30 03:21:43.688] --- VM STEP END ---
+[2025-05-30 03:21:44.195] --- VM STEP START (Processing UOR_addr 4) ---
+[2025-05-30 03:21:44.195]   Yielded IP: 5
+  Yielded Stack: [3, 0, 1, 2, 3]
+  Yielded Output: 3
+  Yielded Halt: False
+  Yielded Error: None
+  Yielded Needs Input: None
+  Program memory NOT reported as changed or same as current.
+
+[2025-05-30 03:21:44.195]   PRINT Output: 3
+[2025-05-30 03:21:44.195]   State Updated (Normal Step): New IP=5, Stack=[3, 0, 1, 2, 3], OutputLog=['3'], Halted=False, Error=None
+[2025-05-30 03:21:44.195]   Instruction at UOR_addr 4 (before IP update to 5) was processed.
+[2025-05-30 03:21:44.195] --- VM STEP END ---
+[2025-05-30 03:21:44.702] --- VM STEP START (Processing UOR_addr 5) ---
+[2025-05-30 03:21:44.702]   Yielded IP: 6
+  Yielded Stack: [3, 0, 1, 2, 3]
+  Yielded Output: None
+  Yielded Halt: False
+  Yielded Error: None
+  Yielded Needs Input: True
+  Program memory NOT reported as changed or same as current.
+
+[2025-05-30 03:21:44.702]   VM NOW WAITING FOR INPUT. State reported by OP_INPUT: IP=6, Stack=[3, 0, 1, 2, 3]
+[2025-05-30 03:21:44.702]   Instruction at UOR_addr 5 (OP_INPUT) was processed.
+[2025-05-30 03:21:44.702] --- VM STEP END ---
+[2025-05-30 03:21:45.209] --- VM STEP Attempted while WAITING FOR INPUT (IP: 6) ---
+[2025-05-30 03:21:45.715] --- VM STEP Attempted while WAITING FOR INPUT (IP: 6) ---
+[2025-05-30 03:21:46.221] --- VM STEP Attempted while WAITING FOR INPUT (IP: 6) ---
+[2025-05-30 03:21:46.728] --- VM STEP Attempted while WAITING FOR INPUT (IP: 6) ---
+[2025-05-30 03:22:17.979] --- VM INITIALIZATION START (Goal-Seeker) ---
+[2025-05-30 03:22:17.979] INIT: Difficulty: MEDIUM. Initial TARGET set by app.py: 7
+[2025-05-30 03:22:17.979] INIT: Overwrote program[0] with PUSH(7), UOR: 469623338082050043184
+[2025-05-30 03:22:17.979] INIT: Interaction phase set to: AWAITING_ATTEMPT_RESULT
+[2025-05-30 03:22:17.979] VM Initialized (Ambitious). Program: goal_seeker_demo.uor.txt. Initial Target (for Addr0 PUSH): 7. Phase: AWAITING_ATTEMPT_RESULT
+[2025-05-30 03:22:17.979] Initial Stack (contents: [last_pokéd_addr0_val, sfc, last_slot_addr_val, last_instr_type_val]): [7, 0, 1, 2]. Initial IP: 0.
+[2025-05-30 03:22:17.980] VM waiting for input (at init end): False
+[2025-05-30 03:22:17.980] --- VM INITIALIZATION COMPLETE (Ambitious Goal-Seeker) ---
+[2025-05-30 03:22:17.991] --- VM STEP START (Processing UOR_addr 0) ---
+[2025-05-30 03:22:17.992]   Yielded IP: 1
+  Yielded Stack: [7, 0, 1, 2, 7]
+  Yielded Output: None
+  Yielded Halt: False
+  Yielded Error: None
+  Yielded Needs Input: None
+  Program memory NOT reported as changed or same as current.
+
+[2025-05-30 03:22:17.992]   State Updated (Normal Step): New IP=1, Stack=[7, 0, 1, 2, 7], OutputLog=[], Halted=False, Error=None
+[2025-05-30 03:22:17.992]   Instruction at UOR_addr 0 (before IP update to 1) was processed.
+[2025-05-30 03:22:17.992] --- VM STEP END ---
+[2025-05-30 03:22:18.099] --- VM STEP START (Processing UOR_addr 1) ---
+[2025-05-30 03:22:18.100]   Yielded IP: 2
+  Yielded Stack: [7, 0, 1, 2, 7]
+  Yielded Output: None
+  Yielded Halt: False
+  Yielded Error: None
+  Yielded Needs Input: None
+  Program memory NOT reported as changed or same as current.
+
+[2025-05-30 03:22:18.100]   State Updated (Normal Step): New IP=2, Stack=[7, 0, 1, 2, 7], OutputLog=[], Halted=False, Error=None
+[2025-05-30 03:22:18.100]   Instruction at UOR_addr 1 (before IP update to 2) was processed.
+[2025-05-30 03:22:18.100] --- VM STEP END ---
+[2025-05-30 03:22:18.109] --- VM STEP START (Processing UOR_addr 2) ---
+[2025-05-30 03:22:18.110]   Yielded IP: 3
+  Yielded Stack: [7, 0, 1, 2, 7]
+  Yielded Output: None
+  Yielded Halt: False
+  Yielded Error: None
+  Yielded Needs Input: None
+  Program memory NOT reported as changed or same as current.
+
+[2025-05-30 03:22:18.110]   State Updated (Normal Step): New IP=3, Stack=[7, 0, 1, 2, 7], OutputLog=[], Halted=False, Error=None
+[2025-05-30 03:22:18.110]   Instruction at UOR_addr 2 (before IP update to 3) was processed.
+[2025-05-30 03:22:18.111] --- VM STEP END ---
+[2025-05-30 03:22:18.116] --- VM STEP START (Processing UOR_addr 3) ---
+[2025-05-30 03:22:18.117]   Yielded IP: 4
+  Yielded Stack: [7, 0, 1, 2, 7, 7]
+  Yielded Output: None
+  Yielded Halt: False
+  Yielded Error: None
+  Yielded Needs Input: None
+  Program memory NOT reported as changed or same as current.
+
+[2025-05-30 03:22:18.117]   State Updated (Normal Step): New IP=4, Stack=[7, 0, 1, 2, 7, 7], OutputLog=[], Halted=False, Error=None
+[2025-05-30 03:22:18.117]   Instruction at UOR_addr 3 (before IP update to 4) was processed.
+[2025-05-30 03:22:18.117] --- VM STEP END ---
+[2025-05-30 03:22:18.125] --- VM STEP START (Processing UOR_addr 4) ---
+[2025-05-30 03:22:18.125]   Yielded IP: 5
+  Yielded Stack: [7, 0, 1, 2, 7]
+  Yielded Output: 7
+  Yielded Halt: False
+  Yielded Error: None
+  Yielded Needs Input: None
+  Program memory NOT reported as changed or same as current.
+
+[2025-05-30 03:22:18.125]   PRINT Output: 7
+[2025-05-30 03:22:18.125]   State Updated (Normal Step): New IP=5, Stack=[7, 0, 1, 2, 7], OutputLog=['7'], Halted=False, Error=None
+[2025-05-30 03:22:18.125]   Instruction at UOR_addr 4 (before IP update to 5) was processed.
+[2025-05-30 03:22:18.125] --- VM STEP END ---
+[2025-05-30 03:22:18.133] --- VM STEP START (Processing UOR_addr 5) ---
+[2025-05-30 03:22:18.134]   Yielded IP: 6
+  Yielded Stack: [7, 0, 1, 2, 7]
+  Yielded Output: None
+  Yielded Halt: False
+  Yielded Error: None
+  Yielded Needs Input: True
+  Program memory NOT reported as changed or same as current.
+
+[2025-05-30 03:22:18.134]   VM NOW WAITING FOR INPUT. State reported by OP_INPUT: IP=6, Stack=[7, 0, 1, 2, 7]
+[2025-05-30 03:22:18.134]   Instruction at UOR_addr 5 (OP_INPUT) was processed.
+[2025-05-30 03:22:18.134] --- VM STEP END ---
+[2025-05-30 03:22:18.240] --- VM STEP Attempted while WAITING FOR INPUT (IP: 6) ---
+[2025-05-30 03:22:18.247] --- VM INITIALIZATION START (Goal-Seeker) ---
+[2025-05-30 03:22:18.247] INIT: Difficulty: MEDIUM. Initial TARGET set by app.py: 4
+[2025-05-30 03:22:18.247] INIT: Overwrote program[0] with PUSH(4), UOR: 389960455649115824
+[2025-05-30 03:22:18.247] INIT: Interaction phase set to: AWAITING_ATTEMPT_RESULT
+[2025-05-30 03:22:18.247] VM Initialized (Ambitious). Program: goal_seeker_demo.uor.txt. Initial Target (for Addr0 PUSH): 4. Phase: AWAITING_ATTEMPT_RESULT
+[2025-05-30 03:22:18.248] Initial Stack (contents: [last_pokéd_addr0_val, sfc, last_slot_addr_val, last_instr_type_val]): [4, 0, 1, 2]. Initial IP: 0.
+[2025-05-30 03:22:18.248] VM waiting for input (at init end): False
+[2025-05-30 03:22:18.248] --- VM INITIALIZATION COMPLETE (Ambitious Goal-Seeker) ---
+[2025-05-30 03:22:18.256] --- VM STEP START (Processing UOR_addr 0) ---
+[2025-05-30 03:22:18.256]   Yielded IP: 1
+  Yielded Stack: [4, 0, 1, 2, 4]
+  Yielded Output: None
+  Yielded Halt: False
+  Yielded Error: None
+  Yielded Needs Input: None
+  Program memory NOT reported as changed or same as current.
+
+[2025-05-30 03:22:18.256]   State Updated (Normal Step): New IP=1, Stack=[4, 0, 1, 2, 4], OutputLog=[], Halted=False, Error=None
+[2025-05-30 03:22:18.256]   Instruction at UOR_addr 0 (before IP update to 1) was processed.
+[2025-05-30 03:22:18.256] --- VM STEP END ---
+[2025-05-30 03:22:18.765] --- VM STEP START (Processing UOR_addr 1) ---
+[2025-05-30 03:22:18.765]   Yielded IP: 2
+  Yielded Stack: [4, 0, 1, 2, 4]
+  Yielded Output: None
+  Yielded Halt: False
+  Yielded Error: None
+  Yielded Needs Input: None
+  Program memory NOT reported as changed or same as current.
+
+[2025-05-30 03:22:18.765]   State Updated (Normal Step): New IP=2, Stack=[4, 0, 1, 2, 4], OutputLog=[], Halted=False, Error=None
+[2025-05-30 03:22:18.766]   Instruction at UOR_addr 1 (before IP update to 2) was processed.
+[2025-05-30 03:22:18.766] --- VM STEP END ---
+[2025-05-30 03:22:19.272] --- VM STEP START (Processing UOR_addr 2) ---
+[2025-05-30 03:22:19.273]   Yielded IP: 3
+  Yielded Stack: [4, 0, 1, 2, 4]
+  Yielded Output: None
+  Yielded Halt: False
+  Yielded Error: None
+  Yielded Needs Input: None
+  Program memory NOT reported as changed or same as current.
+
+[2025-05-30 03:22:19.273]   State Updated (Normal Step): New IP=3, Stack=[4, 0, 1, 2, 4], OutputLog=[], Halted=False, Error=None
+[2025-05-30 03:22:19.273]   Instruction at UOR_addr 2 (before IP update to 3) was processed.
+[2025-05-30 03:22:19.273] --- VM STEP END ---
+[2025-05-30 03:22:19.779] --- VM STEP START (Processing UOR_addr 3) ---
+[2025-05-30 03:22:19.780]   Yielded IP: 4
+  Yielded Stack: [4, 0, 1, 2, 4, 4]
+  Yielded Output: None
+  Yielded Halt: False
+  Yielded Error: None
+  Yielded Needs Input: None
+  Program memory NOT reported as changed or same as current.
+
+[2025-05-30 03:22:19.780]   State Updated (Normal Step): New IP=4, Stack=[4, 0, 1, 2, 4, 4], OutputLog=[], Halted=False, Error=None
+[2025-05-30 03:22:19.780]   Instruction at UOR_addr 3 (before IP update to 4) was processed.
+[2025-05-30 03:22:19.780] --- VM STEP END ---
+[2025-05-30 03:22:20.286] --- VM STEP START (Processing UOR_addr 4) ---
+[2025-05-30 03:22:20.287]   Yielded IP: 5
+  Yielded Stack: [4, 0, 1, 2, 4]
+  Yielded Output: 4
+  Yielded Halt: False
+  Yielded Error: None
+  Yielded Needs Input: None
+  Program memory NOT reported as changed or same as current.
+
+[2025-05-30 03:22:20.287]   PRINT Output: 4
+[2025-05-30 03:22:20.287]   State Updated (Normal Step): New IP=5, Stack=[4, 0, 1, 2, 4], OutputLog=['4'], Halted=False, Error=None
+[2025-05-30 03:22:20.287]   Instruction at UOR_addr 4 (before IP update to 5) was processed.
+[2025-05-30 03:22:20.287] --- VM STEP END ---
+[2025-05-30 03:22:20.794] --- VM STEP START (Processing UOR_addr 5) ---
+[2025-05-30 03:22:20.794]   Yielded IP: 6
+  Yielded Stack: [4, 0, 1, 2, 4]
+  Yielded Output: None
+  Yielded Halt: False
+  Yielded Error: None
+  Yielded Needs Input: True
+  Program memory NOT reported as changed or same as current.
+
+[2025-05-30 03:22:20.794]   VM NOW WAITING FOR INPUT. State reported by OP_INPUT: IP=6, Stack=[4, 0, 1, 2, 4]
+[2025-05-30 03:22:20.794]   Instruction at UOR_addr 5 (OP_INPUT) was processed.
+[2025-05-30 03:22:20.794] --- VM STEP END ---
+[2025-05-30 03:22:21.301] --- VM STEP Attempted while WAITING FOR INPUT (IP: 6) ---
+[2025-05-30 03:22:21.808] --- VM STEP Attempted while WAITING FOR INPUT (IP: 6) ---
+[2025-05-30 03:22:22.314] --- VM STEP Attempted while WAITING FOR INPUT (IP: 6) ---
+[2025-05-30 03:22:22.821] --- VM STEP Attempted while WAITING FOR INPUT (IP: 6) ---
+[2025-05-30 03:25:03.235] --- VM INITIALIZATION START (Goal-Seeker) ---
+[2025-05-30 03:25:03.235] INIT: Difficulty: MEDIUM. Initial TARGET set by app.py: 8
+[2025-05-30 03:25:03.236] INIT: Overwrote program[0] with PUSH(8), UOR: 3387484748998770622448
+[2025-05-30 03:25:03.236] INIT: Interaction phase set to: AWAITING_ATTEMPT_RESULT
+[2025-05-30 03:25:03.236] VM Initialized (Ambitious). Program: goal_seeker_demo.uor.txt. Initial Target (for Addr0 PUSH): 8. Phase: AWAITING_ATTEMPT_RESULT
+[2025-05-30 03:25:03.236] Initial Stack (contents: [last_pokéd_addr0_val, sfc, last_slot_addr_val, last_instr_type_val]): [8, 0, 1, 2]. Initial IP: 0.
+[2025-05-30 03:25:03.236] VM waiting for input (at init end): False
+[2025-05-30 03:25:03.236] --- VM INITIALIZATION COMPLETE (Ambitious Goal-Seeker) ---
+[2025-05-30 03:25:03.251] --- VM STEP START (Processing UOR_addr 0) ---
+[2025-05-30 03:25:03.251]   Yielded IP: 1
+  Yielded Stack: [8, 0, 1, 2, 8]
+  Yielded Output: None
+  Yielded Halt: False
+  Yielded Error: None
+  Yielded Needs Input: None
+  Program memory NOT reported as changed or same as current.
+
+[2025-05-30 03:25:03.251]   State Updated (Normal Step): New IP=1, Stack=[8, 0, 1, 2, 8], OutputLog=[], Halted=False, Error=None
+[2025-05-30 03:25:03.251]   Instruction at UOR_addr 0 (before IP update to 1) was processed.
+[2025-05-30 03:25:03.251] --- VM STEP END ---
+[2025-05-30 03:25:03.260] --- VM STEP START (Processing UOR_addr 1) ---
+[2025-05-30 03:25:03.260]   Yielded IP: 2
+  Yielded Stack: [8, 0, 1, 2, 8]
+  Yielded Output: None
+  Yielded Halt: False
+  Yielded Error: None
+  Yielded Needs Input: None
+  Program memory NOT reported as changed or same as current.
+
+[2025-05-30 03:25:03.260]   State Updated (Normal Step): New IP=2, Stack=[8, 0, 1, 2, 8], OutputLog=[], Halted=False, Error=None
+[2025-05-30 03:25:03.260]   Instruction at UOR_addr 1 (before IP update to 2) was processed.
+[2025-05-30 03:25:03.260] --- VM STEP END ---
+[2025-05-30 03:25:03.267] --- VM STEP START (Processing UOR_addr 2) ---
+[2025-05-30 03:25:03.267]   Yielded IP: 3
+  Yielded Stack: [8, 0, 1, 2, 8]
+  Yielded Output: None
+  Yielded Halt: False
+  Yielded Error: None
+  Yielded Needs Input: None
+  Program memory NOT reported as changed or same as current.
+
+[2025-05-30 03:25:03.267]   State Updated (Normal Step): New IP=3, Stack=[8, 0, 1, 2, 8], OutputLog=[], Halted=False, Error=None
+[2025-05-30 03:25:03.268]   Instruction at UOR_addr 2 (before IP update to 3) was processed.
+[2025-05-30 03:25:03.268] --- VM STEP END ---
+[2025-05-30 03:25:03.276] --- VM STEP START (Processing UOR_addr 3) ---
+[2025-05-30 03:25:03.276]   Yielded IP: 4
+  Yielded Stack: [8, 0, 1, 2, 8, 8]
+  Yielded Output: None
+  Yielded Halt: False
+  Yielded Error: None
+  Yielded Needs Input: None
+  Program memory NOT reported as changed or same as current.
+
+[2025-05-30 03:25:03.276]   State Updated (Normal Step): New IP=4, Stack=[8, 0, 1, 2, 8, 8], OutputLog=[], Halted=False, Error=None
+[2025-05-30 03:25:03.276]   Instruction at UOR_addr 3 (before IP update to 4) was processed.
+[2025-05-30 03:25:03.276] --- VM STEP END ---
+[2025-05-30 03:31:29.369] --- VM INITIALIZATION START (Goal-Seeker) ---
+[2025-05-30 03:31:29.369] INIT: Difficulty: MEDIUM. Initial TARGET set by app.py: 9
+[2025-05-30 03:31:29.369] INIT: Overwrote program[0] with PUSH(9), UOR: 20381138047908104517584
+[2025-05-30 03:31:29.369] INIT: Interaction phase set to: AWAITING_ATTEMPT_RESULT
+[2025-05-30 03:31:29.369] VM Initialized (Ambitious). Program: goal_seeker_demo.uor.txt. Initial Target (for Addr0 PUSH): 9. Phase: AWAITING_ATTEMPT_RESULT
+[2025-05-30 03:31:29.370] Initial Stack (contents: [last_pokéd_addr0_val, sfc, last_slot_addr_val, last_instr_type_val]): [9, 0, 1, 2]. Initial IP: 0.
+[2025-05-30 03:31:29.370] VM waiting for input (at init end): False
+[2025-05-30 03:31:29.370] --- VM INITIALIZATION COMPLETE (Ambitious Goal-Seeker) ---
+[2025-05-30 03:31:29.382] --- VM STEP START (Processing UOR_addr 0) ---
+[2025-05-30 03:31:29.382]   Yielded IP: 1
+  Yielded Stack: [9, 0, 1, 2, 9]
+  Yielded Output: None
+  Yielded Halt: False
+  Yielded Error: None
+  Yielded Needs Input: None
+  Program memory NOT reported as changed or same as current.
+
+[2025-05-30 03:31:29.382]   State Updated (Normal Step): New IP=1, Stack=[9, 0, 1, 2, 9], OutputLog=[], Halted=False, Error=None
+[2025-05-30 03:31:29.382]   Instruction at UOR_addr 0 (before IP update to 1) was processed.
+[2025-05-30 03:31:29.382] --- VM STEP END ---
+[2025-05-30 03:31:29.389] --- VM STEP START (Processing UOR_addr 1) ---
+[2025-05-30 03:31:29.389]   Yielded IP: 2
+  Yielded Stack: [9, 0, 1, 2, 9]
+  Yielded Output: None
+  Yielded Halt: False
+  Yielded Error: None
+  Yielded Needs Input: None
+  Program memory NOT reported as changed or same as current.
+
+[2025-05-30 03:31:29.390]   State Updated (Normal Step): New IP=2, Stack=[9, 0, 1, 2, 9], OutputLog=[], Halted=False, Error=None
+[2025-05-30 03:31:29.390]   Instruction at UOR_addr 1 (before IP update to 2) was processed.
+[2025-05-30 03:31:29.390] --- VM STEP END ---
+[2025-05-30 03:31:29.397] --- VM STEP START (Processing UOR_addr 2) ---
+[2025-05-30 03:31:29.397]   Yielded IP: 3
+  Yielded Stack: [9, 0, 1, 2, 9]
+  Yielded Output: None
+  Yielded Halt: False
+  Yielded Error: None
+  Yielded Needs Input: None
+  Program memory NOT reported as changed or same as current.
+
+[2025-05-30 03:31:29.397]   State Updated (Normal Step): New IP=3, Stack=[9, 0, 1, 2, 9], OutputLog=[], Halted=False, Error=None
+[2025-05-30 03:31:29.397]   Instruction at UOR_addr 2 (before IP update to 3) was processed.
+[2025-05-30 03:31:29.397] --- VM STEP END ---
+[2025-05-30 03:31:29.407] --- VM STEP START (Processing UOR_addr 3) ---
+[2025-05-30 03:31:29.407]   Yielded IP: 4
+  Yielded Stack: [9, 0, 1, 2, 9, 9]
+  Yielded Output: None
+  Yielded Halt: False
+  Yielded Error: None
+  Yielded Needs Input: None
+  Program memory NOT reported as changed or same as current.
+
+[2025-05-30 03:31:29.407]   State Updated (Normal Step): New IP=4, Stack=[9, 0, 1, 2, 9, 9], OutputLog=[], Halted=False, Error=None
+[2025-05-30 03:31:29.407]   Instruction at UOR_addr 3 (before IP update to 4) was processed.
+[2025-05-30 03:31:29.407] --- VM STEP END ---
+[2025-05-30 03:31:29.414] --- VM STEP START (Processing UOR_addr 4) ---
+[2025-05-30 03:31:29.415]   Yielded IP: 5
+  Yielded Stack: [9, 0, 1, 2, 9]
+  Yielded Output: 9
+  Yielded Halt: False
+  Yielded Error: None
+  Yielded Needs Input: None
+  Program memory NOT reported as changed or same as current.
+
+[2025-05-30 03:31:29.415]   PRINT Output: 9
+[2025-05-30 03:31:29.415]   State Updated (Normal Step): New IP=5, Stack=[9, 0, 1, 2, 9], OutputLog=['9'], Halted=False, Error=None
+[2025-05-30 03:31:29.415]   Instruction at UOR_addr 4 (before IP update to 5) was processed.
+[2025-05-30 03:31:29.415] --- VM STEP END ---

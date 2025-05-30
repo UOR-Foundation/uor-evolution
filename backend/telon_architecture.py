@@ -371,7 +371,7 @@ class TELON:
             'mutation_count': len(self.pending_mutations),
             'consciousness_level': self.consciousness_core.awareness_level,
             'ethical_maturity': len(self.ethical_framework.deliberation_history),
-            'layer_confidence': sum(s.confidence for s in self.layer_states.values()) / len(self.layer_states)
+            'layer_confidence': sum(getattr(s, 'confidence', 0.5) for s in self.layer_states.values()) / max(1, len(self.layer_states))
         }
         
         # Check for phase transition
