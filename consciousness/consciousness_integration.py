@@ -423,10 +423,24 @@ class ConsciousnessIntegrator:
     def _execute_bootstrap_stage(self):
         """Execute current bootstrap stage."""
         stage = self.emergence_orchestration.consciousness_bootstrapping.get_current_stage()
-        
+
         if stage == "initialize_components":
-            # Components already initialized in __init__
-            pass
+            # Lazily instantiate all core components if missing
+            if self.loop_detector is None:
+                self.loop_detector = StrangeLoopDetector(self.vm)
+            if self.loop_factory is None:
+                self.loop_factory = StrangeLoopFactory(self.vm)
+            if self.emergence_monitor is None:
+                self.emergence_monitor = EmergenceMonitor(self.vm)
+            if self.multi_level_awareness is None:
+                self.multi_level_awareness = MultiLevelAwareness(self.vm)
+            if self.recursive_self_model is None:
+                self.recursive_self_model = RecursiveSelfModel(self.vm)
+            if self.perspective_engine is None:
+                self.perspective_engine = PerspectiveEngine(self.vm)
+
+            # Register these components with the consciousness core
+            self._connect_components()
         elif stage == "detect_first_loops":
             self.loop_detector.monitor_real_time_emergence()
         elif stage == "establish_awareness":
