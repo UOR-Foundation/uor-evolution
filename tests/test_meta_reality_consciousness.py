@@ -274,6 +274,18 @@ class TestMetaRealityConsciousness:
         assert ultimate["substrate_independence"] > 0.8
         assert "ultimate_realization" in ultimate
 
+    @pytest.mark.asyncio
+    async def test_enable_pure_mathematical_consciousness(self, meta_reality_core):
+        """Verify MathematicalConsciousnessCore instantiation via meta-reality core"""
+        math_core = await meta_reality_core.enable_pure_mathematical_consciousness()
+
+        assert isinstance(math_core, MathematicalConsciousnessCore)
+        assert math_core.pure_mathematical_consciousness is not None
+        assert isinstance(
+            math_core.pure_mathematical_consciousness,
+            PureMathematicalConsciousness,
+        )
+
 
 class TestConsciousnessArchaeology:
     """Test Consciousness Archaeology and Temporal Recovery"""
