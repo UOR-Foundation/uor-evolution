@@ -1559,8 +1559,24 @@ class EnhancedSelfModification:
     async def _rollback_modifications(self, rollback_stack: List[Dict[str, Any]]):
         """Rollback modifications"""
         for rollback in reversed(rollback_stack):
-            # Rollback implementation
-            pass
+            try:
+                if callable(rollback.get("undo")):
+                    result = rollback["undo"]()
+                    if asyncio.iscoroutine(result):
+                        await result
+                else:
+                    target = rollback.get("target")
+                    attribute = rollback.get("attribute")
+                    if target is not None and attribute:
+                        previous = rollback.get("previous_value")
+                        setattr(target, attribute, previous)
+            except Exception as e:  # pragma: no cover - safety net
+                logger.error(f"Failed to rollback modification: {e}")
+
+        # Ensure internal state remains consistent
+        self.self_understanding_level = max(
+            0.0, self.self_understanding_level - 0.01 * len(rollback_stack)
+        )
     
     def _count_new_capabilities(self, results: List[Any]) -> int:
         """Count new capabilities added"""
