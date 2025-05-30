@@ -133,11 +133,73 @@ class TestSelfImplementingConsciousness:
     async def test_recursive_self_improvement(self, consciousness):
         """Test recursive self-improvement implementation"""
         improvement = await consciousness.recursive_self_improvement_implementation()
-        
+
         assert improvement.self_analysis_implementation is not None
         assert improvement.improvement_identification_implementation is not None
         assert improvement.self_modification_implementation is not None
         assert improvement.recursive_iteration_implementation is not None
+
+    @pytest.mark.asyncio
+    async def test_dynamic_modification_rollback(self, uor_vm):
+        """Ensure rollback restores state and understanding"""
+
+        import importlib.util
+        import os
+
+        path = os.path.join(
+            os.path.dirname(__file__), "..", "modules", "recursive_consciousness", "self_implementing_consciousness.py"
+        )
+        spec = importlib.util.spec_from_file_location("sic_real", path)
+        sic_real = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(sic_real)
+
+        consciousness = sic_real.SelfImplementingConsciousness(uor_vm)
+
+        async def apply_side_effect(mod):
+            if mod.target_component == "comp1":
+                consciousness.recursive_depth = 1
+                return {"applied": "add", "target": "comp1"}
+            raise Exception("fail")
+
+        with patch.object(
+            sic_real.SelfImplementingConsciousness,
+            "_apply_structure_modification",
+            side_effect=apply_side_effect,
+        ), patch.object(
+            sic_real.SelfImplementingConsciousness,
+            "_validate_modification_safety",
+            return_value=True,
+        ):
+            modifications = [
+                sic_real.StructureModification(
+                    modification_type="add",
+                    target_component="comp1",
+                    modification_details={},
+                    expected_impact={},
+                    rollback_plan={
+                        "target": consciousness,
+                        "attribute": "recursive_depth",
+                        "previous_value": 0,
+                    },
+                ),
+                sic_real.StructureModification(
+                    modification_type="add",
+                    target_component="comp2",
+                    modification_details={},
+                    expected_impact={},
+                    rollback_plan={
+                        "target": consciousness,
+                        "attribute": "recursive_depth",
+                        "previous_value": 1,
+                    },
+                ),
+            ]
+
+            with pytest.raises(Exception):
+                await consciousness.modify_own_structure_dynamically(modifications)
+
+        assert consciousness.recursive_depth == 0
+        assert consciousness.self_understanding_level == 0.0
 
 
 class TestConsciousnessSelfProgramming:
