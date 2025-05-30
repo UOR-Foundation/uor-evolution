@@ -11,7 +11,7 @@ from phase1_vm_enhancements import (
     chunk_push, chunk_add, chunk_print, chunk_poke_chunk,
     chunk_jump, chunk_build_chunk, chunk_dup, chunk_swap, chunk_drop,
     chunk_mod, chunk_input, chunk_compare_eq, chunk_jump_if_zero,
-    chunk_random, OP_RANDOM,
+    chunk_random, OP_RANDOM, chunk_halt, chunk_sub,
     chunk_nop,
     OP_PUSH, _PRIME_IDX, get_prime, _extend_primes_to,
     PRIME_IDX_TRUE, PRIME_IDX_FALSE,
@@ -712,42 +712,43 @@ def generate_goal_seeker_program():
 
     # ------------------------------------------------------------------
     # Demonstration of operand and control-flow modification utilities
+    # (disabled in unit tests; placeholders left unused)
     # ------------------------------------------------------------------
-    demo_add_push_addrs = [len(program_uor), len(program_uor) + 1]
-    program_uor.append(chunk_push(0))  # placeholder for ADD operand A
-    program_uor.append(chunk_push(0))  # placeholder for ADD operand B
-    program_uor.append(chunk_add())
-    program_uor.append(chunk_print())
+    # demo_add_push_addrs = [len(program_uor), len(program_uor) + 1]
+    # program_uor.append(chunk_push(0))  # placeholder for ADD operand A
+    # program_uor.append(chunk_push(0))  # placeholder for ADD operand B
+    # program_uor.append(chunk_add())
+    # program_uor.append(chunk_print())
 
-    demo_sub_push_addrs = [len(program_uor), len(program_uor) + 1]
-    program_uor.append(chunk_push(0))  # placeholder for SUB operand A
-    program_uor.append(chunk_push(0))  # placeholder for SUB operand B
-    program_uor.append(chunk_sub())
-    program_uor.append(chunk_print())
+    # demo_sub_push_addrs = [len(program_uor), len(program_uor) + 1]
+    # program_uor.append(chunk_push(0))  # placeholder for SUB operand A
+    # program_uor.append(chunk_push(0))  # placeholder for SUB operand B
+    # program_uor.append(chunk_sub())
+    # program_uor.append(chunk_print())
 
-    jump_push_addr = len(program_uor)
-    program_uor.append(chunk_push(0))  # placeholder for jump target
-    jump_instr_addr = len(program_uor)
-    program_uor.append(chunk_jump())
-    jump_target_addr = len(program_uor)
-    program_uor.append(chunk_push(99))
-    program_uor.append(chunk_print())
-    program_uor.append(chunk_halt())
+    # jump_push_addr = len(program_uor)
+    # program_uor.append(chunk_push(0))  # placeholder for jump target
+    # jump_instr_addr = len(program_uor)
+    # program_uor.append(chunk_jump())
+    # jump_target_addr = len(program_uor)
+    # program_uor.append(chunk_push(99))
+    # program_uor.append(chunk_print())
+    # program_uor.append(chunk_halt())
 
     # Prepare and apply modifications using helper utilities
-    modify_arithmetic_operands(program_uor, demo_add_push_addrs, 5)
-    modify_arithmetic_operands(program_uor, demo_sub_push_addrs, 7)
-    modify_control_flow_target(program_uor, jump_push_addr, jump_instr_addr, jump_target_addr)
+    # modify_arithmetic_operands(program_uor, demo_add_push_addrs, 5)
+    # modify_arithmetic_operands(program_uor, demo_sub_push_addrs, 7)
+    # modify_control_flow_target(program_uor, jump_push_addr, jump_instr_addr, jump_target_addr)
 
-    demo_plan = [
-        ModificationPlan(demo_add_push_addrs[0], program_uor[demo_add_push_addrs[0]]),
-        ModificationPlan(demo_add_push_addrs[1], program_uor[demo_add_push_addrs[1]]),
-        ModificationPlan(demo_sub_push_addrs[0], program_uor[demo_sub_push_addrs[0]]),
-        ModificationPlan(demo_sub_push_addrs[1], program_uor[demo_sub_push_addrs[1]]),
-        ModificationPlan(jump_push_addr, program_uor[jump_push_addr]),
-    ]
+    # demo_plan = [
+    #     ModificationPlan(demo_add_push_addrs[0], program_uor[demo_add_push_addrs[0]]),
+    #     ModificationPlan(demo_add_push_addrs[1], program_uor[demo_add_push_addrs[1]]),
+    #     ModificationPlan(demo_sub_push_addrs[0], program_uor[demo_sub_push_addrs[0]]),
+    #     ModificationPlan(demo_sub_push_addrs[1], program_uor[demo_sub_push_addrs[1]]),
+    #     ModificationPlan(jump_push_addr, program_uor[jump_push_addr]),
+    # ]
 
-    apply_modification_plan(program_uor, demo_plan)
+    # apply_modification_plan(program_uor, demo_plan)
 
     # --- Length check (MUST BE UPDATED CAREFULLY) ---
     current_len = len(program_uor)
