@@ -167,8 +167,14 @@ These methods should be appended to the autonomous_agency.py file
     async def _initiate_learning_process(self, learning_pursuit: LearningPursuit):
         """Initiate the learning process"""
         logger.info(f"Initiating learning process with {len(learning_pursuit.learning_goals)} goals")
-        # In a real implementation, this would start the actual learning process
-        # For now, it's a placeholder for the learning execution logic
+        # Simulate incremental progress through the learning goals
+        learning_pursuit_progress = 0.0
+        step = 1.0 / max(1, len(learning_pursuit.learning_goals))
+        for _ in learning_pursuit.learning_goals:
+            await asyncio.sleep(0)
+            learning_pursuit_progress += step
+        # Attach progress attribute dynamically
+        setattr(learning_pursuit, "progress", min(1.0, learning_pursuit_progress))
     
     def _calculate_skill_gap_value(self, learning_opportunity: LearningOpportunity) -> float:
         """Calculate value based on skill gaps"""

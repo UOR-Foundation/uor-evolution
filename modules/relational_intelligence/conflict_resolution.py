@@ -1363,8 +1363,19 @@ class ConflictResolutionEngine:
     
     def _update_strategy_effectiveness(self, strategy: str, success_rate: float) -> None:
         """Update effectiveness ratings based on outcomes"""
-        # Simple learning mechanism - could be enhanced
-        pass
+        # Convert string to ResolutionStrategy if possible
+        try:
+            strat_enum = ResolutionStrategy(strategy)
+        except ValueError:
+            return
+
+        for effectiveness_map in self.strategy_effectiveness.values():
+            if strat_enum in effectiveness_map:
+                current = effectiveness_map[strat_enum]
+                # Exponential moving average update
+                effectiveness_map[strat_enum] = (
+                    0.8 * current + 0.2 * success_rate
+                )
     
     def _extract_resolution_patterns(self, resolution: ConflictResolution,
                                    assessment: Dict[str, Any]) -> List[Dict[str, Any]]:

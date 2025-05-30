@@ -12,7 +12,11 @@ from enum import Enum
 import random
 
 from modules.natural_language.prime_semantics import PrimeSemantics, Concept, ConceptType
-from modules.analogical_reasoning.analogy_engine import AnalogicalReasoningEngine
+from modules.analogical_reasoning.analogy_engine import (
+    AnalogicalReasoningEngine,
+    Domain,
+    Element,
+)
 
 
 class VerbalizationStrategy(Enum):
@@ -691,12 +695,27 @@ class ConceptVerbalizer:
     def _find_analogous_domains(self, concept: AbstractConcept) -> List[str]:
         """Find domains analogous to concept"""
         domains = []
-        
+
         # Use analogical reasoner to find similar structures
         if self.analogical_reasoner:
-            # This would use the actual analogical reasoning engine
-            # For now, return heuristic domains
-            pass
+            try:
+                # Represent concept as a minimal domain for structural comparison
+                elements = {
+                    comp: Element(id=comp, type="feature", properties={})
+                    for comp in concept.semantic_components
+                }
+                concept_domain = Domain(
+                    name=concept.concept_id,
+                    elements=elements,
+                    relations={},
+                )
+                signature = self.analogical_reasoner._extract_structural_signature(
+                    concept_domain
+                )
+                similar = self.analogical_reasoner._find_similar_domains(signature)
+                domains.extend([d.name for d in similar])
+            except Exception:
+                pass
         
         # Heuristic selection
         if concept.concept_type == ConceptType.RELATIONAL:

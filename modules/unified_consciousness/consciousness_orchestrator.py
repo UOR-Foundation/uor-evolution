@@ -894,9 +894,24 @@ class ConsciousnessOrchestrator:
     
     def _calculate_compatibility(self, subsystem_a: Any, subsystem_b: Any) -> float:
         """Calculate compatibility between two subsystems"""
-        # This would implement sophisticated compatibility analysis
-        # For now, return a placeholder value
-        return 0.85
+        # Basic compatibility heuristic based on shared attributes
+        try:
+            attrs_a = set(dir(subsystem_a))
+            attrs_b = set(dir(subsystem_b))
+            if not attrs_a or not attrs_b:
+                return 0.0
+            overlap = len(attrs_a & attrs_b)
+            union = len(attrs_a | attrs_b)
+            score = overlap / union
+
+            if hasattr(subsystem_a, "compatible_with"):
+                score = (score + float(subsystem_a.compatible_with(subsystem_b))) / 2
+            if hasattr(subsystem_b, "compatible_with"):
+                score = (score + float(subsystem_b.compatible_with(subsystem_a))) / 2
+
+            return min(1.0, score)
+        except Exception:
+            return 0.0
     
     async def _coordinate_subsystem_pair(
         self,
