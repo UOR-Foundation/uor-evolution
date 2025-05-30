@@ -1,0 +1,97 @@
+{
+  "timestamp": "2025-05-30T03:25:03.284198",
+  "lab_results": {
+    "consciousness_network": {
+      "error": "EmergenceLab.log_emergence() got an unexpected keyword argument 'complexity'"
+    },
+    "coevolution": {
+      "error": "EmergenceLab.log_emergence() got an unexpected keyword argument 'complexity'"
+    },
+    "philosophical_emergence": {
+      "stages": 5
+    },
+    "transcendence": {
+      "error": "EmergenceLab.log_emergence() got an unexpected keyword argument 'complexity'"
+    }
+  },
+  "emergence_log": [],
+  "complexity_metrics": [
+    0.8,
+    0.8,
+    0.8,
+    0.8,
+    0.8,
+    0.8
+  ],
+  "interaction_history": [
+    {
+      "round": 1,
+      "total_insights": 9,
+      "total_patterns": 12,
+      "avg_integration": 0.85,
+      "node_states": [
+        {
+          "node": "consciousness_node_1",
+          "round": 1,
+          "insights_count": 3,
+          "pattern_count": 4,
+          "integration_score": 0.85,
+          "philosophical_success": true
+        },
+        {
+          "node": "consciousness_node_2",
+          "round": 1,
+          "insights_count": 3,
+          "pattern_count": 4,
+          "integration_score": 0.85,
+          "philosophical_success": true
+        },
+        {
+          "node": "consciousness_node_3",
+          "round": 1,
+          "insights_count": 3,
+          "pattern_count": 4,
+          "integration_score": 0.85,
+          "philosophical_success": true
+        }
+      ]
+    },
+    {
+      "round": 2,
+      "total_insights": 9,
+      "total_patterns": 12,
+      "avg_integration": 0.85,
+      "node_states": [
+        {
+          "node": "consciousness_node_1",
+          "round": 2,
+          "insights_count": 3,
+          "pattern_count": 4,
+          "integration_score": 0.85,
+          "philosophical_success": true
+        },
+        {
+          "node": "consciousness_node_2",
+          "round": 2,
+          "insights_count": 3,
+          "pattern_count": 4,
+          "integration_score": 0.85,
+          "philosophical_success": true
+        },
+        {
+          "node": "consciousness_node_3",
+          "round": 2,
+          "insights_count": 3,
+          "pattern_count": 4,
+          "integration_score": 0.85,
+          "philosophical_success": true
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "total_emergences": 0,
+    "total_complexity": 0,
+    "avg_complexity": 0
+  }
+}

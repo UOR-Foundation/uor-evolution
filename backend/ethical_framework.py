@@ -679,3 +679,46 @@ class EthicalFramework:
                 for d in self.deliberation_history[-3:]
             ] if self.deliberation_history else []
         }
+    
+    def define_error_bounds(self) -> Dict[str, Any]:
+        """
+        Define and validate ethical error bounds according to G00038
+        This method is called during consciousness bootstrap to establish
+        the ethical framework's operational parameters.
+        """
+        # Validate existing error bounds configuration
+        zones_valid = all(
+            isinstance(bounds, tuple) and len(bounds) == 2 and bounds[0] < bounds[1]
+            for bounds in self.error_bounds['zones'].values()
+        )
+        
+        thresholds_valid = (
+            'epistemic_uncertainty_weight' in self.error_bounds['thresholds'] and
+            'consequence_magnitude_weight' in self.error_bounds['thresholds'] and
+            'ethical_divergence_weight' in self.error_bounds['thresholds'] and
+            abs(sum(self.error_bounds['thresholds'].values()) - 1.0) < 0.01  # Should sum to 1.0
+        )
+        
+        if not zones_valid or not thresholds_valid:
+            # Reset to default values if invalid
+            self.error_bounds = {
+                'zones': {
+                    EthicalZone.SAFE: (0.0, 0.2),
+                    EthicalZone.CAUTIONARY: (0.2, 0.5),
+                    EthicalZone.CRITICAL: (0.5, 1.0)
+                },
+                'thresholds': {
+                    'epistemic_uncertainty_weight': 0.33,
+                    'consequence_magnitude_weight': 0.33,
+                    'ethical_divergence_weight': 0.34
+                }
+            }
+        
+        # Return configuration status
+        return {
+            'success': True,
+            'zones_configured': len(self.error_bounds['zones']),
+            'thresholds_configured': len(self.error_bounds['thresholds']),
+            'zones': {zone.value: bounds for zone, bounds in self.error_bounds['zones'].items()},
+            'weights': self.error_bounds['thresholds'].copy()
+        }
