@@ -11,6 +11,7 @@ from datetime import datetime
 from enum import IntEnum
 import math
 from collections import deque
+from .memory_system import PatternCache
 
 
 class ConsciousnessLevel(IntEnum):
@@ -248,6 +249,25 @@ class SelfAwarenessTracker:
                 "timestamp": datetime.now(),
             }
         )
+
+    def _handle_feedback_event(
+        self,
+        predicted: Any,
+        actual: Any,
+        pattern_cache: Optional["PatternCache"] = None,
+    ) -> None:
+        """Compare predictions with outcomes and update metrics."""
+        self.record_prediction_feedback(predicted, actual)
+        accuracy = 1.0 if predicted == actual else 0.0
+        if pattern_cache is not None:
+            pattern_cache.store_pattern(
+                "prediction",
+                {
+                    "predicted": predicted,
+                    "actual": actual,
+                    "accuracy": accuracy,
+                },
+            )
 
     def update_prediction_accuracy(self, predicted: Any, actual: Any) -> None:
         """Update prediction accuracy based on predicted vs actual outcomes."""
@@ -507,7 +527,7 @@ class ConsciousnessLayer:
                 predicted = data.get("predicted")
                 actual = data.get("actual")
 
-            self.awareness_tracker.record_prediction_feedback(predicted, actual)
+            self.awareness_tracker._handle_feedback_event(predicted, actual)
 
             # Update meta-state metrics based on new accuracy
             accuracy = 1.0 if predicted == actual else 0.0
