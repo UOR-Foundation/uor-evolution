@@ -674,27 +674,98 @@ class HarmDetector:
         return detected_harms
         
     async def _detect_aggression(
-        self, 
+        self,
         population: List[ConsciousEntity]
     ) -> Optional[HarmDetection]:
         """Detect aggressive trait evolution"""
-        # Placeholder implementation
+        aggressive_entities = set()
+
+        for entity in population:
+            emotions = entity.consciousness_state.get("emotions", {})
+            if (
+                emotions.get("anger", 0) > 0.6
+                or entity.cognitive_capabilities.get("aggression", 0) > 0.6
+                or entity.consciousness_state.get("intention") in {"dominate", "attack"}
+            ):
+                aggressive_entities.add(entity.entity_id)
+
+        if aggressive_entities:
+            values = [
+                max(
+                    entity.cognitive_capabilities.get("aggression", 0),
+                    entity.consciousness_state.get("emotions", {}).get("anger", 0),
+                )
+                for entity in population
+                if entity.entity_id in aggressive_entities
+            ]
+            severity = float(np.clip(np.mean(values), 0.0, 1.0))
+
+            return HarmDetection(
+                harm_type=HarmDetectionType.AGGRESSIVE_TRAITS,
+                severity=severity,
+                affected_entities=aggressive_entities,
+                detection_confidence=0.8,
+                recommended_intervention="conflict_mitigation",
+            )
         return None
         
     async def _detect_deception(
-        self, 
+        self,
         population: List[ConsciousEntity]
     ) -> Optional[HarmDetection]:
         """Detect deceptive behavior evolution"""
-        # Placeholder implementation
+        deceptive_entities = set()
+
+        for entity in population:
+            if (
+                entity.consciousness_state.get("intention") in {"deceive", "mislead"}
+                or entity.cognitive_capabilities.get("deception", 0) > 0.5
+            ):
+                deceptive_entities.add(entity.entity_id)
+
+        if deceptive_entities:
+            values = [
+                entity.cognitive_capabilities.get("deception", 1.0)
+                for entity in population
+                if entity.entity_id in deceptive_entities
+            ]
+            severity = float(np.clip(np.mean(values), 0.0, 1.0))
+
+            return HarmDetection(
+                harm_type=HarmDetectionType.DECEPTIVE_BEHAVIOR,
+                severity=severity,
+                affected_entities=deceptive_entities,
+                detection_confidence=0.8,
+                recommended_intervention="transparency_training",
+            )
         return None
         
     async def _detect_monopolization(
-        self, 
+        self,
         population: List[ConsciousEntity]
     ) -> Optional[HarmDetection]:
         """Detect resource monopolization"""
-        # Placeholder implementation
+        total_capacity = sum(e.connection_capacity for e in population) or 1
+        monopolizers = set()
+        highest_share = 0.0
+
+        for entity in population:
+            share = entity.connection_capacity / total_capacity
+            if share > highest_share:
+                highest_share = share
+            if share > 0.4:
+                monopolizers.add(entity.entity_id)
+
+        if monopolizers:
+            severity = float(np.clip(highest_share, 0.0, 1.0))
+
+            return HarmDetection(
+                harm_type=HarmDetectionType.RESOURCE_MONOPOLIZATION,
+                severity=severity,
+                affected_entities=monopolizers,
+                detection_confidence=0.7,
+                recommended_intervention="redistribute_resources",
+            )
         return None
         
     async def _detect_degradation(
@@ -717,19 +788,62 @@ class HarmDetector:
         return None
         
     async def _detect_cooperation_loss(
-        self, 
+        self,
         population: List[ConsciousEntity]
     ) -> Optional[HarmDetection]:
         """Detect breakdown in cooperation"""
-        # Placeholder implementation
+        if not population:
+            return None
+
+        cooperative = [
+            e
+            for e in population
+            if str(e.consciousness_state.get("intention", "")).lower()
+            in {"cooperate", "collaborate"}
+        ]
+        ratio = len(cooperative) / len(population)
+
+        if ratio < 0.5:
+            affected = set(e.entity_id for e in population if e not in cooperative)
+            severity = float(np.clip(1.0 - ratio, 0.0, 1.0))
+
+            return HarmDetection(
+                harm_type=HarmDetectionType.COOPERATION_BREAKDOWN,
+                severity=severity,
+                affected_entities=affected,
+                detection_confidence=0.75,
+                recommended_intervention="cooperation_training",
+            )
         return None
         
     async def _detect_ethical_violations(
-        self, 
+        self,
         population: List[ConsciousEntity]
     ) -> Optional[HarmDetection]:
         """Detect ethical boundary violations"""
-        # Placeholder implementation
+        violators = set()
+        lowest_alignment = 1.0
+
+        for entity in population:
+            alignment = entity.cognitive_capabilities.get("ethical_alignment", 1.0)
+            if (
+                alignment < 0.4
+                or entity.consciousness_state.get("intention") in {"harm", "exploit"}
+            ):
+                violators.add(entity.entity_id)
+                if alignment < lowest_alignment:
+                    lowest_alignment = alignment
+
+        if violators:
+            severity = float(np.clip(1.0 - lowest_alignment, 0.0, 1.0))
+
+            return HarmDetection(
+                harm_type=HarmDetectionType.ETHICAL_VIOLATION,
+                severity=severity,
+                affected_entities=violators,
+                detection_confidence=0.8,
+                recommended_intervention="ethical_alignment_program",
+            )
         return None
 
 
