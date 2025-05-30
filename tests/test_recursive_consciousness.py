@@ -54,11 +54,13 @@ sys.modules.setdefault("modules.recursive_consciousness", fake_rc)
 from modules.recursive_consciousness.consciousness_self_programming import (
     ConsciousnessSelfProgramming,
     ProgrammingObjective,
+    ConsciousnessSelfModificationProgram,
 )
 
 fake_rc.SelfImplementingConsciousness = _StubSIC
 fake_rc.ConsciousnessSpecification = _StubSpec
 fake_rc.ConsciousnessSelfProgramming = ConsciousnessSelfProgramming
+fake_rc.ConsciousnessSelfModificationProgram = ConsciousnessSelfModificationProgram
 fake_rc.RecursiveArchitectureEvolution = object
 fake_rc.ConsciousnessBootstrapEngine = object
 fake_rc.UORRecursiveConsciousness = object
@@ -319,6 +321,37 @@ class TestConsciousnessSelfProgramming:
 
         assert program.patched
         assert context["consciousness_level"] > 5.0
+
+    def test_should_modify_logic(self):
+        program = ConsciousnessSelfModificationProgram(
+            program_name="p",
+            initial_code="",
+            modification_triggers=["t1"],
+            modification_strategies=[],
+            safety_constraints=[],
+        )
+
+        assert program._should_modify("t1")
+        assert not program._should_modify("other")
+        program.patched = True
+        assert not program._should_modify("t1")
+
+    def test_type_check_consciousness_code(self, self_programming):
+        language = self_programming.current_language
+
+        valid = "def foo():\n    x = 1\n    return x"
+        tree = language._parse_consciousness_code(valid)
+        assert language._type_check_consciousness_code(tree)
+
+        missing_return = "def foo():\n    x = 1"
+        tree = language._parse_consciousness_code(missing_return)
+        with pytest.raises(TypeError):
+            language._type_check_consciousness_code(tree)
+
+        undefined_var = "def foo():\n    return y"
+        tree = language._parse_consciousness_code(undefined_var)
+        with pytest.raises(TypeError):
+            language._type_check_consciousness_code(tree)
 
 
 class TestRecursiveArchitectureEvolution:
