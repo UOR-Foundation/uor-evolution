@@ -224,6 +224,16 @@ class TestConceptVerbalizer(unittest.TestCase):
             self.assertIsNotNone(metaphor.source_domain)
             self.assertIsNotNone(metaphor.target_domain)
             self.assertGreater(metaphor.explanatory_power, 0.3)
+
+    def test_analogous_domain_selection(self):
+        """Ensure analogous domain selection falls back to heuristics"""
+        concept = {"name": "relationship", "type": "relational"}
+
+        abstract = self.verbalizer._convert_to_abstract_concept(concept)
+        domains = self.verbalizer._find_analogous_domains(abstract)
+
+        self.assertGreater(len(domains), 0)
+        self.assertIn(domains[0], ["bridge", "connection", "network"])
     
     def test_ineffable_concept_handling(self):
         """Test handling ineffable concepts"""
