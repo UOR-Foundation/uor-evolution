@@ -144,7 +144,7 @@ class ConflictResolutionEngine:
         self.fairness_importance = 0.8
         self.relationship_preservation_weight = 0.6
         self.creative_solution_preference = 0.7
-        
+
         # Strategy effectiveness based on conflict type
         self.strategy_effectiveness = {
             ConflictType.VALUE_BASED: {
@@ -166,6 +166,9 @@ class ConflictResolutionEngine:
                 ResolutionStrategy.COMPETITION: 0.5
             }
         }
+
+        # Track historical average success rates for strategies
+        self.strategy_history: Dict[ResolutionStrategy, Dict[str, float]] = {}
     
     def analyze_conflict(self, conflict_data: Dict[str, Any]) -> ConflictContext:
         """Analyze and contextualize a conflict"""
@@ -620,6 +623,11 @@ class ConflictResolutionEngine:
                     adjusted_effectiveness *= 0.9
                 elif strategy == ResolutionStrategy.ACCOMMODATION:
                     adjusted_effectiveness *= 1.1
+
+            # Incorporate historical averages
+            hist = self.strategy_history.get(strategy)
+            if hist and hist["count"] > 0:
+                adjusted_effectiveness = adjusted_effectiveness * 0.7 + hist["avg"] * 0.3
             
             if adjusted_effectiveness > 0.5:
                 suitable_strategies.append(strategy)
@@ -1363,8 +1371,26 @@ class ConflictResolutionEngine:
     
     def _update_strategy_effectiveness(self, strategy: str, success_rate: float) -> None:
         """Update effectiveness ratings based on outcomes"""
-        # Simple learning mechanism - could be enhanced
-        pass
+        # Convert string to ResolutionStrategy if possible
+        try:
+            strategy_enum = ResolutionStrategy(strategy)
+        except ValueError:
+            return
+
+        # Update historical averages
+        hist = self.strategy_history.setdefault(
+            strategy_enum, {"avg": 0.0, "count": 0}
+        )
+        hist["avg"] = (
+            hist["avg"] * hist["count"] + success_rate
+        ) / (hist["count"] + 1)
+        hist["count"] += 1
+
+        # Blend new average into effectiveness mapping
+        for mapping in self.strategy_effectiveness.values():
+            if strategy_enum in mapping:
+                base = mapping[strategy_enum]
+                mapping[strategy_enum] = base * 0.7 + hist["avg"] * 0.3
     
     def _extract_resolution_patterns(self, resolution: ConflictResolution,
                                    assessment: Dict[str, Any]) -> List[Dict[str, Any]]:
