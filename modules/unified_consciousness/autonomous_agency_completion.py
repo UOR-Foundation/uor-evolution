@@ -166,9 +166,39 @@ These methods should be appended to the autonomous_agency.py file
     
     async def _initiate_learning_process(self, learning_pursuit: LearningPursuit):
         """Initiate the learning process"""
-        logger.info(f"Initiating learning process with {len(learning_pursuit.learning_goals)} goals")
-        # In a real implementation, this would start the actual learning process
-        # For now, it's a placeholder for the learning execution logic
+        logger.info(
+            f"Initiating learning process with {len(learning_pursuit.learning_goals)} goals"
+        )
+
+        # Track progress for each metric
+        progress = {m: 0.0 for m in learning_pursuit.progress_metrics}
+
+        # Copy resource allocation so we can adjust as strategies run
+        resources = dict(learning_pursuit.resource_allocation)
+        strategies = learning_pursuit.learning_strategies or []
+
+        async def run_strategy(strategy: str):
+            """Execute a single learning strategy"""
+            if not strategies:
+                return
+
+            # Allocate a portion of resources to this strategy
+            allocation = {k: resources[k] / len(strategies) for k in resources}
+            for key in resources:
+                resources[key] -= allocation[key]
+
+            # Simulate asynchronous execution
+            await asyncio.sleep(0)
+
+            # Update progress metrics based on execution
+            for metric in progress:
+                progress[metric] = min(1.0, progress[metric] + 1.0 / len(strategies))
+
+        # Execute all strategies concurrently
+        await asyncio.gather(*(run_strategy(s) for s in strategies))
+
+        # Attach progress to the pursuit for external inspection
+        setattr(learning_pursuit, "progress", progress)
     
     def _calculate_skill_gap_value(self, learning_opportunity: LearningOpportunity) -> float:
         """Calculate value based on skill gaps"""

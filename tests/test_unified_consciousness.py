@@ -190,10 +190,13 @@ class TestAutonomousAgency:
     async def test_self_directed_learning(self, agency):
         """Test self-directed learning pursuit"""
         pursuits = await agency.pursue_self_directed_learning()
-        
+
         assert len(pursuits) > 0
         assert all(p.learning_goals for p in pursuits)
         assert all(p.expected_outcomes for p in pursuits)
+        # Ensure progress metrics were updated during the learning loop
+        assert all(hasattr(p, "progress") for p in pursuits)
+        assert all(all(v >= 0 for v in p.progress.values()) for p in pursuits)
 
 
 class TestUnifiedAwareness:
