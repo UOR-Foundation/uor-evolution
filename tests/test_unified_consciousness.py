@@ -115,10 +115,44 @@ class TestConsciousnessOrchestrator:
     async def test_evolution_facilitation(self, orchestrator):
         """Test consciousness evolution facilitation"""
         result = await orchestrator.facilitate_consciousness_evolution()
-        
+
         assert 'readiness_score' in result
         assert 'evolution_initiated' in result
         assert 'monitoring_active' in result
+
+    def test_subsystem_compatibility(self, orchestrator):
+        """Compatibility calculation between subsystems"""
+        class Dummy:
+            def __init__(self, c, s):
+                self.coherence_level = c
+                self.stability_score = s
+
+        a = Dummy(0.8, 0.9)
+        b = Dummy(0.7, 0.85)
+
+        compatibility = orchestrator._calculate_compatibility(a, b)
+        assert pytest.approx(0.9, rel=1e-2) == compatibility
+
+    @pytest.mark.asyncio
+    async def test_coordination_metrics(self, orchestrator):
+        """Test coordination quality and metric calculations"""
+        class Dummy:
+            def __init__(self, c, s):
+                self.coherence_level = c
+                self.stability_score = s
+
+        a = Dummy(0.8, 0.9)
+        b = Dummy(0.7, 0.85)
+
+        compatibility = orchestrator._calculate_compatibility(a, b)
+        coordination = await orchestrator._coordinate_subsystem_pair(a, b, compatibility)
+        assert coordination['quality'] > 0.8
+
+        stability = orchestrator._calculate_stability([a, b])
+        assert stability == pytest.approx(0.875)
+
+        coherence = orchestrator._calculate_overall_coherence([a, b])
+        assert coherence == pytest.approx(0.75)
 
 
 class TestAutonomousAgency:
