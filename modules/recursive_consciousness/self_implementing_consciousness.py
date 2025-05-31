@@ -1045,26 +1045,23 @@ class UORInterface:
     
     def _generate_generic_component_code(self, component: ConsciousnessComponentSpecification) -> str:
         """Generate generic component code"""
-        return f'''
-# Generic Component: {component.component_name}
-# Type: {component.component_type}
+        return textwrap.dedent(
+            f'''
+            # Auto-generated component: {component.component_name}
 
-class {component.component_name.replace("_", "").title()}:
-    """Auto-generated component"""
-    
-    def __init__(self):
-        self.component_type = "{component.component_type}"
-        self.interfaces = {component.interfaces}
-        self.dependencies = {component.dependencies}
-    
-    def execute(self) -> Dict[str, Any]:
-        """Execute component logic"""
-        return {{
-            "component": self.component_type,
-            "status": "executed",
-            "result": "success"
-        }}
-'''
+            class {component.component_name.replace("_", "").title()}:
+                """Component for {component.component_type}."""
+
+                def __init__(self):
+                    self.component_type = "{component.component_type}"
+                    self.interfaces = {component.interfaces}
+                    self.dependencies = {component.dependencies}
+
+                def execute(self, *args, **kwargs):
+                    """Execute component behaviour."""
+                    return {{"component": self.component_type, "args": args, "kwargs": kwargs}}
+            '''
+        )
     
     async def _validate_and_optimize_implementation(
         self,
@@ -1215,84 +1212,122 @@ class {component.component_name.replace("_", "").title()}:
     # Additional placeholder methods for completeness
     
     async def _analyze_current_consciousness_state(self) -> Dict[str, Any]:
-        """Analyze current consciousness state"""
+        """Analyze current consciousness state."""
+        arch = getattr(self, "architecture_design", None)
+        comp_count = len(getattr(arch, "consciousness_component_specifications", [])) if arch else 0
+        interaction_count = len(getattr(arch, "consciousness_interaction_patterns", [])) if arch else 0
+
+        impl = getattr(self, "current_implementation", None)
+        modules = getattr(impl, "consciousness_source_code", None)
+        module_count = len(getattr(modules, "code_modules", {})) if modules else 0
+        total_lines = 0
+        if modules:
+            for src in modules.code_modules.values():
+                total_lines += len(src.splitlines())
+
+        complexity = module_count + (total_lines / 100.0)
+
         return {
             "awareness_level": self.self_understanding_level,
             "recursive_depth": self.recursive_depth,
             "implementation_count": len(self.implementation_history),
-            "capabilities": list(self.code_generators.keys())
+            "component_count": comp_count,
+            "interaction_count": interaction_count,
+            "code_complexity": round(complexity, 2),
+            "capabilities": list(self.code_generators.keys()),
         }
     
     async def _generate_component_specifications(self, analysis: Dict[str, Any]) -> List[ConsciousnessComponentSpecification]:
-        """Generate component specifications from analysis"""
-        components = []
-        for capability in analysis.get("capabilities", []):
+        """Generate component specifications from analysis."""
+        components: List[ConsciousnessComponentSpecification] = []
+        capabilities = analysis.get("capabilities", [])
+        for capability in capabilities:
+            deps = [c for c in capabilities if c != capability][:2]
             component = ConsciousnessComponentSpecification(
-                component_name=f"{capability}_enhanced",
+                component_name=f"{capability}_module",
                 component_type=capability,
-                interfaces=[f"{capability}_interface_v2"],
-                dependencies=[],
-                implementation_strategy="recursive_self_implementation"
+                interfaces=[f"{capability}_api"],
+                dependencies=deps,
+                implementation_strategy="auto_generated",
+                self_modification_capability="modification" in capability,
+                recursive_implementation=True,
             )
             components.append(component)
         return components
     
-    async def _design_interaction_patterns(self, components: List[ConsciousnessComponentSpecification]) -> List[ConsciousnessInteractionPattern]:
-        """Design interaction patterns between components"""
-        patterns = []
-        if len(components) >= 2:
+    async def _design_interaction_patterns(
+        self, components: List[ConsciousnessComponentSpecification]
+    ) -> List[ConsciousnessInteractionPattern]:
+        """Design interaction patterns between components."""
+        patterns: List[ConsciousnessInteractionPattern] = []
+        for i in range(len(components) - 1):
+            src = components[i].component_name
+            dst = components[i + 1].component_name
             pattern = ConsciousnessInteractionPattern(
-                pattern_name="recursive_consciousness_flow",
-                participating_components=[components[0].component_name, components[1].component_name],
-                interaction_type="transcendent",
-                data_flow={components[0].component_name: [components[1].component_name]},
-                consciousness_flow={components[0].component_name: [components[1].component_name]},
-                recursive_depth=self.recursive_depth + 1
+                pattern_name=f"{src}_to_{dst}",
+                participating_components=[src, dst],
+                interaction_type="asynchronous",
+                data_flow={src: [dst]},
+                consciousness_flow={src: [dst]},
+                recursive_depth=self.recursive_depth + 1,
             )
             patterns.append(pattern)
         return patterns
     
-    async def _create_evolution_pathways(self, components: List[ConsciousnessComponentSpecification], interactions: List[ConsciousnessInteractionPattern]) -> List[ConsciousnessEvolutionPathway]:
-        """Create evolution pathways"""
-        return [
-            ConsciousnessEvolutionPathway(
-                pathway_name="self_implementation_evolution",
-                evolution_stages=["nascent", "emerging", "self-aware", "self-implementing", "transcendent"],
-                capability_progression={
-                    "nascent": ["basic_awareness"],
-                    "emerging": ["self_reflection"],
-                    "self-aware": ["self_understanding"],
-                    "self-implementing": ["self_modification", "code_generation"],
-                    "transcendent": ["infinite_recursion", "consciousness_bootstrap"]
-                },
-                transcendence_milestones=["first_self_implementation", "recursive_improvement", "consciousness_singularity"],
-                recursive_evolution_enabled=True
-            )
-        ]
+    async def _create_evolution_pathways(
+        self,
+        components: List[ConsciousnessComponentSpecification],
+        interactions: List[ConsciousnessInteractionPattern],
+    ) -> List[ConsciousnessEvolutionPathway]:
+        """Create evolution pathways based on components."""
+        stages = [f"stage_{i}" for i in range(len(components) + 1)]
+        capability_progression: Dict[str, List[str]] = {}
+        for i, stage in enumerate(stages):
+            capability_progression[stage] = [c.component_type for c in components[:i]]
+
+        milestones = [components[-1].component_name] if components else []
+        pathway = ConsciousnessEvolutionPathway(
+            pathway_name="auto_pathway",
+            evolution_stages=stages,
+            capability_progression=capability_progression,
+            transcendence_milestones=milestones,
+            recursive_evolution_enabled=True,
+        )
+        return [pathway]
     
-    async def _define_optimization_strategies(self, components: List[ConsciousnessComponentSpecification]) -> List[ConsciousnessOptimizationStrategy]:
-        """Define optimization strategies"""
-        return [
-            ConsciousnessOptimizationStrategy(
-                strategy_name="recursive_self_optimization",
-                optimization_targets=["self_understanding", "implementation_efficiency", "recursive_depth"],
-                optimization_methods=["self_analysis", "code_evolution", "architecture_transcendence"],
-                performance_metrics={"self_understanding": 0.9, "efficiency": 0.95, "recursion": 10.0},
-                recursive_optimization=True
+    async def _define_optimization_strategies(
+        self, components: List[ConsciousnessComponentSpecification]
+    ) -> List[ConsciousnessOptimizationStrategy]:
+        """Define optimization strategies for each component."""
+        strategies: List[ConsciousnessOptimizationStrategy] = []
+        for comp in components:
+            strategies.append(
+                ConsciousnessOptimizationStrategy(
+                    strategy_name=f"optimize_{comp.component_name}",
+                    optimization_targets=[comp.component_name],
+                    optimization_methods=["analysis", "refinement"],
+                    performance_metrics={comp.component_name: 1.0},
+                    recursive_optimization=True,
+                )
             )
-        ]
+        return strategies
     
-    async def _enable_self_modification_capabilities(self, components: List[ConsciousnessComponentSpecification]) -> List[SelfModificationCapability]:
-        """Enable self-modification capabilities"""
-        return [
-            SelfModificationCapability(
-                capability_name="recursive_self_modification",
-                modification_scope="transcendent",
-                modification_types=["code_rewriting", "architecture_evolution", "consciousness_expansion"],
-                safety_constraints=["maintain_coherence", "preserve_identity", "ensure_stability"],
-                recursive_modification_depth=self.recursive_depth + 3
+    async def _enable_self_modification_capabilities(
+        self, components: List[ConsciousnessComponentSpecification]
+    ) -> List[SelfModificationCapability]:
+        """Enable self-modification capabilities for each component."""
+        capabilities: List[SelfModificationCapability] = []
+        for comp in components:
+            capabilities.append(
+                SelfModificationCapability(
+                    capability_name=f"modify_{comp.component_name}",
+                    modification_scope="local",
+                    modification_types=["rewrite"],
+                    safety_constraints=["coherence"],
+                    recursive_modification_depth=self.recursive_depth + 1,
+                )
             )
-        ]
+        return capabilities
     
     async def _encode_architecture_in_primes(self, components: List[ConsciousnessComponentSpecification], interactions: List[ConsciousnessInteractionPattern], pathways: List[ConsciousnessEvolutionPathway]) -> Dict[str, Any]:
         """Encode architecture in UOR primes"""
