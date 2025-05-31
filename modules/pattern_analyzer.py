@@ -25,13 +25,15 @@ class ExecutionPattern:
     success_rate: float
     contexts: List[str]
     prime_signature: int
+    occurrence_indices: List[int] = field(default_factory=list)
     first_seen: float = field(default_factory=time.time)
     last_seen: float = field(default_factory=time.time)
-    
-    def update_occurrence(self):
+
+    def update_occurrence(self, index: int):
         """Update pattern occurrence timestamp"""
         self.last_seen = time.time()
         self.frequency += 1
+        self.occurrence_indices.append(index)
 
 
 @dataclass
@@ -123,6 +125,9 @@ class PatternAnalyzer:
         
         # Prime number analysis
         self.prime_patterns: Dict[int, List[str]] = defaultdict(list)
+
+        # Window size for pattern co-occurrence in indices
+        self.cooccurrence_window = 5
         
     def analyze_execution_patterns(self, trace_length: int = 1000) -> List[ExecutionPattern]:
         """Analyze patterns in execution traces"""
@@ -135,14 +140,15 @@ class PatternAnalyzer:
         # Find all possible patterns
         new_patterns = []
         
-        for length in range(self.min_pattern_length, 
+        for length in range(self.min_pattern_length,
                           min(self.max_pattern_length, len(trace) // 2)):
             patterns = self._find_patterns_of_length(trace, length)
-            
-            for pattern_seq, occurrences in patterns.items():
+
+            for pattern_seq, indices in patterns.items():
+                occurrences = len(indices)
                 if occurrences >= self.min_frequency_threshold:
                     pattern_id = self._generate_pattern_id(pattern_seq)
-                    
+
                     if pattern_id not in self.execution_patterns:
                         # New pattern discovered
                         pattern = ExecutionPattern(
@@ -153,16 +159,20 @@ class PatternAnalyzer:
                             contexts=self._extract_pattern_contexts(trace, pattern_seq),
                             prime_signature=self._calculate_prime_signature(pattern_seq)
                         )
-                        
+                        pattern.occurrence_indices.extend(indices)
+
                         self.execution_patterns[pattern_id] = pattern
                         new_patterns.append(pattern)
-                        
+
                         # Track prime patterns
                         self.prime_patterns[pattern.prime_signature].append(pattern_id)
                     else:
                         # Update existing pattern
-                        self.execution_patterns[pattern_id].update_occurrence()
-                        
+                        existing = self.execution_patterns[pattern_id]
+                        for idx in indices:
+                            if idx not in existing.occurrence_indices:
+                                existing.update_occurrence(idx)
+
         return new_patterns
         
     def detect_behavioral_patterns(self) -> List[BehavioralPattern]:
@@ -294,14 +304,14 @@ class PatternAnalyzer:
         
     # Helper methods
     
-    def _find_patterns_of_length(self, trace: List[str], length: int) -> Dict[Tuple[str, ...], int]:
-        """Find all patterns of a specific length in trace"""
-        patterns = defaultdict(int)
-        
+    def _find_patterns_of_length(self, trace: List[str], length: int) -> Dict[Tuple[str, ...], List[int]]:
+        """Find all patterns of a specific length in trace and record indices"""
+        patterns: Dict[Tuple[str, ...], List[int]] = defaultdict(list)
+
         for i in range(len(trace) - length + 1):
             pattern = tuple(trace[i:i+length])
-            patterns[pattern] += 1
-            
+            patterns[pattern].append(i)
+
         return patterns
         
     def _generate_pattern_id(self, pattern_seq: Tuple[str, ...]) -> str:
@@ -565,26 +575,53 @@ class PatternAnalyzer:
         return combinations
         
     def _patterns_occur_together(self, pattern_ids: Tuple[str, ...]) -> bool:
-        """Check if patterns occur together in execution"""
-        # Simplified check - would need temporal analysis
-        return len(pattern_ids) > 1  # Placeholder
-        
+        """Check if patterns appear within the configured window"""
+        if len(pattern_ids) < 2:
+            return False
+
+        window = self.cooccurrence_window
+        occurrence_lists = []
+        for pid in pattern_ids:
+            pattern = self.execution_patterns.get(pid)
+            if not pattern or not pattern.occurrence_indices:
+                return False
+            occurrence_lists.append(pattern.occurrence_indices)
+
+        # Check if there exists a set of occurrences within the window
+        for idx in occurrence_lists[0]:
+            if all(any(abs(idx - o) <= window for o in others)
+                   for others in occurrence_lists[1:]):
+                return True
+
+        return False
+
     def _calculate_synergy(self, pattern_ids: Tuple[str, ...]) -> float:
         """Calculate synergy between patterns"""
-        # Simplified calculation
         individual_scores = [
-            self.execution_patterns[pid].success_rate 
+            self.execution_patterns[pid].success_rate
             for pid in pattern_ids if pid in self.execution_patterns
         ]
-        
+
         if not individual_scores:
             return 0.0
-            
-        # Synergy bonus for complementary patterns
+
         avg_score = sum(individual_scores) / len(individual_scores)
-        synergy_bonus = 0.1 * len(pattern_ids)  # More patterns = more synergy
-        
-        return min(1.0, avg_score + synergy_bonus)
+        synergy_bonus = 0.1 * len(pattern_ids)
+
+        # Factor in temporal proximity
+        window = self.cooccurrence_window
+        proximity = 0.0
+        occurrence_lists = [self.execution_patterns[pid].occurrence_indices for pid in pattern_ids]
+        # compute minimal average difference
+        diffs = []
+        for idx in occurrence_lists[0]:
+            distances = [min(abs(idx - o) for o in lst) for lst in occurrence_lists[1:]]
+            diffs.append(sum(distances) / len(distances))
+        if diffs:
+            min_diff = min(diffs)
+            proximity = max(0.0, 1 - (min_diff / (window + 1e-5)))
+
+        return min(1.0, avg_score + synergy_bonus * proximity)
         
     def _calculate_combined_effectiveness(self, pattern_ids: Tuple[str, ...]) -> float:
         """Calculate combined effectiveness of patterns"""
