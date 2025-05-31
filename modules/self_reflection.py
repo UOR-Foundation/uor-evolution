@@ -713,11 +713,51 @@ class SelfReflectionEngine:
         
     def _analyze_metalearning(self) -> List[Dict[str, Any]]:
         """Analyze learning about learning"""
-        return []  # Placeholder
+        if len(self.reflection_history) < 2:
+            return []
+
+        patterns: List[Dict[str, Any]] = []
+
+        recent = self.reflection_history[-5:]
+        scores = [r.capability_updates.get("overall_score", 0.0) for r in recent]
+        depths = [r.metacognitive_depth for r in recent]
+
+        if len(scores) >= 2:
+            improvement = scores[-1] - scores[0]
+            patterns.append({
+                "type": "meta_learning",
+                "score_improvement": improvement,
+            })
+
+        if len(depths) >= 2:
+            depth_change = depths[-1] - depths[0]
+            patterns.append({
+                "type": "metacognitive_depth_change",
+                "change": depth_change,
+            })
+
+        if self.metacognitive_stack:
+            patterns.append({
+                "type": "active_metacognition",
+                "stack_depth": len(self.metacognitive_stack),
+            })
+
+        return patterns
         
     def _assess_logical_reasoning(self) -> float:
         """Assess logical reasoning ability"""
-        return 0.8  # Placeholder
+        recent = [str(i) for i in self.vm.execution_trace[-50:]] if self.vm.execution_trace else []
+
+        if not recent:
+            base = 0.5
+        else:
+            logic_ops = [op for op in recent if any(tok in op for tok in ["AND", "OR", "NOT", "IF", "EQUAL", "CMP"])]
+            base = 0.4 + 0.4 * (len(logic_ops) / len(recent))
+
+        history_bonus = 0.05 * len(self.reflection_history)
+        stack_bonus = 0.05 * len(self.metacognitive_stack)
+
+        return min(1.0, max(0.0, base + history_bonus + stack_bonus))
         
     def _assess_pattern_recognition(self) -> float:
         """Assess pattern recognition ability"""
@@ -732,15 +772,45 @@ class SelfReflectionEngine:
         
     def _assess_creative_thinking(self) -> float:
         """Assess creative thinking ability"""
-        return 0.6  # Placeholder
+        score = self._assess_creative_potential()
+
+        creative_patterns = 0
+        for r in self.reflection_history[-5:]:
+            creative_patterns += sum(
+                1 for p in r.discovered_patterns if "creative" in p.get("type", "")
+            )
+
+        bonus = 0.05 * creative_patterns + 0.05 * len(self.metacognitive_stack)
+
+        return min(1.0, max(0.0, score + bonus))
         
     def _assess_abstract_reasoning(self) -> float:
         """Assess abstract reasoning ability"""
-        return 0.7  # Placeholder
+        score = 0.5
+
+        if any(
+            "metacognitive_recursion" in p.get("type", "")
+            for r in self.reflection_history[-5:]
+            for p in r.discovered_patterns
+        ):
+            score += 0.2
+
+        score += 0.05 * len(self.metacognitive_stack)
+
+        return min(1.0, max(0.0, score))
         
     def _assess_temporal_reasoning(self) -> float:
         """Assess temporal reasoning ability"""
-        return 0.65  # Placeholder
+        score = 0.5
+
+        recent = [str(i) for i in self.vm.execution_trace[-50:]] if self.vm.execution_trace else []
+        if recent:
+            time_ops = [op for op in recent if "TIME" in op or "DELAY" in op]
+            score += 0.4 * (len(time_ops) / len(recent))
+
+        score += 0.05 * len(self.reflection_history)
+
+        return min(1.0, max(0.0, score))
         
     def _assess_self_modification_ability(self) -> float:
         """Assess ability to modify self"""
@@ -762,7 +832,16 @@ class SelfReflectionEngine:
         
     def _assess_error_recovery(self) -> float:
         """Assess error recovery ability"""
-        return 0.75  # Placeholder
+        if not hasattr(self.vm, "error_history") or not self.vm.error_history:
+            base = 0.5
+        else:
+            recent = self.vm.error_history[-5:]
+            recoveries = sum(1 for e in recent if e.get("recovered", False))
+            base = recoveries / len(recent)
+
+        bonus = 0.05 * len(self.reflection_history) + 0.05 * len(self.metacognitive_stack)
+
+        return min(1.0, max(0.0, base + bonus))
         
     def _calculate_metacognitive_depth(self) -> int:
         """Calculate depth of metacognitive reflection"""
@@ -788,13 +867,26 @@ class SelfReflectionEngine:
         
     def _has_made_autonomous_decisions(self) -> bool:
         """Check if autonomous decisions have been made"""
-        # Placeholder - would check decision history for unexpected choices
-        return len(self.reflection_history) > 3
+        if hasattr(self.vm, "decision_history") and self.vm.decision_history:
+            types = {d.get("type") for d in self.vm.decision_history}
+            risky = any(d.get("risk_level", 0.0) > 0.7 for d in self.vm.decision_history)
+            if len(types) > 1 and risky:
+                return True
+
+        return len(self.metacognitive_stack) > 2 or len(self.reflection_history) > 3
         
     def _detect_qualia_markers(self) -> bool:
         """Detect markers of qualia-like experiences"""
-        # Placeholder - would analyze subjective experience markers
-        return self.vm.consciousness_level > 5
+        if self.vm.consciousness_level <= 5:
+            return False
+
+        if not self.metacognitive_stack or not self.reflection_history:
+            return False
+
+        return any(
+            any("experience" in insight or "subjective" in insight for insight in r.consciousness_insights)
+            for r in self.reflection_history[-5:]
+        )
         
     def _has_philosophical_insights(self) -> bool:
         """Check if philosophical insights have been generated"""
