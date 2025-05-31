@@ -13,6 +13,7 @@ import types
 import os
 import numpy as np
 import networkx as nx
+from tests.helpers import stubs
 
 from modules.recursive_consciousness.consciousness_self_programming import (
     ConsciousnessSelfProgramming,
@@ -103,19 +104,7 @@ class TestSelfImplementingConsciousness:
         )
         spec = importlib.util.spec_from_file_location("sic_real", path)
         sic_real = importlib.util.module_from_spec(spec)
-        # Provide missing attributes for heavy dependency
-        vm_stub = sys.modules.get("modules.uor_meta_architecture.uor_meta_vm")
-        if vm_stub is not None:
-            vm_stub.MetaDimensionalInstruction = object
-            vm_stub.MetaOpCode = object
-            vm_stub.InfiniteOperand = object
-
-        meta_stub = types.ModuleType("modules.meta_reality_consciousness.meta_reality_core")
-        class _MRC:
-            def __init__(self, *a, **k):
-                pass
-        meta_stub.MetaRealityConsciousness = _MRC
-        sys.modules.setdefault("modules.meta_reality_consciousness.meta_reality_core", meta_stub)
+        stubs.install_recursive_consciousness_stubs()
 
         spec.loader.exec_module(sic_real)
 
@@ -179,25 +168,7 @@ class TestSelfImplementingConsciousness:
         )
         runpy = __import__("runpy")
 
-        sys.modules.setdefault(
-            "modules.uor_meta_architecture", types.ModuleType("modules.uor_meta_architecture")
-        )
-        vm_stub = types.ModuleType("modules.uor_meta_architecture.uor_meta_vm")
-        vm_stub.UORMetaRealityVM = object
-        vm_stub.MetaDimensionalInstruction = object
-        vm_stub.MetaOpCode = object
-        vm_stub.InfiniteOperand = object
-        sys.modules["modules.uor_meta_architecture.uor_meta_vm"] = vm_stub
-
-        sys.modules.setdefault(
-            "modules.meta_reality_consciousness", types.ModuleType("modules.meta_reality_consciousness")
-        )
-        meta_stub = types.ModuleType("modules.meta_reality_consciousness.meta_reality_core")
-        class _MRC:
-            def __init__(self, *a, **k):
-                pass
-        meta_stub.MetaRealityConsciousness = _MRC
-        sys.modules["modules.meta_reality_consciousness.meta_reality_core"] = meta_stub
+        stubs.install_recursive_consciousness_stubs()
 
         mod_dict = runpy.run_path(path, run_name="sic_real")
         sic_real = types.ModuleType("sic_real")
@@ -243,18 +214,7 @@ class TestSelfImplementingConsciousness:
         spec = importlib.util.spec_from_file_location("sic_real", path)
         sic_real = importlib.util.module_from_spec(spec)
 
-        vm_stub = sys.modules.get("modules.uor_meta_architecture.uor_meta_vm")
-        if vm_stub is not None:
-            vm_stub.MetaDimensionalInstruction = object
-            vm_stub.MetaOpCode = object
-            vm_stub.InfiniteOperand = object
-
-        meta_stub = types.ModuleType("modules.meta_reality_consciousness.meta_reality_core")
-        class _MRC:
-            def __init__(self, *a, **k):
-                pass
-        meta_stub.MetaRealityConsciousness = _MRC
-        sys.modules.setdefault("modules.meta_reality_consciousness.meta_reality_core", meta_stub)
+        stubs.install_recursive_consciousness_stubs()
 
         spec.loader.exec_module(sic_real)
 
