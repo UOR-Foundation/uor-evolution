@@ -73,7 +73,7 @@ class SimpleUnifiedAPI:
     This version focuses on core functionality without complex dependencies.
     """
     
-    def __init__(self, mode: APIMode = APIMode.DEVELOPMENT):
+    def __init__(self, mode: APIMode = APIMode.DEVELOPMENT, session_dir: str = "."):
         """
         Initialize the simplified API.
         
@@ -83,6 +83,7 @@ class SimpleUnifiedAPI:
         self.mode = mode
         self.status = SystemStatus.DORMANT
         self.session_id = datetime.now().strftime("%Y%m%d_%H%M%S")
+        self.session_dir = session_dir
         
         # State tracking
         self.system_state = SystemState()
@@ -624,6 +625,8 @@ class SimpleUnifiedAPI:
         try:
             if not filepath:
                 filepath = f"session_{self.session_id}.json"
+            if not os.path.isabs(filepath):
+                filepath = os.path.join(self.session_dir, filepath)
             
             session_data = {
                 'session_id': self.session_id,
@@ -651,9 +654,9 @@ class SimpleUnifiedAPI:
 
 # ==================== CONVENIENCE FUNCTIONS ====================
 
-def create_simple_api(mode: APIMode = APIMode.DEVELOPMENT) -> SimpleUnifiedAPI:
+def create_simple_api(mode: APIMode = APIMode.DEVELOPMENT, session_dir: str = ".") -> SimpleUnifiedAPI:
     """Create a new simplified unified API instance."""
-    return SimpleUnifiedAPI(mode)
+    return SimpleUnifiedAPI(mode, session_dir=session_dir)
 
 def quick_consciousness_demo() -> Dict[str, Any]:
     """Quick demonstration of consciousness capabilities."""
