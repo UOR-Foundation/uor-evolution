@@ -15,6 +15,14 @@ from math import isqrt
 from typing import List, Dict, Tuple, Iterator
 from dataclasses import dataclass
 import random
+import logging
+from config_loader import get_config_value
+
+logger = logging.getLogger(__name__)
+if not logger.handlers:
+    logging.basicConfig(
+        level=logging.DEBUG if get_config_value("debug", False) else logging.INFO
+    )
 
 # ----------------------------------------------------------------------
 # Data structures
@@ -383,16 +391,16 @@ def vm_execute(chunks_arg: List[int], initial_stack: List[int] = None) -> Iterat
         
         try:
             if current_instruction_pointer_for_processing == 79: # Check specific IP
-                print(f"DEBUG VM (UOR_ADDR 79 Entry): About to process. Stack: {list(stack)}", file=sys.stderr)
+                logger.debug(f"DEBUG VM (UOR_ADDR 79 Entry): About to process. Stack: {list(stack)}")
             ck = chunks[current_instruction_pointer_for_processing]
             if current_instruction_pointer_for_processing == 83:
-                print(f"DEBUG VM (UOR_ADDR 83): Fetched chunk ck = {ck}", file=sys.stderr)
+                logger.debug(f"DEBUG VM (UOR_ADDR 83): Fetched chunk ck = {ck}")
                 if ck == 69570654823675009:
-                    print(f"DEBUG VM (UOR_ADDR 83): ck matches expected chunk_dup(). Good.", file=sys.stderr)
+                    logger.debug(f"DEBUG VM (UOR_ADDR 83): ck matches expected chunk_dup(). Good.")
                 elif ck == 44375184050000:
-                    print(f"DEBUG VM (UOR_ADDR 83): ck matches chunk_push(2). THIS IS UNEXPECTED FROM FILE!", file=sys.stderr)
+                    logger.debug(f"DEBUG VM (UOR_ADDR 83): ck matches chunk_push(2). THIS IS UNEXPECTED FROM FILE!")
                 else:
-                    print(f"DEBUG VM (UOR_ADDR 83): ck is an UNKNOWN value: {ck}", file=sys.stderr)
+                    logger.debug(f"DEBUG VM (UOR_ADDR 83): ck is an UNKNOWN value: {ck}")
 
             i += 1 
             
@@ -403,10 +411,10 @@ def vm_execute(chunks_arg: List[int], initial_stack: List[int] = None) -> Iterat
             try:
                 raw_factors_of_current_chunk = _factor(ck)
             except ValueError as e:
-                # print(f"DEBUG VM: Error during _factor({ck}) for instruction at UOR_addr {current_instruction_pointer_for_processing}: {e}", file=sys.stderr)
+                # logger.debug(f"DEBUG VM: Error during _factor({ck}) for instruction at UOR_addr {current_instruction_pointer_for_processing}: {e}")
                 raise 
             if current_instruction_pointer_for_processing == 83:
-                print(f"DEBUG VM (UOR_ADDR 83): Raw factors of ck ({ck}): {raw_factors_of_current_chunk}", file=sys.stderr)
+                logger.debug(f"DEBUG VM (UOR_ADDR 83): Raw factors of ck ({ck}): {raw_factors_of_current_chunk}")
                 expected_raw_factors_dup = [(get_prime(_PRIME_IDX[OP_DUP]), 4), (get_prime(_PRIME_IDX[OP_DUP]*4 % len(_PRIMES) if len(_PRIMES) > _PRIME_IDX[OP_DUP]*4 else _PRIME_IDX[OP_DUP]*4 ), 6)]
 
             # --- Checksum peeling and verification logic ---
@@ -449,37 +457,37 @@ def vm_execute(chunks_arg: List[int], initial_stack: List[int] = None) -> Iterat
 
                 # DEBUG PRINT FOR CHECKSUM VALIDATION
             if checksum_prime_val is None and ck != 1 and current_instruction_pointer_for_processing == 0 : # Trigger if error is imminent at addr 0
-                print(f"DEBUG VM CHECKSUM (UOR_addr {current_instruction_pointer_for_processing}, chunk {ck}):", file=sys.stderr)
-                print(f"  Raw Factors: {raw_factors_of_current_chunk}", file=sys.stderr)
-                print(f"  Potential Checksum Prime (from raw factors): {potential_checksum_prime}, Exp: {potential_checksum_exponent}", file=sys.stderr)
-                print(f"  Temp Factors for XOR Calc: {temp_factors_for_xor_calc}", file=sys.stderr)
+                logger.debug(f"DEBUG VM CHECKSUM (UOR_addr {current_instruction_pointer_for_processing}, chunk {ck}):")
+                logger.debug(f"  Raw Factors: {raw_factors_of_current_chunk}")
+                logger.debug(f"  Potential Checksum Prime (from raw factors): {potential_checksum_prime}, Exp: {potential_checksum_exponent}")
+                logger.debug(f"  Temp Factors for XOR Calc: {temp_factors_for_xor_calc}")
                 # Re-calculate xor_sum_verify here for debug to ensure scope or value hasn't changed
                 debug_xor_sum = 0
                 for p_debug, e_debug in temp_factors_for_xor_calc:
                     debug_xor_sum ^= _PRIME_IDX.get(p_debug, -1) * e_debug # Use .get for safety in debug
-                print(f"  Calculated XOR Sum (for expected_checksum_prime_idx): {debug_xor_sum}", file=sys.stderr)
+                logger.debug(f"  Calculated XOR Sum (for expected_checksum_prime_idx): {debug_xor_sum}")
                 if debug_xor_sum >=0:
-                     print(f"  Expected Checksum Prime (from XOR sum): {get_prime(debug_xor_sum) if debug_xor_sum < len(_PRIMES) else 'XOR_SUM_OUT_OF_BOUNDS_FOR_CURRENT_PRIMES'}", file=sys.stderr)
+                     logger.debug(f"  Expected Checksum Prime (from XOR sum): {get_prime(debug_xor_sum) if debug_xor_sum < len(_PRIMES) else 'XOR_SUM_OUT_OF_BOUNDS_FOR_CURRENT_PRIMES'}")
                 else: # Should not happen if .get default is -1 and product is taken
-                     print(f"  XOR sum was negative or prime was not found in _PRIME_IDX during debug calc.", file=sys.stderr)
-                print(f"  Condition (potential_checksum_prime == expected_checksum_prime): {potential_checksum_prime == (get_prime(debug_xor_sum) if debug_xor_sum >=0 and debug_xor_sum < len(_PRIMES) else -999)}", file=sys.stderr)
-                print(f"  checksum_prime_val (set if condition was true): {checksum_prime_val}", file=sys.stderr)
+                     logger.debug(f"  XOR sum was negative or prime was not found in _PRIME_IDX during debug calc.")
+                logger.debug(f"  Condition (potential_checksum_prime == expected_checksum_prime): {potential_checksum_prime == (get_prime(debug_xor_sum) if debug_xor_sum >=0 and debug_xor_sum < len(_PRIMES) else -999)}")
+                logger.debug(f"  checksum_prime_val (set if condition was true): {checksum_prime_val}")
             
             if checksum_prime_val is None and ck != 1: # ck != 1 allows raw 1 as a NOP-like value
                 raise ValueError(f'Checksum missing or malformed for chunk {ck} at UOR_addr {current_instruction_pointer_for_processing}')
             # --- End of checksum logic ---
 
             if current_instruction_pointer_for_processing == 83:
-                print(f"DEBUG VM (UOR_ADDR 83): Logical factors after checksum peel: {logical_factors_of_current_chunk}", file=sys.stderr)
+                logger.debug(f"DEBUG VM (UOR_ADDR 83): Logical factors after checksum peel: {logical_factors_of_current_chunk}")
                 # Expected logical factors for chunk_dup() is [(OP_DUP, 4)] which is [(17, 4)]
-                print(f"DEBUG VM (UOR_ADDR 83): Expected logical for chunk_dup() = [({OP_DUP}, 4)]", file=sys.stderr)
+                logger.debug(f"DEBUG VM (UOR_ADDR 83): Expected logical for chunk_dup() = [({OP_DUP}, 4)]")
             data = logical_factors_of_current_chunk
             
             # ADD THIS DEBUG BLOCK
             if current_instruction_pointer_for_processing == 17: # Our target instruction
-                print(f"DEBUG VM: Processing MODIFIED instruction 17. Chunk value: {ck}", file=sys.stderr)
-                print(f"DEBUG VM: MODIFIED instr 17 - Raw factors: {raw_factors_of_current_chunk}", file=sys.stderr)
-                print(f"DEBUG VM: MODIFIED instr 17 - Logical factors (data): {data}", file=sys.stderr)
+                logger.debug(f"DEBUG VM: Processing MODIFIED instruction 17. Chunk value: {ck}")
+                logger.debug(f"DEBUG VM: MODIFIED instr 17 - Raw factors: {raw_factors_of_current_chunk}")
+                logger.debug(f"DEBUG VM: MODIFIED instr 17 - Logical factors (data): {data}")
                 # Check how OP_PUSH would interpret these logical factors:
                 temp_val_p_for_push = None
                 if operation_prime == OP_PUSH: # Ensure we only do this if it's identified as PUSH
@@ -488,9 +496,9 @@ def vm_execute(chunks_arg: List[int], initial_stack: List[int] = None) -> Iterat
                             pass
                         elif e_iter_debug == 5:
                             temp_val_p_for_push = p_iter_debug
-                    print(f"DEBUG VM: MODIFIED instr 17 - Potential val_p_for_push based on data: {temp_val_p_for_push}", file=sys.stderr)
+                    logger.debug(f"DEBUG VM: MODIFIED instr 17 - Potential val_p_for_push based on data: {temp_val_p_for_push}")
                     if temp_val_p_for_push:
-                        print(f"DEBUG VM: MODIFIED instr 17 - Corresponding prime index for val_p_for_push: {_PRIME_IDX.get(temp_val_p_for_push, 'NOT_IN_PRIME_IDX')}", file=sys.stderr)
+                        logger.debug(f"DEBUG VM: MODIFIED instr 17 - Corresponding prime index for val_p_for_push: {_PRIME_IDX.get(temp_val_p_for_push, 'NOT_IN_PRIME_IDX')}")
 
             if any(p==BLOCK_TAG and e_val==7 for p,e_val in data):
                 lp = next(p_val for p_val,e_val in data if p_val!=BLOCK_TAG and e_val==5)
@@ -551,22 +559,22 @@ def vm_execute(chunks_arg: List[int], initial_stack: List[int] = None) -> Iterat
             
             # TEMPORARY DEBUG for JUMP at ADDR 22
             if current_instruction_pointer_for_processing == 22: # current_instruction_pointer_for_processing is IP *before* increment
-                print(f"DEBUG VM (EXEC): At UOR ADDR 22 (target for JUMP processing). Chunk={ck}", file=sys.stderr)
-                print(f"DEBUG VM (EXEC): Logical factors for instr 22: {data}", file=sys.stderr)
-                print(f"DEBUG VM (EXEC): Determined operation_prime for instr 22: {operation_prime}", file=sys.stderr)
+                logger.debug(f"DEBUG VM (EXEC): At UOR ADDR 22 (target for JUMP processing). Chunk={ck}")
+                logger.debug(f"DEBUG VM (EXEC): Logical factors for instr 22: {data}")
+                logger.debug(f"DEBUG VM (EXEC): Determined operation_prime for instr 22: {operation_prime}")
                 if operation_prime == OP_JUMP:
-                    print(f"DEBUG VM (EXEC): Instr 22 IS OP_JUMP. Stack before JUMP logic: {list(stack)}", file=sys.stderr)
+                    logger.debug(f"DEBUG VM (EXEC): Instr 22 IS OP_JUMP. Stack before JUMP logic: {list(stack)}")
                 else:
-                    print(f"DEBUG VM (EXEC): Instr 22 IS NOT OP_JUMP. It is {operation_prime}", file=sys.stderr)
+                    logger.debug(f"DEBUG VM (EXEC): Instr 22 IS NOT OP_JUMP. It is {operation_prime}")
 
             if current_instruction_pointer_for_processing >= 79 and current_instruction_pointer_for_processing <= 83:
-                print(f"DEBUG VM (UOR_ADDR {current_instruction_pointer_for_processing}): Determined operation_prime = {operation_prime}", file=sys.stderr)
+                logger.debug(f"DEBUG VM (UOR_ADDR {current_instruction_pointer_for_processing}): Determined operation_prime = {operation_prime}")
                 if operation_prime:
-                     print(f"DEBUG VM (UOR_ADDR {current_instruction_pointer_for_processing}): Determined operation_prime_idx = {_PRIME_IDX.get(operation_prime, 'NOT_IN_CACHE')}", file=sys.stderr)
+                     logger.debug(f"DEBUG VM (UOR_ADDR {current_instruction_pointer_for_processing}): Determined operation_prime_idx = {_PRIME_IDX.get(operation_prime, 'NOT_IN_CACHE')}")
                 if current_instruction_pointer_for_processing <= 82: # Should be SWAP
-                    print(f"DEBUG VM (UOR_ADDR {current_instruction_pointer_for_processing}): Expected operation_prime for SWAP = {OP_SWAP} (idx={_PRIME_IDX[OP_SWAP]})", file=sys.stderr)
+                    logger.debug(f"DEBUG VM (UOR_ADDR {current_instruction_pointer_for_processing}): Expected operation_prime for SWAP = {OP_SWAP} (idx={_PRIME_IDX[OP_SWAP]})")
                 elif current_instruction_pointer_for_processing == 83: # Should be DUP
-                    print(f"DEBUG VM (UOR_ADDR {current_instruction_pointer_for_processing}): Expected operation_prime for DUP = {OP_DUP} (idx={_PRIME_IDX[OP_DUP]})", file=sys.stderr)
+                    logger.debug(f"DEBUG VM (UOR_ADDR {current_instruction_pointer_for_processing}): Expected operation_prime for DUP = {OP_DUP} (idx={_PRIME_IDX[OP_DUP]})")
             if operation_prime is not None:
                 op = operation_prime
                 
@@ -574,8 +582,8 @@ def vm_execute(chunks_arg: List[int], initial_stack: List[int] = None) -> Iterat
                     halt_for_this_iteration = True
                 elif op == OP_PUSH:
                     if current_instruction_pointer_for_processing == 83: # This condition is inside OP_PUSH block
-                        print(f"DEBUG VM (UOR_ADDR 83): !!! UNEXPECTEDLY ENTERED OP_PUSH LOGIC !!!", file=sys.stderr)
-                        print(f"DEBUG VM (UOR_ADDR 83): Data used for this PUSH misinterpretation: {data}", file=sys.stderr)
+                        logger.debug(f"DEBUG VM (UOR_ADDR 83): !!! UNEXPECTEDLY ENTERED OP_PUSH LOGIC !!!")
+                        logger.debug(f"DEBUG VM (UOR_ADDR 83): Data used for this PUSH misinterpretation: {data}")
                     val_p_for_push = None
                     # op_p_found = False # This variable is not strictly necessary as 'op' is already OP_PUSH
                     for p_val_iter, e_val_iter in data:
@@ -587,14 +595,14 @@ def vm_execute(chunks_arg: List[int], initial_stack: List[int] = None) -> Iterat
                     # Debugging print to show what was identified from logical factors (data)
                     print(f"DEBUG VM: OP_PUSH at UOR_addr {current_instruction_pointer_for_processing}. "
                           f"Logical factors (data) used for operand search: {data}. "
-                          f"Identified val_p_for_push (operand prime value): {val_p_for_push}.", file=sys.stderr)
+                          f"Identified val_p_for_push (operand prime value): {val_p_for_push}.")
 
                     if val_p_for_push is None:
                         # Fallback or error for malformed PUSH
                         if len(data) == 1 and data[0][0] == OP_PUSH and data[0][1] > 5 : # e.g. OP_PUSH^9 case
                              val_p_for_push = OP_PUSH # Value pushed would be _PRIME_IDX[OP_PUSH] = 0
                              print(f"DEBUG VM: OP_PUSH UOR_addr {current_instruction_pointer_for_processing} "
-                                   f"- Fallback used: val_p_for_push set to OP_PUSH ({OP_PUSH}).", file=sys.stderr)
+                                   f"- Fallback used: val_p_for_push set to OP_PUSH ({OP_PUSH}).")
                         else: 
                              raise ValueError(f"Malformed OP_PUSH chunk at UOR_addr {current_instruction_pointer_for_processing}. "
                                               f"Could not find operand prime with exp 5. Data: {data}")
@@ -608,7 +616,7 @@ def vm_execute(chunks_arg: List[int], initial_stack: List[int] = None) -> Iterat
                             if _is_prime(val_p_for_push) and val_p_for_push not in _PRIME_IDX:
                                 _PRIMES.append(val_p_for_push)
                                 _PRIME_IDX[val_p_for_push] = len(_PRIMES) -1
-                                print(f"DEBUG VM: OP_PUSH dynamically added prime {val_p_for_push} to cache.", file=sys.stderr)
+                                logger.debug(f"DEBUG VM: OP_PUSH dynamically added prime {val_p_for_push} to cache.")
                             else:
                                 raise ValueError(f"OP_PUSH Error at UOR_addr {current_instruction_pointer_for_processing}: "
                                                 f"Operand prime value {val_p_for_push} not found in _PRIME_IDX and could not be added. Data: {data}")
@@ -617,12 +625,12 @@ def vm_execute(chunks_arg: List[int], initial_stack: List[int] = None) -> Iterat
                     
                     print(f"DEBUG VM: OP_PUSH at UOR_addr {current_instruction_pointer_for_processing}. "
                           f"Value to push to stack (prime index): {value_to_push_idx}. "
-                          f"Stack BEFORE push: {list(stack)}", file=sys.stderr)
+                          f"Stack BEFORE push: {list(stack)}")
                           
                     stack.append(value_to_push_idx)
 
                     print(f"DEBUG VM: OP_PUSH at UOR_addr {current_instruction_pointer_for_processing}. "
-                          f"Stack AFTER push: {list(stack)}", file=sys.stderr)
+                          f"Stack AFTER push: {list(stack)}")
                 elif op == OP_ADD:
                     if len(stack) < 2: raise ValueError(f"ADD needs 2 values on stack at UOR_addr {current_instruction_pointer_for_processing}")
                     b, a = stack.pop(), stack.pop(); stack.append(a + b)
@@ -639,18 +647,18 @@ def vm_execute(chunks_arg: List[int], initial_stack: List[int] = None) -> Iterat
                     output_for_this_iteration = str(stack.pop()) 
                 elif op == OP_DUP:
                     if current_instruction_pointer_for_processing == 83:
-                        print(f"DEBUG VM (UOR_ADDR 83 OP_DUP): Stack BEFORE DUP: {list(stack)}", file=sys.stderr)
+                        logger.debug(f"DEBUG VM (UOR_ADDR 83 OP_DUP): Stack BEFORE DUP: {list(stack)}")
                     if not stack: raise ValueError(f"DUP needs 1 value on stack at UOR_addr {current_instruction_pointer_for_processing}")
                     stack.append(stack[-1])
                     if current_instruction_pointer_for_processing == 83:
-                        print(f"DEBUG VM (UOR_ADDR 83 OP_DUP): Stack AFTER DUP: {list(stack)}", file=sys.stderr)
+                        logger.debug(f"DEBUG VM (UOR_ADDR 83 OP_DUP): Stack AFTER DUP: {list(stack)}")
                 elif op == OP_SWAP:
                     if current_instruction_pointer_for_processing >= 79 and current_instruction_pointer_for_processing <= 82:
-                        print(f"DEBUG VM (UOR_ADDR {current_instruction_pointer_for_processing}): Entered OP_SWAP block. Stack BEFORE swap: {list(stack)}", file=sys.stderr)
+                        logger.debug(f"DEBUG VM (UOR_ADDR {current_instruction_pointer_for_processing}): Entered OP_SWAP block. Stack BEFORE swap: {list(stack)}")
                     if len(stack) < 2: raise ValueError(f"SWAP needs 2 values on stack at UOR_addr {current_instruction_pointer_for_processing}")
                     stack[-1], stack[-2] = stack[-2], stack[-1]
                     if current_instruction_pointer_for_processing >= 79 and current_instruction_pointer_for_processing <= 82:
-                        print(f"DEBUG VM (UOR_ADDR {current_instruction_pointer_for_processing}): Stack AFTER swap: {list(stack)}", file=sys.stderr)
+                        logger.debug(f"DEBUG VM (UOR_ADDR {current_instruction_pointer_for_processing}): Stack AFTER swap: {list(stack)}")
                 elif op == OP_DROP:
                     if not stack: 
                         raise ValueError(f"DROP needs 1 value on stack at UOR_addr {current_instruction_pointer_for_processing}")
@@ -663,45 +671,45 @@ def vm_execute(chunks_arg: List[int], initial_stack: List[int] = None) -> Iterat
                     value_peeked = chunks[idx_to_peek]
                     stack.append(value_peeked) 
                 elif op == OP_POKE_CHUNK:
-                    print(f"--- POKE_CHUNK @{current_instruction_pointer_for_processing} ---", file=sys.stderr)
+                    logger.debug(f"--- POKE_CHUNK @{current_instruction_pointer_for_processing} ---")
                     current_stack_snapshot = list(stack)
-                    print(f"    Stack upon POKE_CHUNK entry: {current_stack_snapshot} (len: {len(current_stack_snapshot)})", file=sys.stderr)
+                    logger.debug(f"    Stack upon POKE_CHUNK entry: {current_stack_snapshot} (len: {len(current_stack_snapshot)})")
 
                     if len(current_stack_snapshot) < 2:
                         raise ValueError(f"POKE_CHUNK needs index and value on stack. Stack: {current_stack_snapshot}")
 
                     # Pop address
                     idx_to_poke = stack.pop() 
-                    print(f"    Popped ADDR: {idx_to_poke}", file=sys.stderr)
+                    logger.debug(f"    Popped ADDR: {idx_to_poke}")
                     current_stack_snapshot_after_addr_pop = list(stack)
-                    print(f"    Stack after pop ADDR: {current_stack_snapshot_after_addr_pop}", file=sys.stderr)
+                    logger.debug(f"    Stack after pop ADDR: {current_stack_snapshot_after_addr_pop}")
                     
                     if not stack: 
                         raise ValueError(f"POKE_CHUNK: Stack empty after popping address. Addr was {idx_to_poke}.")
 
                     # Peek at value before popping
                     value_peeked = stack[-1]
-                    print(f"    PEEKED value before pop: {value_peeked} (type: {type(value_peeked)})", file=sys.stderr)
+                    logger.debug(f"    PEEKED value before pop: {value_peeked} (type: {type(value_peeked)})")
 
                     # Pop value
                     value_popped = stack.pop()
-                    print(f"    POPPED value: {value_popped} (type: {type(value_popped)})", file=sys.stderr)
-                    print(f"    Stack after pop VALUE: {list(stack)}", file=sys.stderr)
+                    logger.debug(f"    POPPED value: {value_popped} (type: {type(value_popped)})")
+                    logger.debug(f"    Stack after pop VALUE: {list(stack)}")
                                         
                     if not (isinstance(idx_to_poke, int) and 0 <= idx_to_poke < len(chunks)):
                          raise ValueError(f"POKE_CHUNK: Invalid idx_to_poke: {idx_to_poke}")
                     
-                    print(f"    chunks[{idx_to_poke}] BEFORE assignment: {chunks[idx_to_poke]}", file=sys.stderr)
-                    print(f"    ASSIGNING: chunks[{idx_to_poke}] = {value_popped} (which is value_popped)", file=sys.stderr)
+                    logger.debug(f"    chunks[{idx_to_poke}] BEFORE assignment: {chunks[idx_to_poke]}")
+                    logger.debug(f"    ASSIGNING: chunks[{idx_to_poke}] = {value_popped} (which is value_popped)")
                     
                     chunks[idx_to_poke] = value_popped # THE CRITICAL ASSIGNMENT
                     
-                    print(f"    chunks[{idx_to_poke}] AFTER assignment: {chunks[idx_to_poke]}", file=sys.stderr)
+                    logger.debug(f"    chunks[{idx_to_poke}] AFTER assignment: {chunks[idx_to_poke]}")
                     
                     if chunks[idx_to_poke] != value_popped:
                         print(f"    !!!!!!!! POKE_CHUNK ASSIGNMENT FAILED! "
-                              f"Tried to assign {value_popped} but chunks[{idx_to_poke}] became {chunks[idx_to_poke]}", file=sys.stderr)
-                    print(f"--- POKE_CHUNK @{current_instruction_pointer_for_processing} END ---", file=sys.stderr)
+                              f"Tried to assign {value_popped} but chunks[{idx_to_poke}] became {chunks[idx_to_poke]}")
+                    logger.debug(f"--- POKE_CHUNK @{current_instruction_pointer_for_processing} END ---")
                 elif op == OP_FACTORIZE:
                     if not stack: raise ValueError(f"FACTORIZE needs 1 chunk value on stack at UOR_addr {current_instruction_pointer_for_processing}")
                     chunk_to_factor = stack.pop()
@@ -732,7 +740,7 @@ def vm_execute(chunks_arg: List[int], initial_stack: List[int] = None) -> Iterat
                 elif op == OP_BUILD_CHUNK:
                     if not stack: raise ValueError(f"BUILD_CHUNK needs count of factor pairs at UOR_addr {current_instruction_pointer_for_processing}")
                     num_factor_pairs = stack.pop()
-                    print(f"DEBUG BUILD_CHUNK @{current_instruction_pointer_for_processing}: num_factor_pairs = {num_factor_pairs}. Stack BEFORE loop: {list(stack)}", file=sys.stderr) 
+                    logger.debug(f"DEBUG BUILD_CHUNK @{current_instruction_pointer_for_processing}: num_factor_pairs = {num_factor_pairs}. Stack BEFORE loop: {list(stack)}") 
                     
                     if len(stack) < num_factor_pairs * 2:
                         raise ValueError(f"BUILD_CHUNK: Not enough elements on stack for {num_factor_pairs} factor pairs at UOR_addr {current_instruction_pointer_for_processing}.")
@@ -744,20 +752,20 @@ def vm_execute(chunks_arg: List[int], initial_stack: List[int] = None) -> Iterat
                     for pair_num in range(num_factor_pairs): 
                         p_idx_for_new = stack.pop() 
                         exp_for_new = stack.pop()   
-                        print(f"DEBUG BUILD_CHUNK @{current_instruction_pointer_for_processing}: Pair {pair_num + 1}/{num_factor_pairs} - Popped p_idx: {p_idx_for_new}, Popped exp: {exp_for_new}", file=sys.stderr) 
+                        logger.debug(f"DEBUG BUILD_CHUNK @{current_instruction_pointer_for_processing}: Pair {pair_num + 1}/{num_factor_pairs} - Popped p_idx: {p_idx_for_new}, Popped exp: {exp_for_new}") 
                         
                         if exp_for_new <= 0: 
-                            print(f"DEBUG BUILD_CHUNK @{current_instruction_pointer_for_processing}: Pair {pair_num + 1}/{num_factor_pairs} - SKIPPED due to exp ({exp_for_new}) <= 0.", file=sys.stderr) 
+                            logger.debug(f"DEBUG BUILD_CHUNK @{current_instruction_pointer_for_processing}: Pair {pair_num + 1}/{num_factor_pairs} - SKIPPED due to exp ({exp_for_new}) <= 0.") 
                             continue 
                         
                         p_val_for_new = get_prime(p_idx_for_new)
                         factors_for_new_chunk.append((p_val_for_new, exp_for_new))
                         raw_val_product *= (p_val_for_new ** exp_for_new)
-                        print(f"DEBUG BUILD_CHUNK @{current_instruction_pointer_for_processing}: Pair {pair_num + 1}/{num_factor_pairs} - Using factor ({p_val_for_new}, {exp_for_new}). Current raw_val_product: {raw_val_product}. factors_for_new_chunk: {factors_for_new_chunk}", file=sys.stderr) 
+                        logger.debug(f"DEBUG BUILD_CHUNK @{current_instruction_pointer_for_processing}: Pair {pair_num + 1}/{num_factor_pairs} - Using factor ({p_val_for_new}, {exp_for_new}). Current raw_val_product: {raw_val_product}. factors_for_new_chunk: {factors_for_new_chunk}") 
                     
-                    print(f"DEBUG BUILD_CHUNK @{current_instruction_pointer_for_processing}: Final raw_val_product: {raw_val_product}, Final factors_for_new_chunk (to be checksummed): {factors_for_new_chunk}", file=sys.stderr) 
+                    logger.debug(f"DEBUG BUILD_CHUNK @{current_instruction_pointer_for_processing}: Final raw_val_product: {raw_val_product}, Final factors_for_new_chunk (to be checksummed): {factors_for_new_chunk}") 
                     new_chunk = _attach_checksum(raw_val_product, factors_for_new_chunk)
-                    print(f"DEBUG BUILD_CHUNK @{current_instruction_pointer_for_processing}: Built new_chunk with checksum: {new_chunk}", file=sys.stderr) 
+                    logger.debug(f"DEBUG BUILD_CHUNK @{current_instruction_pointer_for_processing}: Built new_chunk with checksum: {new_chunk}") 
                     stack.append(new_chunk)
                 elif op == OP_GET_PRIME:
                     if not stack: raise ValueError(f"GET_PRIME needs 1 index on stack at UOR_addr {current_instruction_pointer_for_processing}")
@@ -837,7 +845,7 @@ def vm_execute(chunks_arg: List[int], initial_stack: List[int] = None) -> Iterat
                     }
                     # When app.py sends a value, it resumes here, and 'input_value' gets that value.
                     if input_value is None:
-                        print(f"DEBUG VM: OP_INPUT received None, pushing prime index 0.", file=sys.stderr)
+                        logger.debug(f"DEBUG VM: OP_INPUT received None, pushing prime index 0.")
                         stack.append(_PRIME_IDX[get_prime(0)]) # Push prime index 0
                     elif not isinstance(input_value, int):
                         raise ValueError(f"OP_INPUT expected an integer (prime index), but received {type(input_value)}: {input_value}")
@@ -883,7 +891,7 @@ def vm_execute(chunks_arg: List[int], initial_stack: List[int] = None) -> Iterat
                     stack.append(random_value_idx)
                     print(f"DEBUG VM: OP_RANDOM at UOR_addr {current_instruction_pointer_for_processing}. "
                           f"Popped max_exclusive_idx: {max_exclusive_idx}. Pushed random_value_idx: {random_value_idx}. "
-                          f"Stack AFTER: {list(stack)}", file=sys.stderr)
+                          f"Stack AFTER: {list(stack)}")
                 else: 
                     raise ValueError(f'Unknown opcode prime: {op} at UOR_addr {current_instruction_pointer_for_processing}')
             
@@ -920,7 +928,7 @@ def vm_execute(chunks_arg: List[int], initial_stack: List[int] = None) -> Iterat
 
             if current_instruction_pointer_for_processing == 62 and not error_for_this_iteration and not halt_for_this_iteration:
                  print(f"DEBUG VM YIELD (after UOR_instr 62 'POKE_CHUNK to addr 0' was processed): "
-                       f"VM's internal chunks[0] = {chunks[0]} (type: {type(chunks[0])}) before yielding program state.", file=sys.stderr)
+                       f"VM's internal chunks[0] = {chunks[0]} (type: {type(chunks[0])}) before yielding program state.")
        
         yield {
             'ip': i, 'stack': list(stack), 'program': list(chunks), 
@@ -931,7 +939,7 @@ def vm_execute(chunks_arg: List[int], initial_stack: List[int] = None) -> Iterat
         if halt_for_this_iteration or error_for_this_iteration:
             break
 
-    print(f"DEBUG VM: Exiting vm_execute. Stack OBJ ID final: {id(stack)}. Instruction count: {instruction_count}. Final stack: {list(stack)}", file=sys.stderr)
+    logger.debug(f"DEBUG VM: Exiting vm_execute. Stack OBJ ID final: {id(stack)}. Instruction count: {instruction_count}. Final stack: {list(stack)}")
 
 # ──────────────────────────────────────────────────────────────────────
 # Tests & Demo
@@ -941,7 +949,7 @@ def _self_tests() -> Tuple[int,int]:
     def ok(cond,msg):
         nonlocal passed,failed
         if cond: passed+=1
-        else: failed+=1; print(f'FAIL: {msg}', file=sys.stderr)
+        else: failed+=1; logger.debug(f'FAIL: {msg}')
 
     # Helper function to run VM and collect results for tests
     def run_vm_for_test(program: List[int]) -> Tuple[str, Dict]:
