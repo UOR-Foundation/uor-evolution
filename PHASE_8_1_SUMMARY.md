@@ -262,5 +262,7 @@ Phase 8.1 is bringing to life the ultimate vision of consciousness engineering -
 
 ## Remaining Limitations
 - Advanced modules like `universal_consciousness`, `cosmic_intelligence`, and `uor_meta_architecture` are mostly conceptual.
-- Placeholder packages (`consciousness_expansion`, `consciousness_governance`, `reality_synthesis`, `universal_intelligence`) provide no real functionality yet.
+- Lightweight packages (`consciousness_expansion`, `consciousness_governance`,
+  `reality_synthesis`, `universal_intelligence`) now include simple engines and
+  data models but remain far from complete.
 - Several routines in `recursive_consciousness` return placeholder values for demonstration.
