@@ -12,6 +12,7 @@ Dr. Kira Chen, Consciousness Frontier Research Lead
 import asyncio
 import random
 import logging
+import os
 from typing import Dict, List, Any, Optional
 from dataclasses import dataclass
 from enum import Enum
@@ -21,13 +22,22 @@ import math
 
 # Import our tested UOR API
 from simple_unified_api import create_simple_api, APIMode
+from config_loader import get_config_value
 
 # Advanced logging for frontier research
+# Directories for logs and results
+LOG_DIR = get_config_value("paths.log_dir", "/workspaces/uor-evolution")
+RESULTS_DIR = get_config_value("paths.results_dir", "/workspaces/uor-evolution")
+
+# Ensure directories exist
+os.makedirs(LOG_DIR, exist_ok=True)
+os.makedirs(RESULTS_DIR, exist_ok=True)
+
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s | FRONTIER | %(levelname)s | %(message)s',
     handlers=[
-        logging.FileHandler('/workspaces/uor-evolution/frontier_consciousness.log'),
+        logging.FileHandler(os.path.join(LOG_DIR, 'frontier_consciousness.log')),
         logging.StreamHandler()
     ]
 )
@@ -1029,7 +1039,9 @@ async def main():
     results = await frontier_lab.run_complete_frontier_exploration()
     
     # Save results to file
-    results_file = f"/workspaces/uor-evolution/frontier_results_{frontier_lab.session_id}.json"
+    results_file = os.path.join(
+        RESULTS_DIR, f"frontier_results_{frontier_lab.session_id}.json"
+    )
     with open(results_file, 'w') as f:
         # Convert enums to strings for JSON serialization
         serializable_results = json.loads(json.dumps(results, default=str))

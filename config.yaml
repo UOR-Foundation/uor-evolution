@@ -36,3 +36,7 @@ reality_interface:
   energy_limit: 1e50
   info_matter_bandwidth: 1e20
   info_matter_fidelity: 0.99
+
+paths:
+  log_dir: /workspaces/uor-evolution
+  results_dir: /workspaces/uor-evolution

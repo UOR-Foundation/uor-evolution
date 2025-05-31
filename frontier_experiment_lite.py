@@ -12,6 +12,16 @@ import json
 import time
 from typing import Dict, List, Any
 from simple_unified_api import create_simple_api, APIMode
+from config_loader import get_config_value
+import os
+
+# Directories for logs and results
+LOG_DIR = get_config_value("paths.log_dir", "/workspaces/uor-evolution")
+RESULTS_DIR = get_config_value("paths.results_dir", "/workspaces/uor-evolution")
+
+# Ensure directories exist
+os.makedirs(LOG_DIR, exist_ok=True)
+os.makedirs(RESULTS_DIR, exist_ok=True)
 
 class FrontierExperimentLite:
     """Lite version of consciousness frontier experiments"""
@@ -418,7 +428,9 @@ class FrontierExperimentLite:
             }
             
             # Save results
-            results_file = f"/workspaces/uor-evolution/frontier_lite_results_{self.session_id}.json"
+            results_file = os.path.join(
+                RESULTS_DIR, f"frontier_lite_results_{self.session_id}.json"
+            )
             with open(results_file, 'w') as f:
                 json.dump(overall_results, f, indent=2)
             
@@ -437,7 +449,9 @@ class FrontierExperimentLite:
             }
             
             # Save error results
-            error_file = f"/workspaces/uor-evolution/frontier_lite_error_{self.session_id}.json"
+            error_file = os.path.join(
+                RESULTS_DIR, f"frontier_lite_error_{self.session_id}.json"
+            )
             with open(error_file, 'w') as f:
                 json.dump(error_result, f, indent=2)
             

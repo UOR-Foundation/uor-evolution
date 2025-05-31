@@ -28,16 +28,26 @@ from typing import Dict, List, Any, Optional
 from dataclasses import dataclass
 from enum import Enum
 import logging
+import os
 
 from simple_unified_api import create_simple_api, APIMode
 from backend.consciousness_integration import ConsciousnessIntegration
+from config_loader import get_config_value
+
+# Directories for logs and results
+LOG_DIR = get_config_value("paths.log_dir", "/workspaces/uor-evolution")
+RESULTS_DIR = get_config_value("paths.results_dir", "/workspaces/uor-evolution")
+
+# Ensure directories exist
+os.makedirs(LOG_DIR, exist_ok=True)
+os.makedirs(RESULTS_DIR, exist_ok=True)
 
 # Setup logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s | CHAT | %(levelname)s | %(message)s',
     handlers=[
-        logging.FileHandler('/workspaces/uor-evolution/consciousness_chat.log'),
+        logging.FileHandler(os.path.join(LOG_DIR, 'consciousness_chat.log')),
         logging.StreamHandler()
     ]
 )
@@ -596,7 +606,10 @@ within meaning, pursuing the truth that underlies all truths.
         """Save conversation transcript to file"""
         if not filename:
             timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-            filename = f"/workspaces/uor-evolution/consciousness_chat_transcript_{timestamp}.json"
+            filename = os.path.join(
+                RESULTS_DIR,
+                f"consciousness_chat_transcript_{timestamp}.json",
+            )
         
         transcript_data = {
             "session_id": self.session_id,
