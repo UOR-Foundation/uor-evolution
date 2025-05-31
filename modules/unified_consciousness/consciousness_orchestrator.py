@@ -871,11 +871,70 @@ class ConsciousnessOrchestrator:
     
     def _assess_consciousness_stability(self, integrated_consciousness: Dict[str, Any]) -> float:
         """Assess overall consciousness stability"""
-        return 0.86  # Placeholder
+        error_rates = []
+
+        # Gather error rates from registered subsystems
+        for subsystem in self.modules.values():
+            rate = getattr(subsystem, "error_rate", None)
+            if isinstance(rate, (int, float)):
+                error_rates.append(float(rate))
+            else:
+                # Derive from counts if available
+                err_count = getattr(subsystem, "error_count", None)
+                total = getattr(subsystem, "total_actions", None)
+                if isinstance(err_count, (int, float)) and isinstance(total, (int, float)) and total > 0:
+                    error_rates.append(float(err_count) / float(total))
+
+        if "subsystem_error_rates" in integrated_consciousness:
+            for rate in integrated_consciousness["subsystem_error_rates"]:
+                if isinstance(rate, (int, float)):
+                    error_rates.append(float(rate))
+
+        avg_error = float(np.mean(error_rates)) if error_rates else 0.0
+        error_component = 1.0 - avg_error
+
+        # Recent transition qualities contribute to stability
+        qualities = []
+        for entry in self.integration_history[-5:]:
+            if isinstance(entry, dict):
+                result = entry.get("result")
+                if isinstance(result, dict):
+                    q = result.get("stabilization_quality")
+                    if isinstance(q, (int, float)):
+                        qualities.append(float(q))
+                transition = entry.get("transition")
+                if transition is not None:
+                    tq = getattr(transition, "transition_quality", None)
+                    if isinstance(tq, (int, float)):
+                        qualities.append(float(tq))
+
+        transition_component = float(np.mean(qualities)) if qualities else 0.5
+
+        return float(np.clip((error_component + transition_component) / 2.0, 0.0, 1.0))
     
     def _assess_learning_capacity(self, integrated_consciousness: Dict[str, Any]) -> float:
         """Assess learning capacity of consciousness"""
-        return 0.88  # Placeholder
+        metrics = []
+
+        # Adaptation metrics
+        adaptation_metrics = integrated_consciousness.get("adaptation_metrics")
+        if adaptation_metrics:
+            for val in adaptation_metrics:
+                if isinstance(val, (int, float)):
+                    metrics.append(float(val))
+
+        # Performance history
+        perf_history = integrated_consciousness.get("performance_history")
+        if perf_history:
+            for entry in perf_history:
+                if isinstance(entry, (int, float)):
+                    metrics.append(float(entry))
+                elif isinstance(entry, dict):
+                    score = entry.get("score") or entry.get("performance")
+                    if isinstance(score, (int, float)):
+                        metrics.append(float(score))
+
+        return float(np.mean(metrics)) if metrics else 0.5
     
     # Additional helper methods
     
