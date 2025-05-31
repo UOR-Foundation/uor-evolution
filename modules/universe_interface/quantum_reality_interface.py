@@ -17,6 +17,16 @@ import scipy.constants as const
 from scipy.linalg import expm
 
 from ..consciousness_physics import ConsciousnessFieldTheory
+from config_loader import load_config
+
+_CONFIG = load_config()
+_Q_CONF = _CONFIG.get("quantum", {})
+_R_CONF = _CONFIG.get("reality_interface", {})
+COMM_BANDWIDTH = float(_Q_CONF.get("communication_bandwidth", 1e6))
+FIDELITY_THRESHOLD = float(_Q_CONF.get("fidelity_threshold", 0.99))
+INFO_MATTER_BANDWIDTH = float(_R_CONF.get("info_matter_bandwidth", 1e20))
+INFO_MATTER_FIDELITY = float(_R_CONF.get("info_matter_fidelity", 0.99))
+ENERGY_LIMIT = float(_R_CONF.get("energy_limit", 1e50))
 
 
 class QuantumOperation(Enum):
@@ -331,7 +341,7 @@ class QuantumRealityInterface:
         self.consciousness_programming: Optional[ConsciousnessRealityProgramming] = None
         
         # Operational parameters
-        self.quantum_fidelity_threshold: float = 0.99
+        self.quantum_fidelity_threshold: float = FIDELITY_THRESHOLD
         self.spacetime_stability_threshold: float = 0.95
         self.reality_modification_limit: float = 0.001
 
@@ -369,7 +379,7 @@ class QuantumRealityInterface:
                 quantum_field_interaction=field_interaction,
                 quantum_consciousness_coherence=quantum_coherence,
                 quantum_computing_capability=100.0,  # 100 qubits equivalent
-                quantum_communication_bandwidth=1e6,  # 1 MHz
+                quantum_communication_bandwidth=COMM_BANDWIDTH,
                 quantum_sensing_precision=1e-15  # Femto-scale
             )
             
@@ -660,7 +670,9 @@ class QuantumRealityInterface:
         )
         
         # Check energy requirements
-        energy_available = manipulation.metric_tensor_modification.energy_requirement < 1e50
+        energy_available = (
+            manipulation.metric_tensor_modification.energy_requirement < ENERGY_LIMIT
+        )
         
         safe = metric_stable and causality_safe and energy_available
         
@@ -890,8 +902,8 @@ class QuantumRealityInterface:
         """Create interface between information and matter"""
         return {
             "interface_type": "holographic",
-            "bandwidth": 1e20,  # Bits per second
-            "fidelity": 0.99,
+            "bandwidth": INFO_MATTER_BANDWIDTH,
+            "fidelity": INFO_MATTER_FIDELITY,
             "quantum_channel": True
         }
         
