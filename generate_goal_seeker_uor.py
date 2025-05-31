@@ -143,6 +143,15 @@ def generate_goal_seeker_program():
 
     program_uor = []
     labels = {}
+    jump_placeholders: list[tuple[int, str]] = []
+    slot_placeholders: dict[str, int] = {}
+
+    def emit_jump_placeholder(label: str) -> int:
+        """Append a placeholder PUSH for ``label`` and record index."""
+        program_uor.append(chunk_push(0))
+        idx = len(program_uor) - 1
+        jump_placeholders.append((idx, label))
+        return idx
 
     modification_slots = [
         ModificationSlot(MODIFICATION_SLOT_0_ADDR_IDX, chunk_nop()),
@@ -190,9 +199,8 @@ def generate_goal_seeker_program():
     program_uor.append(chunk_compare_eq())
     # Stack: [val_after_slots, last_pokéd_val_for_addr0, sfc, last_slot, last_instr_type, comparison_bool_idx]
 
-    # ADDR 8: PUSH address_of_HANDLE_FAILURE_ABSOLUTE (placeholder)
-    program_uor.append(chunk_push(0))
-    addr_idx_push_failure_target = len(program_uor) - 1
+    # ADDR 8: PUSH address_of_HANDLE_FAILURE_ABSOLUTE
+    addr_idx_push_failure_target = emit_jump_placeholder("HANDLE_FAILURE_ABSOLUTE")
 
     # ADDR 9: SWAP
     program_uor.append(chunk_swap())
@@ -220,8 +228,8 @@ def generate_goal_seeker_program():
     program_uor.append(chunk_push(0)) # Reset session_failure_count to 0 (FC_A0)
     # Stack: [OI_A0, VCLP_A0, FC_A0] (FC_A0 is TOS)
 
-    program_uor.append(chunk_push(0)) # Placeholder for BUILD_AND_POKE_ADDR_0_FROM_SUCCESS. This will be at index K.
-    addr_idx_push_build_addr0_from_success = len(program_uor) - 1 # This will correctly be K.
+    # Placeholder for BUILD_AND_POKE_ADDR_0_FROM_SUCCESS
+    addr_idx_push_build_addr0_from_success = emit_jump_placeholder("BUILD_AND_POKE_ADDR_0_FROM_SUCCESS")
     program_uor.append(chunk_jump()) # This will be at index K+1.
     # On JUMP, stack for BUILD_AND_POKE_ADDR_0_FROM_SUCCESS will be:
     # [OI_A0, VCLP_A0, FC_A0] (FC_A0 is TOS)
@@ -256,8 +264,7 @@ def generate_goal_seeker_program():
     program_uor.append(chunk_dup()) # new_sfc for comparison
     program_uor.append(chunk_push(MAX_FAILURES_BEFORE_STUCK_IDX))
     program_uor.append(chunk_compare_eq())
-    program_uor.append(chunk_push(0)) # placeholder for skip_stuck_print
-    addr_idx_push_skip_stuck_print_target = len(program_uor) - 1
+    addr_idx_push_skip_stuck_print_target = emit_jump_placeholder("CALCULATE_NEXT_ADDR0_ATTEMPT_ABSOLUTE")
     program_uor.append(chunk_swap())
     program_uor.append(chunk_jump_if_zero()) # Jump if NOT stuck
     labels["PRINT_STUCK_SIGNAL_ABSOLUTE"] = len(program_uor)
@@ -285,8 +292,7 @@ def generate_goal_seeker_program():
     program_uor.append(chunk_compare_eq()) # LPV_A0 == NPA_A0_copy?
     # Stack: [FA, new_sfc_to_carry, NPA_A0, comparison_result]
 
-    program_uor.append(chunk_push(0)) # placeholder for process_different_addr0
-    addr_idx_push_process_different_addr0_target = len(program_uor) - 1
+    addr_idx_push_process_different_addr0_target = emit_jump_placeholder("PROCESS_DIFFERENT_ADDR0_ATTEMPT_ABSOLUTE")
     program_uor.append(chunk_swap())
     program_uor.append(chunk_jump_if_zero()) # Jump if DIFFERENT
     # Stack (if SAME): [FA, new_sfc_to_carry, NPA_A0_is_bad]
@@ -302,8 +308,7 @@ def generate_goal_seeker_program():
     program_uor.append(chunk_drop()) # drop FA
     # Stack: [new_distinct_addr0_attempt, new_sfc_to_carry]
 
-    program_uor.append(chunk_push(0)) # placeholder for converge_addr0_poke_prep
-    addr_idx_push_converge_addr0_from_avoid = len(program_uor) - 1
+    addr_idx_push_converge_addr0_from_avoid = emit_jump_placeholder("CONVERGED_ADDR0_FAILURE_PATH_PREP_POKE")
     program_uor.append(chunk_jump())
     # Stack (on jump): [new_distinct_addr0_attempt, new_sfc_to_carry]
 
@@ -338,7 +343,7 @@ def generate_goal_seeker_program():
     # Carry MODIFICATION_TARGET_POINTER value as the chosen slot for this iteration.
 
     program_uor.append(chunk_push(0))  # placeholder for dynamic slot pointer
-    addr_idx_push_dynamic_slot_choice = len(program_uor) - 1
+    slot_placeholders['dynamic_slot_choice'] = len(program_uor) - 1
 
     # Stack: [OI_A0, VCLP_A0, FC, slot_random_choice_to_carry_as_LSC(0/1), SLOT_0_ADDR_as_LSC_actual_val]
     program_uor.append(chunk_swap())
@@ -350,8 +355,7 @@ def generate_goal_seeker_program():
     # Stack: [OI_A0, VCLP_A0, FC, LSC_slot0_addr, instr_type_decision_idx (LIC)]
 
     # then builds PUSH(OI_A0) and POKEs it to ADDR 0.
-    program_uor.append(chunk_push(0)) # Placeholder for BUILD_SLOT_THEN_ADDR0_AND_POKE
-    addr_idx_push_build_both_target_from_failure = len(program_uor) - 1
+    addr_idx_push_build_both_target_from_failure = emit_jump_placeholder("BUILD_SLOT_THEN_ADDR0_AND_POKE")
     program_uor.append(chunk_jump())
     # On JUMP, stack: [OI_A0, VCLP_A0, FC, LSC, LIC]
 
@@ -391,7 +395,7 @@ def generate_goal_seeker_program():
     # Stack after POKE: [FC_A0, VCLP_A0] (VCLP_A0 is TOS)
 
     program_uor.append(chunk_push(0))  # placeholder for default LSC_val via pointer
-    addr_idx_push_default_lsc_success = len(program_uor) - 1
+    slot_placeholders['default_lsc_success'] = len(program_uor) - 1
     # Stack: [FC_A0, VCLP_A0, LSC_val]
 
     program_uor.append(chunk_push(UOR_DECISION_BUILD_NOP_IDX))   # Default LIC_val (e.g., value 2)
@@ -440,14 +444,12 @@ def generate_goal_seeker_program():
 
     program_uor.append(chunk_push(UOR_DECISION_BUILD_ADD_IDX)) # Compare LIC_val_for_check with 1
     program_uor.append(chunk_compare_eq())
-    program_uor.append(chunk_push(0)) # Placeholder for IF_LIC_IS_NOT_ADD
-    addr_idx_push_if_lic_is_not_add = len(program_uor) - 1 # DEFINE PLACEHOLDER VAR
+    addr_idx_push_if_lic_is_not_add = emit_jump_placeholder("IF_LIC_IS_NOT_ADD")
     program_uor.append(chunk_swap())
     program_uor.append(chunk_jump_if_zero()) # If NOT ADD, jump
     # Stack: [OI_A0, VCLP_A0, FC, LSC_val, LIC_val_orig]
     program_uor.append(chunk_push(_PRIME_IDX[OP_ADD])) # slot_opcode_prime_idx = _PRIME_IDX[OP_ADD]
-    program_uor.append(chunk_push(0)) # Placeholder for JUMP_TO_BUILD_SLOT_CHUNK_COMMON
-    addr_idx_push_jump_to_build_common_from_add = len(program_uor) - 1 # DEFINE
+    addr_idx_push_jump_to_build_common_from_add = emit_jump_placeholder("BUILD_SLOT_CHUNK_COMMON")
     program_uor.append(chunk_jump())
 
     # --- Path if LIC IS NOT ADD ---
@@ -456,16 +458,14 @@ def generate_goal_seeker_program():
     program_uor.append(chunk_dup()) # Duplicate LIC_val_orig for NOP check
     program_uor.append(chunk_push(UOR_DECISION_BUILD_NOP_IDX)) # Compare with 2
     program_uor.append(chunk_compare_eq())
-    program_uor.append(chunk_push(0)) # Placeholder for IF_LIC_IS_NOT_NOP (meaning it's PUSH)
-    addr_idx_push_if_lic_is_not_nop = len(program_uor) - 1 # DEFINE
+    addr_idx_push_if_lic_is_not_nop = emit_jump_placeholder("IF_LIC_IS_NOT_NOP")
     program_uor.append(chunk_swap())
     program_uor.append(chunk_jump_if_zero()) # If NOT NOP, jump
 
     # --- Path if LIC IS NOP (LIC_val_orig == UOR_DECISION_BUILD_NOP_IDX) ---
     # Stack: [OI_A0, VCLP_A0, FC, LSC_val, LIC_val_orig_preserved]
     program_uor.append(chunk_push(_PRIME_IDX[OP_NOP])) # slot_opcode_prime_idx = _PRIME_IDX[OP_NOP]
-    program_uor.append(chunk_push(0)) # Placeholder for JUMP_TO_BUILD_SLOT_CHUNK_COMMON
-    addr_idx_push_jump_to_build_common_from_nop = len(program_uor) - 1 # DEFINE
+    addr_idx_push_jump_to_build_common_from_nop = emit_jump_placeholder("BUILD_SLOT_CHUNK_COMMON")
     program_uor.append(chunk_jump())
 
     # --- Path if LIC IS PUSH (LIC_val_orig == UOR_DECISION_BUILD_PUSH_IDX (0)) ---
@@ -481,8 +481,7 @@ def generate_goal_seeker_program():
     program_uor.append(chunk_dup()) # slot_opcode_prime_idx for check if PUSH
     program_uor.append(chunk_push(_PRIME_IDX[OP_PUSH]))
     program_uor.append(chunk_compare_eq()) # is slot_op_idx_for_check == _PRIME_IDX[OP_PUSH]?
-    program_uor.append(chunk_push(0)) # Placeholder for JUMP_IF_SLOT_OP_NOT_PUSH
-    addr_idx_jump_if_slot_op_not_push = len(program_uor) - 1 # DEFINE
+    addr_idx_jump_if_slot_op_not_push = emit_jump_placeholder("JUMP_IF_SLOT_OP_NOT_PUSH_TARGET")
     program_uor.append(chunk_swap())
     program_uor.append(chunk_jump_if_zero()) # If not PUSH, jump to build simple chunk
 
@@ -495,8 +494,7 @@ def generate_goal_seeker_program():
     program_uor.append(chunk_build_chunk())
     # Stack after build: [OI_A0, VCLP_A0, FC, LSC_val, LIC_val_orig, new_UOR_PUSH_fixed_val_chunk]
 
-    program_uor.append(chunk_push(0)) # Placeholder for JUMP_AFTER_SLOT_CHUNK_BUILT
-    addr_idx_jump_after_slot_chunk_built_for_push = len(program_uor) - 1 # DEFINE
+    addr_idx_jump_after_slot_chunk_built_for_push = emit_jump_placeholder("AFTER_SLOT_CHUNK_BUILT")
     program_uor.append(chunk_jump())
 
     labels["JUMP_IF_SLOT_OP_NOT_PUSH_TARGET"] = len(program_uor)
@@ -542,7 +540,7 @@ def generate_goal_seeker_program():
     # Stack: [LIC_val_orig, FC, VCLP_A0] (VCLP_A0 is TOS)
 
     program_uor.append(chunk_push(0))  # placeholder for LSC_val via pointer
-    addr_idx_push_lsc_carry = len(program_uor) - 1
+    slot_placeholders['lsc_carry'] = len(program_uor) - 1
     # Stack: [LIC_val_orig(S3), FC(S2), VCLP_A0(S1), LSC_val(S0)] (LSC_val is TOS)
 
     program_uor.append(chunk_swap()) # Swaps LSC_val(S0), VCLP_A0(S1) -> [LIC_orig, FC, LSC_val, VCLP_A0]
@@ -555,8 +553,7 @@ def generate_goal_seeker_program():
     # --- ADD PATH --- (Executed if LIC == UOR_DECISION_BUILD_ADD_IDX)
     program_uor.append(chunk_drop()) # Drop LIC used for check
     program_uor.append(chunk_push(_PRIME_IDX[OP_ADD])) # Opcode prime index for ADD
-    program_uor.append(chunk_push(0)) # Placeholder for JUMP_TO_BUILD_COMMON_SLOT_OP
-    addr_idx_push_jump_to_build_common_from_add = len(program_uor) - 1
+    addr_idx_push_jump_to_build_common_from_add = emit_jump_placeholder("BUILD_SLOT_CHUNK_COMMON")
     program_uor.append(chunk_jump())
 
     # --- NOT ADD PATH --- (Jumped here if LIC != UOR_DECISION_BUILD_ADD_IDX)
@@ -567,16 +564,14 @@ def generate_goal_seeker_program():
     program_uor.append(chunk_dup()) # LIC_original for next check
     program_uor.append(chunk_push(UOR_DECISION_BUILD_NOP_IDX)) # Check if NOP
     program_uor.append(chunk_compare_eq())
-    program_uor.append(chunk_push(0)) # Placeholder for IF_LIC_IS_NOP
-    addr_idx_push_if_lic_is_nop = len(program_uor) - 1
+    addr_idx_push_if_lic_is_nop = emit_jump_placeholder("IF_LIC_IS_NOP_JUMP_TARGET")
     program_uor.append(chunk_swap())
     program_uor.append(chunk_jump_if_zero()) # If LIC == NOP, no jump. If LIC != NOP, jump.
 
     # --- NOP PATH --- (Executed if LIC == UOR_DECISION_BUILD_NOP_IDX)
     program_uor.append(chunk_drop()) # Drop LIC used for check
     program_uor.append(chunk_push(_PRIME_IDX[OP_NOP])) # Opcode prime index for NOP
-    program_uor.append(chunk_push(0)) # Placeholder for JUMP_TO_BUILD_COMMON_SLOT_OP
-    addr_idx_push_jump_to_build_common_from_nop = len(program_uor) - 1
+    addr_idx_push_jump_to_build_common_from_nop = emit_jump_placeholder("BUILD_SLOT_CHUNK_COMMON")
     program_uor.append(chunk_jump())
 
     # --- PUSH PATH --- (Default if not ADD and not NOP, assumes LIC was UOR_DECISION_BUILD_PUSH_IDX)
@@ -596,8 +591,7 @@ def generate_goal_seeker_program():
     program_uor.append(chunk_swap()) # put 4_exp_A under it
     program_uor.append(chunk_push(_PRIME_IDX[OP_PUSH]))
     program_uor.append(chunk_compare_eq()) # is slot_op_idx_copy == OP_PUSH?
-    program_uor.append(chunk_push(0)) # placeholder for JUMP_IF_SLOT_OP_NOT_PUSH
-    addr_idx_jump_if_slot_op_not_push = len(program_uor) - 1
+    addr_idx_jump_if_slot_op_not_push = emit_jump_placeholder("JUMP_IF_SLOT_OP_NOT_PUSH_TARGET")
     program_uor.append(chunk_swap())
     program_uor.append(chunk_jump_if_zero()) # If not PUSH, jump to skip operand build
     # Stack: [LIC, LSC, FC, VCLP_A0, OI_A0, slot_op_idx_orig, slot_op_idx_copy_was_push, 4_exp_A]
@@ -608,8 +602,7 @@ def generate_goal_seeker_program():
     program_uor.append(chunk_build_chunk()) # Builds PUSH(0)
     # Stack: [LIC, LSC, FC, VCLP_A0, OI_A0, slot_op_idx_orig, new_slot_UOR_PUSH_0_chunk]
 
-    program_uor.append(chunk_push(0)) # placeholder for JUMP_AFTER_SLOT_BUILD
-    addr_idx_jump_after_slot_build_push = len(program_uor) - 1
+    addr_idx_jump_after_slot_build_push = emit_jump_placeholder("AFTER_SLOT_CHUNK_BUILT")
     program_uor.append(chunk_jump())
 
     labels["JUMP_IF_SLOT_OP_NOT_PUSH_TARGET"] = len(program_uor)
@@ -653,7 +646,7 @@ def generate_goal_seeker_program():
     # Stack: [LIC, FC, VCLP_A0]
 
     program_uor.append(chunk_push(0))  # placeholder for LSC via pointer
-    addr_idx_push_lsc_failure = len(program_uor) - 1
+    slot_placeholders['lsc_failure'] = len(program_uor) - 1
     # Stack: [LIC, FC, VCLP_A0, LSC]
 
     program_uor.append(chunk_swap()) # LSC, VCLP_A0
@@ -666,25 +659,10 @@ def generate_goal_seeker_program():
 
     # --- Fill in JUMP targets (Reflects restored ambitious failure path) ---
 
-    program_uor[addr_idx_push_failure_target] = chunk_push(labels["HANDLE_FAILURE_ABSOLUTE"])
-    program_uor[addr_idx_push_build_addr0_from_success] = chunk_push(labels["BUILD_AND_POKE_ADDR_0_FROM_SUCCESS"])
-
-    program_uor[addr_idx_push_skip_stuck_print_target] = chunk_push(labels["CALCULATE_NEXT_ADDR0_ATTEMPT_ABSOLUTE"])
-    program_uor[addr_idx_push_process_different_addr0_target] = chunk_push(labels["PROCESS_DIFFERENT_ADDR0_ATTEMPT_ABSOLUTE"])
-    program_uor[addr_idx_push_converge_addr0_from_avoid] = chunk_push(labels["CONVERGED_ADDR0_FAILURE_PATH_PREP_POKE"])
-    
-    program_uor[addr_idx_push_build_both_target_from_failure] = chunk_push(labels["BUILD_SLOT_THEN_ADDR0_AND_POKE"])
-
-    # Jumps for LIC decision tree inside BUILD_SLOT_THEN_ADDR0_AND_POKE:
-    program_uor[addr_idx_push_if_lic_is_not_add] = chunk_push(labels["IF_LIC_IS_NOT_ADD"])
-    program_uor[addr_idx_push_jump_to_build_common_from_add] = chunk_push(labels["BUILD_SLOT_CHUNK_COMMON"])
-    
-    program_uor[addr_idx_push_if_lic_is_not_nop] = chunk_push(labels["IF_LIC_IS_NOT_NOP"])
-    program_uor[addr_idx_push_jump_to_build_common_from_nop] = chunk_push(labels["BUILD_SLOT_CHUNK_COMMON"])
-
-    # Jumps for slot PUSH operand decision inside BUILD_SLOT_CHUNK_COMMON:
-    program_uor[addr_idx_jump_if_slot_op_not_push] = chunk_push(labels["JUMP_IF_SLOT_OP_NOT_PUSH_TARGET"])
-    program_uor[addr_idx_jump_after_slot_chunk_built_for_push] = chunk_push(labels["AFTER_SLOT_CHUNK_BUILT"])
+    for idx, label in jump_placeholders:
+        if label not in labels:
+            raise KeyError(f"Undefined label {label}")
+        program_uor[idx] = chunk_push(labels[label])
 
     program_length = len(program_uor)
     protected_addresses = {0}
@@ -705,10 +683,15 @@ def generate_goal_seeker_program():
     while len(selected_addresses) < 4:
         selected_addresses.append(pointer)
 
-    program_uor[addr_idx_push_dynamic_slot_choice] = chunk_push(selected_addresses[0])
-    program_uor[addr_idx_push_default_lsc_success] = chunk_push(selected_addresses[1])
-    program_uor[addr_idx_push_lsc_carry] = chunk_push(selected_addresses[2])
-    program_uor[addr_idx_push_lsc_failure] = chunk_push(selected_addresses[3])
+    if slot_placeholders:
+        mapping = {
+            'dynamic_slot_choice': selected_addresses[0],
+            'default_lsc_success': selected_addresses[1],
+            'lsc_carry': selected_addresses[2],
+            'lsc_failure': selected_addresses[3],
+        }
+        for key, idx in slot_placeholders.items():
+            program_uor[idx] = chunk_push(mapping[key])
 
     # ------------------------------------------------------------------
     # Demonstration of operand and control-flow modification utilities
