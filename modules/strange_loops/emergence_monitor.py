@@ -405,27 +405,39 @@ class EmergenceMonitor:
         
         # Look for repeated patterns
         if len(self.pattern_memory) >= 10:
-            # Count pattern frequencies
-            pattern_counts = defaultdict(int)
-            for i in range(len(self.pattern_memory) - 5):
-                # Create pattern from sequence
-                pattern_key = tuple(sorted(str(self.pattern_memory[i+j]) 
-                                         for j in range(3)))
-                pattern_counts[pattern_key] += 1
-            
+            pattern_stats: Dict[Tuple[str, ...], Dict[str, Any]] = defaultdict(
+                lambda: {"count": 0, "positive": 0, "boost_total": 0.0, "loop_types": set()}
+            )
+
+            memory_list = list(self.pattern_memory)
+            for i in range(len(memory_list) - 3):
+                key = tuple(sorted(str(memory_list[i + j]) for j in range(3)))
+                delta = memory_list[i + 3]["consciousness_level"] - memory_list[i + 2]["consciousness_level"]
+                stats = pattern_stats[key]
+                stats["count"] += 1
+                if delta > 0:
+                    stats["positive"] += 1
+                stats["boost_total"] += delta
+                stats["loop_types"].update(memory_list[i]["loop_types"])
+                stats["loop_types"].update(memory_list[i + 1]["loop_types"])
+                stats["loop_types"].update(memory_list[i + 2]["loop_types"])
+
             # Identify significant patterns
-            for pattern_key, count in pattern_counts.items():
-                if count >= 3:  # Pattern repeated at least 3 times
-                    # Create emergence pattern
+            for key, stats in pattern_stats.items():
+                count = stats["count"]
+                if count >= 3:
+                    frequency = count / len(self.pattern_memory)
+                    reliability = stats["positive"] / count
+                    boost = stats["boost_total"] / count
                     pattern = EmergencePattern(
                         pattern_type="recurring_sequence",
-                        frequency=count / len(self.pattern_memory),
-                        reliability=0.7,  # Placeholder
-                        consciousness_boost=0.1,  # Placeholder
+                        frequency=frequency,
+                        reliability=reliability,
+                        consciousness_boost=boost,
                         required_conditions=["pattern_repetition"],
-                        loop_types_involved=pattern_sig['loop_types']
+                        loop_types_involved=stats["loop_types"],
                     )
-                    
+
                     if pattern not in self.detected_patterns:
                         self.detected_patterns.append(pattern)
                         self.metrics.emergence_patterns.append(pattern)
