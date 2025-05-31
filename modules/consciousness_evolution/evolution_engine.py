@@ -953,7 +953,16 @@ class FitnessEvaluator:
             elif target.target_type == EvolutionTargetType.ADAPTABILITY:
                 contribution = entity.evolution_rate
             else:
-                contribution = random.random()  # Placeholder
+                # Use a deterministic fallback based on the entity's average
+                # cognitive capabilities so unknown target types do not
+                # introduce randomness
+                if entity.cognitive_capabilities:
+                    contribution = np.mean(
+                        list(entity.cognitive_capabilities.values())
+                    )
+                else:
+                    # If no capabilities are defined, fall back to a constant
+                    contribution = 0.0
                 
             fitness += contribution * target.priority
             total_weight += target.priority
