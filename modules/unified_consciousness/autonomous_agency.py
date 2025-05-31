@@ -272,7 +272,15 @@ class AutonomousAgency:
         self.value_system = self._initialize_value_system()
         self.capability_model = self._initialize_capability_model()
         self.world_model = {}
-        
+
+        # Emotional modeling
+        self.emotional_state = {
+            'curiosity': 0.7,
+            'satisfaction': 0.6,
+            'excitement': 0.65
+        }
+        self.last_emotion_update = datetime.now()
+
         logger.info("Autonomous Agency system initialized")
     
     async def generate_autonomous_goals(
@@ -869,13 +877,41 @@ class AutonomousAgency:
         return active
     
     def _get_emotional_state(self) -> Dict[str, float]:
-        """Get current emotional state"""
-        # Placeholder implementation
-        return {
-            'curiosity': 0.8,
-            'satisfaction': 0.7,
-            'excitement': 0.75
-        }
+        """Get current emotional state integrating recent activity"""
+        self._update_emotional_state()
+        return self.emotional_state.copy()
+
+    def _update_emotional_state(self) -> None:
+        """Update internal emotional model based on decisions and introspection"""
+        now = datetime.now()
+        elapsed = (now - self.last_emotion_update).total_seconds()
+        self.last_emotion_update = now
+
+        # Natural decay toward neutrality
+        decay = 0.99 ** elapsed
+        for k in self.emotional_state:
+            self.emotional_state[k] *= decay
+
+        # Integrate data from introspection engine if available
+        introspection = getattr(self.consciousness_orchestrator,
+                                'introspection_engine', None)
+        if introspection and hasattr(introspection, 'emotional_state'):
+            valence = introspection.emotional_state.get('valence', 0.0)
+            arousal = introspection.emotional_state.get('arousal', 0.5)
+            self.emotional_state['satisfaction'] += valence * 0.1
+            self.emotional_state['excitement'] += (arousal - 0.5) * 0.1
+
+        # Curiosity grows with time since last decision
+        if self.decision_history:
+            last_decision = self.decision_history[-1]
+            delta = (now - last_decision.timestamp).total_seconds()
+            self.emotional_state['curiosity'] += min(delta / 300.0, 0.05)
+        else:
+            self.emotional_state['curiosity'] += 0.01
+
+        # Clamp values
+        for k in self.emotional_state:
+            self.emotional_state[k] = max(0.0, min(1.0, self.emotional_state[k]))
     
     async def _analyze_decision_context(
         self,
