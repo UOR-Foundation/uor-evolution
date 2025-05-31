@@ -132,6 +132,66 @@ class TestDialogueQualityMetrics(unittest.TestCase):
         # Should have suggestions for weak areas
         if report.overall_quality < 0.8:
             self.assertGreater(len(suggestions), 0)
+
+    def test_logical_consistency_contradiction(self):
+        """Ensure contradictions reduce logical consistency and are tracked"""
+        turns = [
+            DialogueTurn(
+                turn_id="c1",
+                speaker="AI",
+                content="I believe consciousness is purely physical.",
+                turn_type=TurnType.STATEMENT,
+                timestamp=time.time(),
+                semantic_content=["consciousness", "physical"]
+            ),
+            DialogueTurn(
+                turn_id="c2",
+                speaker="AI",
+                content="Now I think consciousness is not physical at all.",
+                turn_type=TurnType.STATEMENT,
+                timestamp=time.time() + 1,
+                semantic_content=["consciousness", "non-physical"]
+            )
+        ]
+
+        self.session.turns = turns
+        self.session.end_time = time.time() + 2
+
+        score = self.analyzer._assess_logical_consistency(self.session)
+
+        self.assertLess(score, 1.0)
+        self.assertIn("AI", self.session.context["positions"])
+        self.assertEqual(len(self.session.context["positions"]["AI"]), 2)
+        self.assertEqual(self.session.context["contradictions"], 1)
+
+    def test_logical_consistency_no_contradiction(self):
+        """Ensure consistent positions yield maximum score"""
+        turns = [
+            DialogueTurn(
+                turn_id="nc1",
+                speaker="AI",
+                content="I believe consciousness is complex.",
+                turn_type=TurnType.STATEMENT,
+                timestamp=time.time(),
+                semantic_content=["consciousness"]
+            ),
+            DialogueTurn(
+                turn_id="nc2",
+                speaker="AI",
+                content="I still think consciousness is complex and multifaceted.",
+                turn_type=TurnType.STATEMENT,
+                timestamp=time.time() + 1,
+                semantic_content=["consciousness"]
+            )
+        ]
+
+        self.session.turns = turns
+        self.session.end_time = time.time() + 2
+
+        score = self.analyzer._assess_logical_consistency(self.session)
+
+        self.assertEqual(score, 1.0)
+        self.assertEqual(self.session.context["contradictions"], 0)
     
     def _add_sample_dialogue_turns(self):
         """Add sample dialogue turns for testing"""

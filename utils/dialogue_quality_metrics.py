@@ -1153,17 +1153,63 @@ class DialogueQualityAnalyzer:
     
     def _assess_logical_consistency(self, session: DialogueSession) -> float:
         """Assess logical consistency across dialogue"""
-        # Simplified - check for contradictions
-        positions = {}
-        
+        # Track stated positions for each speaker and look for contradictions
+        positions: Dict[str, List[str]] = defaultdict(list)
+        contradictions = 0
+        total_positions = 0
+
         for turn in session.turns:
-            # Extract position statements (simplified)
-            if "believe" in turn.content or "think" in turn.content:
-                positions[turn.speaker] = positions.get(turn.speaker, []) + [turn.content]
-        
-        # Check for contradictions within same speaker
-        # This is simplified - real implementation would be more sophisticated
-        return 0.8  # Placeholder
+            content_lower = turn.content.lower()
+
+            # Identify position statements in a very simple way
+            if "believe" in content_lower or "think" in content_lower:
+                total_positions += 1
+
+                # Compare against previous positions from the same speaker
+                for prev in positions[turn.speaker]:
+                    if self._are_contradictory(prev, content_lower):
+                        contradictions += 1
+                        break
+
+                positions[turn.speaker].append(content_lower)
+
+        # Store tracking information in session context for inspection
+        session.context["positions"] = positions
+        session.context["contradictions"] = contradictions
+
+        if total_positions == 0:
+            return 1.0
+
+        # Consistency decreases with more contradictions
+        return max(0.0, 1.0 - contradictions / total_positions)
+
+    def _are_contradictory(self, statement1: str, statement2: str) -> bool:
+        """Simple check for contradictory statements"""
+        s1 = statement1.lower()
+        s2 = statement2.lower()
+
+        # Explicit negation pattern
+        if " not " in s1 and s1.replace(" not ", " ").strip() == s2.strip():
+            return True
+        if " not " in s2 and s2.replace(" not ", " ").strip() == s1.strip():
+            return True
+
+        opposites = [
+            ("true", "false"),
+            ("exist", "not exist"),
+            ("possible", "impossible"),
+            ("necessary", "contingent"),
+            ("physical", "non-physical"),
+            ("material", "immaterial"),
+        ]
+
+        for a, b in opposites:
+            if a in s1 and b in s2:
+                return True
+            if b in s1 and a in s2:
+                return True
+
+        return False
     
     def _assess_conceptual_precision(self, session: DialogueSession) -> float:
         """Assess precision of concept usage"""
