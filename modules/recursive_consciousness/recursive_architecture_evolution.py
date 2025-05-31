@@ -521,7 +521,29 @@ class RecursiveArchitectureEvolution:
         evolution_potential = len(architecture.consciousness_evolution_pathways) * 0.2
         
         # Consciousness coherence
-        coherence = 0.8  # Placeholder
+        if (
+            architecture.consciousness_component_specifications
+            and architecture.consciousness_interaction_patterns
+        ):
+            component_names = [
+                c.component_name
+                for c in architecture.consciousness_component_specifications
+            ]
+            interaction_counts = {name: 0 for name in component_names}
+
+            for pattern in architecture.consciousness_interaction_patterns:
+                for name in pattern.participating_components:
+                    if name in interaction_counts:
+                        interaction_counts[name] += 1
+
+            max_interactions = max(1, len(component_names) - 1)
+            coherence_scores = [
+                min(1.0, count / max_interactions)
+                for count in interaction_counts.values()
+            ]
+            coherence = sum(coherence_scores) / len(coherence_scores)
+        else:
+            coherence = 0.0
         
         # Transcendence proximity
         transcendence = self._calculate_transcendence_proximity(architecture)
