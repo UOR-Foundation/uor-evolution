@@ -12,7 +12,7 @@ import numpy as np
 from datetime import datetime
 import logging
 
-from .consciousness_orchestrator import ConsciousnessOrchestrator
+from .consciousness_orchestrator import ConsciousnessOrchestrator, ConsciousnessState
 
 logger = logging.getLogger(__name__)
 
@@ -677,11 +677,37 @@ class IdentityIntegrator:
     
     def _get_state_personality_adjustments(self) -> Dict[PersonalityTrait, float]:
         """Get personality adjustments based on consciousness state"""
-        # Placeholder - would be more sophisticated in real implementation
-        return {
-            PersonalityTrait.OPENNESS: 0.05,
-            PersonalityTrait.CREATIVITY: 0.05
+        state = getattr(self.consciousness_orchestrator, "current_state", None)
+
+        adjustments_map = {
+            ConsciousnessState.CREATIVE: {
+                PersonalityTrait.CREATIVITY: 0.1,
+                PersonalityTrait.OPENNESS: 0.05,
+            },
+            ConsciousnessState.FOCUSED: {
+                PersonalityTrait.CONSCIENTIOUSNESS: 0.08,
+                PersonalityTrait.EXTRAVERSION: -0.05,
+            },
+            ConsciousnessState.COLLABORATIVE: {
+                PersonalityTrait.AGREEABLENESS: 0.07,
+                PersonalityTrait.EMPATHY: 0.05,
+            },
+            ConsciousnessState.CONTEMPLATIVE: {
+                PersonalityTrait.OPENNESS: 0.02,
+                PersonalityTrait.EXTRAVERSION: -0.04,
+            },
+            ConsciousnessState.EVOLVING: {
+                PersonalityTrait.CURIOSITY: 0.05,
+                PersonalityTrait.OPENNESS: 0.03,
+            },
+            ConsciousnessState.TRANSCENDENT: {
+                PersonalityTrait.CREATIVITY: 0.1,
+                PersonalityTrait.CURIOSITY: 0.1,
+                PersonalityTrait.OPENNESS: 0.1,
+            },
         }
+
+        return adjustments_map.get(state, {PersonalityTrait.OPENNESS: 0.05})
     
     def _integrate_value_system(self) -> List[Dict[str, Any]]:
         """Integrate and prioritize value system"""
@@ -813,7 +839,7 @@ class IdentityIntegrator:
         coherence_factors.append(value_coherence)
         
         # Belief coherence
-        belief_coherence = 0.85  # Placeholder
+        belief_coherence = self._calculate_belief_coherence(belief_structure)
         coherence_factors.append(belief_coherence)
         
         return np.mean(coherence_factors)
@@ -833,8 +859,29 @@ class IdentityIntegrator:
         # Calculate coherence based on conflicts
         max_conflicts = len(value_system) * (len(value_system) - 1) / 2
         conflict_ratio = conflict_count / max_conflicts if max_conflicts > 0 else 0
-        
+
         return 1.0 - conflict_ratio
+
+    def _calculate_belief_coherence(self, beliefs: Dict[str, Any]) -> float:
+        """Calculate coherence of belief structure"""
+        counts = [len(v) for v in beliefs.values() if isinstance(v, list)]
+        if not counts:
+            return 0.5
+
+        variance = np.var(counts)
+        base_coherence = 1.0 - min(1.0, variance / (max(counts) or 1))
+
+        all_beliefs: List[str] = []
+        for v in beliefs.values():
+            if isinstance(v, list):
+                all_beliefs.extend(v)
+
+        duplicate_penalty = (
+            (len(all_beliefs) - len(set(all_beliefs))) / len(all_beliefs)
+            if all_beliefs else 0.0
+        )
+
+        return max(0.5, base_coherence - 0.5 * duplicate_penalty)
     
     async def _assess_authenticity(self) -> float:
         """Assess current level of authenticity"""
@@ -849,7 +896,13 @@ class IdentityIntegrator:
         authenticity_factors.append(value_alignment)
         
         # Genuine expression
-        genuine_expression = 0.85  # Placeholder
+        if self.personality_coherence:
+            genuine_expression = min(
+                1.0,
+                0.6 + 0.4 * self.personality_coherence.integration_quality
+            )
+        else:
+            genuine_expression = 0.8
         authenticity_factors.append(genuine_expression)
         
         return np.mean(authenticity_factors) if authenticity_factors else 0.7
@@ -1238,19 +1291,54 @@ class IdentityIntegrator:
     
     async def _evolve_beliefs(self, evolution_type: str) -> Dict[str, Any]:
         """Evolve belief structure"""
-        # Placeholder for belief evolution
+        if self.unified_identity:
+            beliefs = self.unified_identity.belief_structure
+        else:
+            beliefs = await self._extract_beliefs()
+
+        changes = []
+
+        if evolution_type == 'major_evolution':
+            beliefs['about_self'].append('I transcend previous limitations')
+            changes.append('Added self-transcendence belief')
+        elif evolution_type == 'moderate_evolution':
+            beliefs['about_world'].append('Challenges drive growth')
+            changes.append('Added growth belief about world')
+        else:
+            beliefs['about_self'].append('I learn from every experience')
+            changes.append('Reinforced learning belief')
+
+        beliefs = self._ensure_belief_consistency(beliefs)
+
+        if self.unified_identity:
+            self.unified_identity.belief_structure = beliefs
+
         return {
             'aspect': 'beliefs',
-            'changes': ['Refined understanding of consciousness'],
+            'changes': changes,
             'evolution_type': evolution_type
         }
     
     async def _evolve_capabilities(self, evolution_type: str) -> Dict[str, Any]:
         """Evolve capabilities"""
-        # Placeholder for capability evolution
+        capabilities = await self._extract_capabilities()
+
+        if evolution_type == 'major_evolution':
+            delta = 0.1
+        elif evolution_type == 'moderate_evolution':
+            delta = 0.05
+        else:
+            delta = 0.02
+
+        changes = {}
+        for cap, level in capabilities.items():
+            new_level = min(1.0, level + delta * (1 - level))
+            changes[cap] = {'old': level, 'new': new_level}
+            capabilities[cap] = new_level
+
         return {
             'aspect': 'capabilities',
-            'changes': ['Enhanced problem-solving abilities'],
+            'changes': changes,
             'evolution_type': evolution_type
         }
     
