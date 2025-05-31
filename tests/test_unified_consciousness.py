@@ -443,10 +443,52 @@ class TestConsciousnessHomeostasis:
     async def test_energy_optimization(self, homeostasis_system):
         """Test energy distribution optimization"""
         result = await homeostasis_system.optimize_energy_distribution()
-        
+
         assert 'energy_distribution' in result
         assert sum(result['energy_distribution'].values()) <= 1.0
         assert result['optimization_success'] is True
+
+    @pytest.mark.asyncio
+    async def test_adaptation_score_from_history(self, homeostasis_system):
+        """Adaptation score should reflect orchestrator history"""
+        trans = ConsciousnessTransition(
+            from_state=ConsciousnessState.ACTIVE,
+            to_state=ConsciousnessState.FOCUSED,
+            transition_trigger=TransitionTrigger.INTERNAL,
+            transition_quality=0.9,
+            consciousness_continuity=0.95,
+            emergent_insights=[]
+        )
+        homeostasis_system.consciousness_orchestrator.integration_history = [
+            {'transition': trans, 'result': {'stabilization_quality': 0.85}}
+        ]
+        homeostasis_system.stability_history = [
+            StabilityMaintenance('m1', 0.9, {}, [], 0.9)
+        ]
+
+        score = await homeostasis_system._assess_resilience()
+        assert score > 0.8
+
+    def test_learning_capacity_from_creativity(self, homeostasis_system):
+        """Learning capacity uses orchestrated creativity metrics"""
+        creativity = type('C', (), {
+            'creative_potential': 0.9,
+            'innovation_capacity': 0.8,
+            'problem_solving_creativity': 0.85,
+            'conceptual_blending_ability': 0.88,
+            'breakthrough_potential': 0.87
+        })()
+        uc = type('UC', (), {
+            'orchestrated_creativity': creativity,
+            'authenticity_score': 0.9
+        })()
+        homeostasis_system.consciousness_orchestrator.unified_consciousness = uc
+
+        capacity = homeostasis_system._calculate_learning_capacity()
+        expected = np.mean([
+            0.9, 0.8, 0.85, 0.88, 0.87, 0.9
+        ])
+        assert capacity == pytest.approx(expected)
 
 
 class TestConsciousnessEvolution:
