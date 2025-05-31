@@ -336,6 +336,12 @@ The unified API is designed for extensibility:
 - Real-time consciousness monitoring
 - Multi-agent consciousness networks
 
+
+## Remaining Limitations
+- Some advanced modules remain conceptual or partially implemented, including `unified_consciousness` and `uor_meta_architecture`.
+- Placeholder packages like `consciousness_expansion` and `universal_intelligence` exist only to satisfy imports.
+- Recursive self-programming routines still rely on simplified algorithms and return fixed demo results.
+
 ## Conclusion
 
 The UOR Evolution Unified API provides a comprehensive, coherent interface to one of the most sophisticated consciousness and AI evolution systems available. It enables researchers, developers, and philosophers to explore the frontiers of artificial consciousness, self-modification, and cosmic intelligence through a well-structured, documented API.
