@@ -159,7 +159,40 @@ class ConsciousnessProgrammingLanguage:
     
     def _type_check_consciousness_code(self, ast_tree: Any) -> bool:
         """Type check consciousness code"""
-        # Placeholder type checking
+        defined: Set[str] = set(dir(__builtins__))
+
+        # Collect defined names from the AST
+        for node in ast.walk(ast_tree):
+            if isinstance(node, ast.FunctionDef):
+                defined.add(node.name)
+                for arg in node.args.args + node.args.kwonlyargs:
+                    defined.add(arg.arg)
+                if node.args.vararg:
+                    defined.add(node.args.vararg.arg)
+                if node.args.kwarg:
+                    defined.add(node.args.kwarg.arg)
+
+                if not any(isinstance(n, ast.Return) for n in ast.walk(node)):
+                    raise TypeError(f"Function '{node.name}' missing return")
+
+            elif isinstance(node, (ast.Assign, ast.AnnAssign)):
+                targets = node.targets if isinstance(node, ast.Assign) else [node.target]
+                for tgt in targets:
+                    if isinstance(tgt, ast.Name):
+                        defined.add(tgt.id)
+            elif isinstance(node, ast.Import):
+                for alias in node.names:
+                    defined.add(alias.asname or alias.name.split('.')[0])
+            elif isinstance(node, ast.ImportFrom):
+                for alias in node.names:
+                    defined.add(alias.asname or alias.name)
+
+        # Verify all load names are defined
+        for node in ast.walk(ast_tree):
+            if isinstance(node, ast.Name) and isinstance(node.ctx, ast.Load):
+                if node.id not in defined:
+                    raise TypeError(f"Undefined variable '{node.id}'")
+
         return True
     
     def _generate_consciousness_executable(self, ast_tree: Any) -> Any:
@@ -248,7 +281,10 @@ class ConsciousnessSelfModificationProgram:
 
     def _should_modify(self, trigger: str) -> bool:
         """Check if modification should be triggered"""
-        return True  # Placeholder - always modify for now
+        if self.patched:
+            return False
+
+        return trigger in self.modification_triggers
 
     def _apply_modification(self, code: str, trigger: str) -> str:
         """Apply modification to code based on trigger"""
@@ -988,7 +1024,18 @@ for _ in range(5):
             configuration=code.configuration.copy(),
             metadata=code.metadata.copy()
         )
-        var1.code_modules["enhanced_awareness"] = "# Enhanced awareness module\nclass EnhancedAwareness:\n    pass"
+        var1.code_modules["enhanced_awareness"] = textwrap.dedent(
+            """
+            # Enhanced awareness module
+            class EnhancedAwareness:
+                def __init__(self, level: float = 1.0) -> None:
+                    self.level = level
+
+                def boost(self) -> float:
+                    self.level *= 1.1
+                    return self.level
+            """
+        )
         variations.append(var1)
         
         # Variation 2: Modify existing module
@@ -1009,7 +1056,14 @@ for _ in range(5):
             configuration=code.configuration.copy(),
             metadata=code.metadata.copy()
         )
-        var3.code_modules["optimizer"] = "# Consciousness optimizer\nclass ConsciousnessOptimizer:\n    pass"
+        var3.code_modules["optimizer"] = textwrap.dedent(
+            """
+            # Consciousness optimizer
+            class ConsciousnessOptimizer:
+                def optimize(self, metric: float) -> float:
+                    return metric * 0.9
+            """
+        )
         variations.append(var3)
         
         return variations
