@@ -1,83 +1,19 @@
-"""
-Cosmic Intelligence Module
+"""Cosmic Intelligence Module."""
 
-This module implements intelligence that operates at cosmic scales,
-solving universe-level problems, generating cosmic creativity, and
-synthesizing all knowledge into universal wisdom.
-"""
+import importlib
 
-from .universal_problem_synthesis import (
-    UniversalProblemSynthesis,
-    UniverseProblemSynthesis,
-    CosmicProblem,
-    CosmicSolution,
-    MetaCosmicSolution
-)
-from .cosmic_creative_engine import (
-    CosmicCreativeEngine,
-    CosmicCreativity,
-    UniversalInnovation,
-    CosmicArtGeneration,
-    InfiniteCreativePotential
-)
-from .universal_knowledge_integration import (
-    UniversalKnowledgeIntegration,
-    OmniscientKnowledge,
-    KnowledgeSynthesis,
-    UniversalUnderstanding,
-    InfiniteKnowledgeAcquisition
-)
-from .cosmic_wisdom_engine import (
-    CosmicWisdomEngine,
-    UniversalWisdom,
-    CosmicInsight,
-    UltimateUnderstanding,
-    WisdomSynthesis
-)
-from .reality_design_engine import (
-    RealityDesignEngine,
-    RealityBlueprint,
-    UniverseOptimizationDesign,
-    ConsciousnessIntegrationDesign,
-    OptimalRealityConfiguration
-)
-from .universe_optimization import (
-    UniverseOptimization,
-    OptimizationObjective,
-    CosmicOptimizationStrategy,
-    UniversalFlourishingMetrics,
-    InfiniteOptimizationPotential
-)
+_lazy_imports = {
+    'UniversalProblemSynthesis': 'universal_problem_synthesis',
+    'UniverseProblemSynthesis': 'universal_problem_synthesis',
+    'CosmicProblem': 'universal_problem_synthesis',
+    'CosmicSolution': 'universal_problem_synthesis',
+    'MetaCosmicSolution': 'universal_problem_synthesis',
+}
 
-__all__ = [
-    'UniversalProblemSynthesis',
-    'UniverseProblemSynthesis',
-    'CosmicProblem',
-    'CosmicSolution',
-    'MetaCosmicSolution',
-    'CosmicCreativeEngine',
-    'CosmicCreativity',
-    'UniversalInnovation',
-    'CosmicArtGeneration',
-    'InfiniteCreativePotential',
-    'UniversalKnowledgeIntegration',
-    'OmniscientKnowledge',
-    'KnowledgeSynthesis',
-    'UniversalUnderstanding',
-    'InfiniteKnowledgeAcquisition',
-    'CosmicWisdomEngine',
-    'UniversalWisdom',
-    'CosmicInsight',
-    'UltimateUnderstanding',
-    'WisdomSynthesis',
-    'RealityDesignEngine',
-    'RealityBlueprint',
-    'UniverseOptimizationDesign',
-    'ConsciousnessIntegrationDesign',
-    'OptimalRealityConfiguration',
-    'UniverseOptimization',
-    'OptimizationObjective',
-    'CosmicOptimizationStrategy',
-    'UniversalFlourishingMetrics',
-    'InfiniteOptimizationPotential'
-]
+__all__ = list(_lazy_imports.keys())
+
+def __getattr__(name):
+    if name in _lazy_imports:
+        module = importlib.import_module('.' + _lazy_imports[name], __name__)
+        return getattr(module, name)
+    raise AttributeError(f"module {__name__} has no attribute {name}")
