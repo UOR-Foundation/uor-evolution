@@ -6,81 +6,8 @@ import pytest
 import asyncio
 from datetime import datetime, timedelta
 from unittest.mock import Mock, AsyncMock, patch
-try:
-    import numpy as np
-except Exception:  # pragma: no cover - allow running without numpy
-    import math
-
-    class _FakeNP:
-        @staticmethod
-        def mean(values):
-            return sum(values) / len(values) if values else 0.0
-
-        @staticmethod
-        def clip(x, a, b):
-            return max(a, min(b, x))
-
-        @staticmethod
-        def isscalar(obj):
-            return isinstance(obj, (int, float))
-
-        ndarray = list
-
-    np = _FakeNP()
-    import sys
-    sys.modules.setdefault("numpy", np)
-
-import types
-
-# Stub modules required by the orchestrator to avoid heavy dependencies
-_stub_names = [
-    "consciousness.consciousness_core",
-    "consciousness.multi_level_awareness",
-    "consciousness.recursive_self_model",
-    "modules.strange_loops.loop_factory",
-    "modules.analogical_reasoning.analogy_engine",
-    "modules.creative_engine.creativity_core",
-    "modules.natural_language.consciousness_narrator",
-    "modules.philosophical_reasoning.consciousness_philosopher",
-    "modules.relational_intelligence.collaborative_creativity",
-    "modules.communication.emotion_articulator",
-]
-
-for name in _stub_names:
-    if name not in sys.modules:
-        module = types.ModuleType(name)
-        attr = name.split(".")[-1]
-        class_name = "".join(part.capitalize() for part in attr.split("_"))
-        setattr(module, class_name, object)
-        sys.modules[name] = module
-
-class _FakeGraph:
-    def __init__(self, nodes=0, edges=0):
-        self._nodes = nodes
-        self._edges = edges
-
-    def number_of_nodes(self):
-        return self._nodes
-
-    def number_of_edges(self):
-        return self._edges
-
-
-class _FakeNX:
-    Graph = _FakeGraph
-
-    def watts_strogatz_graph(self, n, k, p):
-        return _FakeGraph(n, n * k // 2)
-
-    def barabasi_albert_graph(self, n, m):
-        return _FakeGraph(n, n * m)
-
-    def complete_graph(self, n):
-        return _FakeGraph(n, n * (n - 1) // 2)
-
-
-sys.modules.setdefault("networkx", _FakeNX())
-
+import numpy as np
+import networkx as nx
 import importlib.util
 import os
 

@@ -1,84 +1,25 @@
 import asyncio
-import sys
 import builtins
+from tests.helpers import stubs
 
-# Provide missing PrimeInstruction if needed
 import core.instruction_set as _instruction_set
 if not hasattr(_instruction_set, "PrimeInstruction"):
-    class PrimeInstruction:  # minimal placeholder
-        pass
-    _instruction_set.PrimeInstruction = PrimeInstruction
+    _instruction_set.PrimeInstruction = stubs.PrimeInstruction
 
-# Provide minimal StateTransitionManager for consciousness imports
 if not hasattr(builtins, "StateTransitionManager"):
-    class StateTransitionManager:  # minimal placeholder
-        def get_possible_transitions(self, state):
-            return []
+    builtins.StateTransitionManager = stubs.StateTransitionManager
 
-        def execute_transition(self, transition):
-            return None
-
-    builtins.StateTransitionManager = StateTransitionManager
-
-# Provide LoopFactory alias if missing
-import types
-import enum
-
-# Stub orchestrator module to avoid heavy imports
-fake_orch = types.ModuleType("modules.unified_consciousness.consciousness_orchestrator")
-class ConsciousnessState(enum.Enum):
-    DORMANT = "dormant"
-    AWAKENING = "awakening"
-    ACTIVE = "active"
-    FOCUSED = "focused"
-    CREATIVE = "creative"
-    CONTEMPLATIVE = "contemplative"
-    COLLABORATIVE = "collaborative"
-    EVOLVING = "evolving"
-    TRANSCENDENT = "transcendent"
-
-class ConsciousnessOrchestrator:  # minimal placeholder
-    def __init__(self):
-        self.current_state = ConsciousnessState.DORMANT
-
-class UnifiedConsciousness:
-    pass
-
-class CoordinationResult:
-    pass
-
-class ConsciousnessTransition:
-    pass
-
-fake_orch.ConsciousnessOrchestrator = ConsciousnessOrchestrator
-fake_orch.ConsciousnessState = ConsciousnessState
-fake_orch.UnifiedConsciousness = UnifiedConsciousness
-fake_orch.CoordinationResult = CoordinationResult
-fake_orch.ConsciousnessTransition = ConsciousnessTransition
-sys.modules.setdefault(
-    "modules.unified_consciousness.consciousness_orchestrator", fake_orch
+from modules.unified_consciousness.consciousness_orchestrator import ConsciousnessState
+from modules.unified_consciousness.identity_integration import (
+    IdentityIntegrator,
+    UnifiedIdentity,
+    PersonalityTrait,
+    PersonalityCoherence,
 )
 
 from unittest.mock import Mock, AsyncMock
 import pytest
 import numpy as np
-
-import importlib.util
-spec = importlib.util.spec_from_file_location(
-    "modules.unified_consciousness.identity_integration",
-    "modules/unified_consciousness/identity_integration.py",
-)
-identity_integration = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(identity_integration)  # type: ignore
-sys.modules.setdefault(
-    "modules.unified_consciousness.identity_integration", identity_integration
-)
-
-IdentityIntegrator = identity_integration.IdentityIntegrator
-UnifiedIdentity = identity_integration.UnifiedIdentity
-PersonalityTrait = identity_integration.PersonalityTrait
-PersonalityCoherence = identity_integration.PersonalityCoherence
-ConsciousnessState = fake_orch.ConsciousnessState
 
 class DummyOrchestrator:
     def __init__(self, state):
