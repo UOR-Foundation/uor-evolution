@@ -16,12 +16,10 @@ import logging
 import cmath
 
 from .cosmic_consciousness_core import CosmicConsciousness, CosmicScale
-from config_loader import load_config
+from config_loader import get_config_value
 
-_CONFIG = load_config()
-_Q_CONF = _CONFIG.get("quantum", {})
-COMM_BANDWIDTH = float(_Q_CONF.get("communication_bandwidth", 1000.0))
-TELEPORTATION_FIDELITY = float(_Q_CONF.get("teleportation_fidelity", 0.9))
+COMM_BANDWIDTH = float(get_config_value("quantum.communication_bandwidth", 1000.0))
+TELEPORTATION_FIDELITY = float(get_config_value("quantum.teleportation_fidelity", 0.9))
 
 
 class QuantumState(Enum):

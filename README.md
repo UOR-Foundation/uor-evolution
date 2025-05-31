@@ -161,6 +161,30 @@ The interaction between the UOR program (Learner) and the Flask backend (Teacher
     `consciousness_physics`, `quantum`, and `reality_interface` contain
     defaults for bandwidth, fidelity, and energy limits used by the more
     advanced modules.
+
+### Configuration Reference
+
+The ``config.yaml`` file provides default values used throughout the project.
+Important keys include:
+
+* ``vm.log_file`` – file path for VM event logs.
+* ``vm.max_instructions`` – instruction limit before halting.
+* ``teacher.difficulty`` – starting difficulty level for the adaptive teacher.
+* ``teacher.alert_email`` – address to notify on critical errors.
+* ``difficulty_levels`` – per-level settings such as ``range_max`` and
+  thresholds.
+* ``benchmark.iterations`` – iteration count for benchmarking utilities.
+* ``consciousness_physics`` – physical constants used by advanced modules
+  (``information_transfer_rate``, ``consciousness_bandwidth``,
+  ``info_reality_bridge_bandwidth``, ``info_reality_bridge_fidelity``).
+* ``quantum`` – quantum communication parameters
+  (``communication_bandwidth``, ``teleportation_fidelity``,
+  ``fidelity_threshold``).
+* ``reality_interface`` – limits for information/matter interfaces
+  (``energy_limit``, ``info_matter_bandwidth``, ``info_matter_fidelity``).
+
+These values can be overridden at runtime via ``get_config_value`` in
+``config_loader`` if custom behaviour is required.
 4.  **Access the Frontend:**
     Open your web browser and navigate to `http://127.0.0.1:5000/`.
 
