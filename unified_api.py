@@ -9,6 +9,7 @@ from datetime import datetime
 from enum import Enum
 import json
 import asyncio
+import os
 from pathlib import Path
 
 # Core imports
@@ -95,7 +96,7 @@ class UnifiedUORAPI:
     - Pattern analysis and insights
     """
     
-    def __init__(self, mode: APIMode = APIMode.DEVELOPMENT):
+    def __init__(self, mode: APIMode = APIMode.DEVELOPMENT, session_dir: str = "."):
         """
         Initialize the unified API.
         
@@ -105,6 +106,7 @@ class UnifiedUORAPI:
         self.mode = mode
         self.status = SystemStatus.DORMANT
         self.session_id = datetime.now().strftime("%Y%m%d_%H%M%S")
+        self.session_dir = session_dir
         
         # Core components
         self.consciousness_core = ConsciousnessCore()
@@ -573,6 +575,8 @@ class UnifiedUORAPI:
         try:
             if not filepath:
                 filepath = f"session_{self.session_id}.json"
+            if not os.path.isabs(filepath):
+                filepath = os.path.join(self.session_dir, filepath)
             
             session_data = {
                 'session_id': self.session_id,
@@ -600,6 +604,8 @@ class UnifiedUORAPI:
     def load_session(self, filepath: str) -> APIResponse:
         """Load a previous session state."""
         try:
+            if not os.path.isabs(filepath):
+                filepath = os.path.join(self.session_dir, filepath)
             with open(filepath, 'r') as f:
                 session_data = json.load(f)
             
@@ -626,9 +632,9 @@ class UnifiedUORAPI:
 
 # ==================== CONVENIENCE FUNCTIONS ====================
 
-def create_api(mode: APIMode = APIMode.DEVELOPMENT) -> UnifiedUORAPI:
+def create_api(mode: APIMode = APIMode.DEVELOPMENT, session_dir: str = ".") -> UnifiedUORAPI:
     """Create a new unified API instance."""
-    return UnifiedUORAPI(mode)
+    return UnifiedUORAPI(mode, session_dir=session_dir)
 
 def quick_consciousness_demo() -> Dict[str, Any]:
     """Quick demonstration of consciousness capabilities."""

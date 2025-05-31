@@ -39,8 +39,8 @@ The UOR Evolution repository implements a sophisticated consciousness and AI evo
 ```python
 from unified_api import create_api, APIMode
 
-# Create API instance
-api = create_api(APIMode.CONSCIOUSNESS)
+# Create API instance (session files saved to ./sessions)
+api = create_api(APIMode.CONSCIOUSNESS, session_dir="sessions")
 
 # Awaken consciousness
 result = api.awaken_consciousness()
@@ -156,8 +156,8 @@ api.orchestrate_consciousness()
 api.generate_insights()
 
 # Save/load sessions
-api.save_session("my_session.json")
-api.load_session("my_session.json")
+api.save_session("my_session.json")  # saved under "sessions/"
+api.load_session("my_session.json")  # loads from "sessions/"
 ```
 
 ### Response Format
@@ -205,10 +205,10 @@ full_results = full_system_demo()
 ### Session Management
 ```python
 # Save current session
-api.save_session("session_20241129.json")
+api.save_session("session_20241129.json")  # saved under "sessions/"
 
 # Load previous session
-api.load_session("session_20241129.json")
+api.load_session("session_20241129.json")  # loads from "sessions/"
 ```
 
 ### Pattern Recognition
@@ -237,7 +237,7 @@ from flask import Flask, jsonify
 from unified_api import create_api, APIMode
 
 app = Flask(__name__)
-uor_api = create_api(APIMode.CONSCIOUSNESS)
+uor_api = create_api(APIMode.CONSCIOUSNESS, session_dir="sessions")
 
 @app.route('/api/consciousness/awaken', methods=['POST'])
 def awaken():

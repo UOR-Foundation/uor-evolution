@@ -58,7 +58,7 @@ python demo_unified_api.py
 from unified_api import create_api, APIMode
 
 # Create API instance
-api = create_api(APIMode.CONSCIOUSNESS)
+api = create_api(APIMode.CONSCIOUSNESS, session_dir="sessions")
 
 # Awaken consciousness
 result = api.awaken_consciousness()
@@ -208,10 +208,10 @@ Save and restore system state:
 
 ```python
 # Save current session
-api.save_session("my_session.json")
+api.save_session("my_session.json")  # saved under "sessions/"
 
 # Load previous session
-api.load_session("my_session.json")
+api.load_session("my_session.json")  # loads from "sessions/"
 ```
 
 ## 🌐 Web Integration
