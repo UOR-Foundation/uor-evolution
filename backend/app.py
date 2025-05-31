@@ -3,9 +3,12 @@ import os
 import sys
 import random
 import datetime
+import logging
 from typing import List, Optional, Tuple
 
 from config_loader import load_config, get_config_value
+
+logger = logging.getLogger(__name__)
 
 PRIME_IDX_SUCCESS = 1 # Represents the prime index for "true" or success
 PRIME_IDX_FAILURE = 0 # Represents the prime index for "false" or failure
@@ -40,6 +43,9 @@ def get_debug_flag() -> bool:
 
 DEBUG_MODE = get_debug_flag()
 
+if not logger.handlers:
+    logging.basicConfig(level=logging.DEBUG if DEBUG_MODE else logging.INFO)
+
 from phase1_vm_enhancements import (
     vm_execute, # For the main VM
     _PRIMES as VM_PRIMES, _PRIME_IDX as VM_PRIME_IDX, get_prime as vm_get_prime, 
@@ -60,7 +66,7 @@ def append_to_log(message: str):
         with open(LOG_FILE_PATH, "a", encoding="utf-8") as f:
             f.write(f"[{timestamp}] {message}\n")
     except Exception as e:
-        print(f"Error writing to log file: {e}", file=sys.stderr)
+        logger.debug(f"Error writing to log file: {e}")
 
 # --- Flask App Setup ---
 app = Flask(__name__, static_folder=os.path.join(PROJECT_ROOT, 'frontend'), static_url_path='')
