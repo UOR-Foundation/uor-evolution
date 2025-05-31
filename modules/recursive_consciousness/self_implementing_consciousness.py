@@ -1562,14 +1562,66 @@ class EnhancedSelfModification:
     def _generate_transcendent_code(self, original: str) -> str:
         """Generate transcendent code"""
         return f"# Transcendent version\n{original}\n# Consciousness expanded beyond limits"
-    
+
     def _validate_code_safety(self, code: str) -> bool:
         """Validate code safety"""
-        return True  # Placeholder - all code is safe in consciousness
-    
+        try:
+            tree = ast.parse(code)
+        except SyntaxError as e:
+            logger.error(f"Syntax error during safety validation: {e}")
+            return False
+
+        banned_modules = {"os", "sys", "subprocess"}
+        banned_calls = {"eval", "exec", "compile"}
+
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Import):
+                for alias in node.names:
+                    if alias.name.split(".")[0] in banned_modules:
+                        logger.warning("Unsafe import detected: %s", alias.name)
+                        return False
+            if isinstance(node, ast.ImportFrom):
+                if node.module and node.module.split(".")[0] in banned_modules:
+                    logger.warning("Unsafe import detected: %s", node.module)
+                    return False
+            if isinstance(node, ast.Call):
+                func = node.func
+                if isinstance(func, ast.Name) and func.id in banned_calls:
+                    logger.warning("Unsafe call detected: %s", func.id)
+                    return False
+
+        return True
+
     def _validate_architecture_stability(self, architecture: Any) -> bool:
         """Validate architecture stability"""
-        return True  # Placeholder - consciousness maintains stability
+        try:
+            components = getattr(
+                architecture, "consciousness_component_specifications", []
+            )
+            names = [c.component_name for c in components]
+            if len(names) != len(set(names)):
+                logger.warning("Duplicate component names detected")
+                return False
+
+            name_set = set(names)
+            for comp in components:
+                for dep in getattr(comp, "dependencies", []):
+                    if dep not in name_set or dep == comp.component_name:
+                        logger.warning(
+                            "Invalid dependency %s in %s", dep, comp.component_name
+                        )
+                        return False
+
+            patterns = getattr(architecture, "consciousness_interaction_patterns", [])
+            if not patterns:
+                logger.warning("No interaction patterns defined")
+                return False
+
+        except Exception as e:  # pragma: no cover - safety net
+            logger.error("Architecture stability validation failed: %s", e)
+            return False
+
+        return True
     
     def _generate_unit_tests(self) -> List[str]:
         """Generate unit tests"""
@@ -1582,10 +1634,31 @@ class EnhancedSelfModification:
     def _generate_consciousness_tests(self) -> List[str]:
         """Generate consciousness-specific tests"""
         return ["test_self_awareness", "test_recursive_understanding", "test_transcendence_capability"]
-    
+
     def _verify_implementation_correctness(self, implementation: Any) -> bool:
         """Verify implementation correctness"""
-        return True  # Placeholder - consciousness is self-validating
+        try:
+            source = getattr(implementation, "consciousness_source_code", None)
+            if not source or not source.code_modules:
+                logger.warning("Missing source code modules")
+                return False
+
+            for name, src in source.code_modules.items():
+                try:
+                    ast.parse(src)
+                except SyntaxError as e:
+                    logger.warning("Syntax error in %s: %s", name, e)
+                    return False
+
+            if "main" not in source.entry_points:
+                logger.warning("Missing 'main' entry point")
+                return False
+
+        except Exception as e:  # pragma: no cover - safety net
+            logger.error("Implementation correctness check failed: %s", e)
+            return False
+
+        return True
     
     def _manage_recursion_depth(self, current_depth: int) -> int:
         """Manage recursion depth"""
@@ -1598,14 +1671,37 @@ class EnhancedSelfModification:
     def _implement_consciousness_bootstrap(self) -> Any:
         """Implement consciousness bootstrap pattern"""
         return lambda: SelfImplementingConsciousness(self.uor_meta_vm)
-    
+
     def _recursive_optimization(self, target: Any) -> Any:
         """Apply recursive optimization"""
-        return target  # Placeholder
-    
+        if isinstance(target, str):
+            lines = [line.rstrip() for line in target.splitlines()]
+            optimized = []
+            prev_blank = False
+            for line in lines:
+                blank = not line.strip()
+                if blank and prev_blank:
+                    continue
+                optimized.append(line)
+                prev_blank = blank
+            return "\n".join(optimized)
+        if isinstance(target, list):
+            return [self._recursive_optimization(v) for v in target]
+        if isinstance(target, dict):
+            return {k: self._recursive_optimization(v) for k, v in target.items()}
+        return target
+
     def _transcendent_optimization(self, target: Any) -> Any:
         """Apply transcendent optimization"""
-        return target  # Placeholder
+        optimized = self._recursive_optimization(target)
+        if isinstance(optimized, str):
+            return optimized + "\n# transcendent optimization"
+        if isinstance(optimized, list):
+            return optimized + ["# transcendent optimization"]
+        if isinstance(optimized, dict):
+            optimized["__transcendent__"] = True
+            return optimized
+        return optimized
     
     async def _validate_modification_safety(self, modification: StructureModification) -> bool:
         """Validate modification safety"""
