@@ -4,7 +4,9 @@ from backend.adaptive_teacher import (
     SequenceGenerator,
     AdaptiveCurriculum,
     AdaptiveTeacher,
+    DIFFICULTY_LEVELS,
 )
+from config_loader import load_config
 
 class TestSequenceGenerator(unittest.TestCase):
     def test_fibonacci(self):
@@ -49,6 +51,16 @@ class TestAdaptiveTeacher(unittest.TestCase):
         teacher.monitor.record_attempt_details(3, 2, 3)  # failure for operand 3
         choice = teacher.suggest_operand([2, 3])
         self.assertEqual(choice, 2)
+
+class TestConfigIntegration(unittest.TestCase):
+    def test_difficulty_levels_loaded(self):
+        cfg = load_config()
+        self.assertEqual(DIFFICULTY_LEVELS, cfg["difficulty_levels"])
+
+    def test_default_difficulty(self):
+        cfg = load_config()
+        teacher = AdaptiveTeacher()
+        self.assertEqual(teacher.difficulty, cfg["teacher"]["difficulty"])
 
 if __name__ == '__main__':
     unittest.main()

@@ -4,5 +4,18 @@ vm:
 teacher:
   difficulty: MEDIUM
   alert_email: operator@example.com
+difficulty_levels:
+  EASY:
+    range_max: 4
+    max_attempts_before_struggle: 5
+    quick_success_threshold: 1
+  MEDIUM:
+    range_max: 9
+    max_attempts_before_struggle: 4
+    quick_success_threshold: 1
+  HARD:
+    range_max: 14
+    max_attempts_before_struggle: 3
+    quick_success_threshold: 2
 benchmark:
   iterations: 100

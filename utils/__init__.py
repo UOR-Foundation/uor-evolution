@@ -12,7 +12,7 @@ from .emotional_state_monitor import EmotionalStateMonitor
 
 __all__ = [
     'ConsciousnessMetricsCalculator',
-    'SocialDynamicsAnalyzer', 
+    'SocialDynamicsAnalyzer',
     'RelationshipVisualizer',
     'EmotionalStateMonitor'
 ]

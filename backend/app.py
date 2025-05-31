@@ -5,6 +5,8 @@ import random
 import datetime
 from typing import List, Optional, Tuple
 
+from config_loader import load_config
+
 PRIME_IDX_SUCCESS = 1 # Represents the prime index for "true" or success
 PRIME_IDX_FAILURE = 0 # Represents the prime index for "false" or failure
 STUCK_SIGNAL_PRINT_VALUE = "99" # String, as OP_PRINT output is stringified
@@ -14,6 +16,8 @@ current_script_dir = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(current_script_dir)
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
+
+CONFIG = load_config(os.path.join(PROJECT_ROOT, "config.yaml"))
 
 from phase1_vm_enhancements import (
     vm_execute, # For the main VM
@@ -48,7 +52,7 @@ class AdaptiveTeacher:
         self.monitor = PerformanceMonitor()
         self.curriculum = AdaptiveCurriculum()
         self.sequence_gen = SequenceGenerator()
-        self.difficulty = "MEDIUM"
+        self.difficulty = CONFIG.get("teacher", {}).get("difficulty", "MEDIUM")
         self.current_goal = None
         self.goal_type = None
 
@@ -219,12 +223,15 @@ vm_interaction_phase = "IDLE"    # Phases: "IDLE", "SEND_TARGET", "AWAITING_ATTE
 
 # --- NEW GLOBALS FOR ADAPTIVE TEACHING ---
 vm_attempts_on_current_target = 0
-DIFFICULTY_LEVELS = {
-    "EASY": {"range_max": 4, "max_attempts_before_struggle": 5, "quick_success_threshold": 1},
-    "MEDIUM": {"range_max": 9, "max_attempts_before_struggle": 4, "quick_success_threshold": 1}, # VM more likely to hit in 1 on easy, so threshold can be same
-    "HARD": {"range_max": 14, "max_attempts_before_struggle": 3, "quick_success_threshold": 2} # Allow 2 attempts for hard before it's "quick"
-}
-current_difficulty_level_name = "MEDIUM" # Start at medium
+DIFFICULTY_LEVELS = CONFIG.get(
+    "difficulty_levels",
+    {
+        "EASY": {"range_max": 4, "max_attempts_before_struggle": 5, "quick_success_threshold": 1},
+        "MEDIUM": {"range_max": 9, "max_attempts_before_struggle": 4, "quick_success_threshold": 1},
+        "HARD": {"range_max": 14, "max_attempts_before_struggle": 3, "quick_success_threshold": 2},
+    },
+)
+current_difficulty_level_name = CONFIG.get("teacher", {}).get("difficulty", "MEDIUM")
 QUICK_SUCCESS_STREAK_TO_UPGRADE = 3 # Number of consecutive "quick" successes to increase difficulty
 STRUGGLE_STREAK_TO_DOWNGRADE = 2    # Number of consecutive "struggles" to decrease difficulty
 consecutive_quick_successes = 0

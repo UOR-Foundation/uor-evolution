@@ -11,12 +11,19 @@ from __future__ import annotations
 import random
 from typing import Dict, List, Optional, Tuple
 
+from config_loader import load_config
+
+_CONFIG = load_config()
+
 # Difficulty parameters used by ``AdaptiveTeacher``
-DIFFICULTY_LEVELS: Dict[str, Dict[str, int]] = {
-    "EASY": {"range_max": 4},
-    "MEDIUM": {"range_max": 9},
-    "HARD": {"range_max": 14},
-}
+DIFFICULTY_LEVELS: Dict[str, Dict[str, int]] = _CONFIG.get(
+    "difficulty_levels",
+    {
+        "EASY": {"range_max": 4},
+        "MEDIUM": {"range_max": 9},
+        "HARD": {"range_max": 14},
+    },
+)
 
 class PerformanceMonitor:
     """Track success statistics for the virtual machine."""
@@ -177,7 +184,7 @@ class AdaptiveTeacher:
         self.monitor = PerformanceMonitor()
         self.curriculum = AdaptiveCurriculum()
         self.sequence_gen = SequenceGenerator()
-        self.difficulty: str = "MEDIUM"
+        self.difficulty: str = _CONFIG.get("teacher", {}).get("difficulty", "MEDIUM")
         self.current_goal: Optional[int] = None
         self.goal_type: Optional[str] = None
 

@@ -154,10 +154,14 @@ The interaction between the UOR program (Learner) and the Flask backend (Teacher
     ```
     The Flask development server will start, typically on `http://127.0.0.1:5000/`.
 
-3.  **Access the Frontend:**
+3.  **Edit Configuration (Optional):**
+    Difficulty parameters and the starting level are defined in `config.yaml`.
+    Adjust the values under `difficulty_levels` or `teacher.difficulty` to
+    customize how challenging the goals will be.
+4.  **Access the Frontend:**
     Open your web browser and navigate to `http://127.0.0.1:5000/`.
 
-4.  **Interact with the Demo:**
+5.  **Interact with the Demo:**
     *   Click **"Initialize PrimeVM"** to load the UOR program and set up the VM.
     *   Click **"Step Instruction"** to execute one instruction at a time.
     *   Click **"Autostep"** to let the VM run automatically. The "Current Action" and other displays will update live.
