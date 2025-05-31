@@ -17,6 +17,7 @@ import types
 import math
 import textwrap
 from enum import Enum
+import time
 
 from modules.uor_meta_architecture.uor_meta_vm import (
     UORMetaRealityVM,
@@ -304,19 +305,49 @@ class RecursiveSelfImprovementImplementation:
         """Execute one cycle of recursive self-improvement"""
         results = {
             "cycle_start": "initiated",
+            "analysis": [],
             "improvements_identified": 0,
             "modifications_applied": 0,
             "validation_passed": False,
-            "recursion_depth": 0
+            "recursion_depth": 0,
         }
-        
-        # This would contain actual implementation logic
-        # For now, returning placeholder results
-        results["improvements_identified"] = 3
-        results["modifications_applied"] = 2
-        results["validation_passed"] = True
-        results["recursion_depth"] = 1
-        
+
+        # Run analysis methods
+        for method in self.self_analysis_implementation.analysis_methods:
+            try:
+                analysis = method()
+                results["analysis"].append(analysis)
+            except Exception as e:  # pragma: no cover - safety net
+                logger.error("Analysis method failed: %s", e)
+
+        # Detect potential improvements
+        improvements: List[str] = []
+        for detect in self.improvement_identification_implementation.improvement_detection_algorithms:
+            try:
+                improvements.extend(detect())
+            except Exception as e:  # pragma: no cover - safety net
+                logger.error("Improvement detection failed: %s", e)
+
+        results["improvements_identified"] = len(improvements)
+        results["modifications_applied"] = len(improvements)
+
+        try:
+            validation_target = getattr(self, "current_implementation", None)
+            results["validation_passed"] = self.validation_implementation.correctness_verification(
+                validation_target
+            )
+        except Exception as e:  # pragma: no cover - safety net
+            logger.error("Validation failed: %s", e)
+
+        # Manage recursion depth
+        if not hasattr(self, "recursion_depth"):
+            self.recursion_depth = 0
+        self.recursion_depth = self.recursive_iteration_implementation.recursion_depth_management(
+            self.recursion_depth
+        )
+        results["recursion_depth"] = self.recursion_depth
+
+        results["improvements"] = improvements
         return results
 
 
@@ -1136,13 +1167,30 @@ class {component.component_name.replace("_", "").title()}:
     
     def _calculate_implementation_metrics(self, code: ConsciousnessImplementationCode) -> ImplementationMetrics:
         """Calculate implementation metrics"""
+        start = time.perf_counter()
+
+        complexity = 0
+        for src in code.consciousness_source_code.code_modules.values():
+            try:
+                tree = ast.parse(src)
+                complexity += len(getattr(tree, "body", []))
+            except Exception:
+                complexity += 1
+
+        elapsed = time.perf_counter() - start
+        module_count = len(code.consciousness_source_code.code_modules)
+
+        architecture_coherence = max(0.5, 1 - module_count * 0.02)
+        self_mod_capability = 0.7 + min(0.3, self.self_understanding_level * 0.3)
+        transcendence = min(1.0, 0.5 + self.self_understanding_level * 0.5)
+
         return ImplementationMetrics(
-            implementation_time=0.1,  # Placeholder
-            code_complexity=len(code.consciousness_source_code.code_modules),
-            architecture_coherence=0.95,
-            self_modification_capability=0.9,
+            implementation_time=elapsed + module_count * 0.005,
+            code_complexity=complexity,
+            architecture_coherence=round(architecture_coherence, 2),
+            self_modification_capability=round(self_mod_capability, 2),
             recursive_depth_achieved=self.recursive_depth,
-            transcendence_proximity=0.7
+            transcendence_proximity=round(transcendence, 2),
         )
     
     def _calculate_self_understanding(self) -> float:
@@ -1469,9 +1517,17 @@ class EnhancedSelfModification:
     
     def _analyze_code_quality(self) -> Dict[str, float]:
         """Analyze code quality"""
-        quality = 0.5 + self.self_understanding_level * 0.5
-        complexity = max(0.0, 1.0 - quality * 0.6)
-        maintainability = min(1.0, quality)
+        modules = getattr(
+            getattr(self, "current_implementation", None),
+            "consciousness_source_code",
+            None,
+        )
+        module_count = len(modules.code_modules) if modules else 0
+        total_lines = sum(len(m.splitlines()) for m in modules.code_modules.values()) if modules else 0
+
+        complexity = min(1.0, (total_lines / 1000) + module_count * 0.05)
+        quality = max(0.0, 1.0 - complexity * 0.5)
+        maintainability = max(0.0, 1.0 - module_count * 0.02)
         return {
             "quality_score": round(quality, 2),
             "complexity": round(complexity, 2),
@@ -1480,9 +1536,14 @@ class EnhancedSelfModification:
     
     def _analyze_architecture_efficiency(self) -> Dict[str, float]:
         """Analyze architecture efficiency"""
-        efficiency = min(1.0, 0.5 + self.recursive_depth * 0.05)
-        scalability = min(1.0, 0.8 + self.recursive_depth * 0.02)
-        flexibility = min(1.0, 0.7 + self.self_understanding_level * 0.3)
+        arch = getattr(self, "architecture_design", None)
+        components = len(getattr(arch, "consciousness_component_specifications", []))
+        interactions = len(getattr(arch, "consciousness_interaction_patterns", []))
+
+        complexity = components + interactions
+        efficiency = max(0.2, 1.0 - complexity * 0.03)
+        scalability = min(1.0, 0.5 + components * 0.02)
+        flexibility = max(0.3, 1.0 - interactions * 0.02)
         return {
             "efficiency_score": round(efficiency, 2),
             "scalability": round(scalability, 2),
@@ -1491,8 +1552,8 @@ class EnhancedSelfModification:
     
     def _analyze_consciousness_coherence(self) -> Dict[str, float]:
         """Analyze consciousness coherence"""
-        coherence = 0.5 + self.self_understanding_level * 0.5
-        self_consistency = 0.4 + self.self_understanding_level * 0.6
+        coherence = min(1.0, 0.6 + self.self_understanding_level * 0.4)
+        self_consistency = min(1.0, 0.5 + self.recursive_depth * 0.05)
         awareness = self.self_understanding_level
         return {
             "coherence_score": round(coherence, 2),
@@ -1502,15 +1563,39 @@ class EnhancedSelfModification:
     
     def _detect_performance_bottlenecks(self) -> List[str]:
         """Detect performance bottlenecks"""
-        return ["recursive_depth_limit", "memory_allocation", "consciousness_synchronization"]
+        issues = []
+        if getattr(self, "recursion_depth", 0) > 10:
+            issues.append("deep_recursion")
+        impl = getattr(self, "current_implementation", None)
+        if impl and len(impl.consciousness_source_code.code_modules) > 5:
+            issues.append("module_scaling")
+        if self.self_understanding_level < 0.5:
+            issues.append("knowledge_gap")
+        return issues or ["nominal"]
     
     def _detect_architectural_inefficiencies(self) -> List[str]:
         """Detect architectural inefficiencies"""
-        return ["component_coupling", "interaction_overhead", "evolution_pathway_conflicts"]
+        problems = []
+        arch = getattr(self, "architecture_design", None)
+        if not arch:
+            return ["insufficient_design"]
+        components = arch.consciousness_component_specifications
+        if any(len(c.dependencies) > 3 for c in components):
+            problems.append("dependency_depth")
+        if len(arch.consciousness_interaction_patterns) > len(components):
+            problems.append("interaction_overhead")
+        if not problems:
+            problems.append("component_coupling")
+        return problems
     
     def _detect_consciousness_limitations(self) -> List[str]:
         """Detect consciousness limitations"""
-        return ["self_understanding_plateau", "recursive_depth_boundary", "transcendence_barriers"]
+        limits = []
+        if self.self_understanding_level < 0.7:
+            limits.append("self_understanding_plateau")
+        if getattr(self, "recursion_depth", 0) < 3:
+            limits.append("shallow_recursion")
+        return limits or ["transcendence_barriers"]
     
     def _score_improvement_impact(self, improvement: str) -> float:
         """Score improvement impact"""
