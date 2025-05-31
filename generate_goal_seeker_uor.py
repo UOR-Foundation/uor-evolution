@@ -138,7 +138,49 @@ def determine_slots_to_update(slots: List[ModificationSlot], failure_streak: int
     ranked = sorted(slots, key=lambda s: sum(s.success_history[-3:]))
     return ranked[:num_slots]
 
-def generate_goal_seeker_program():
+
+def resolve_placeholders(program: List[int], labels: dict,
+                         jump_placeholders: list[tuple[int, str]],
+                         slot_placeholders: dict[str, int],
+                         selected_addresses: List[int]) -> None:
+    """Replace placeholder values with actual addresses."""
+
+    for idx, label in jump_placeholders:
+        if label not in labels:
+            raise KeyError(f"Undefined label {label}")
+        program[idx] = chunk_push(labels[label])
+
+    if slot_placeholders:
+        mapping = {
+            'dynamic_slot_choice': selected_addresses[0],
+            'default_lsc_success': selected_addresses[1],
+            'lsc_carry': selected_addresses[2],
+            'lsc_failure': selected_addresses[3],
+        }
+        for key, idx in slot_placeholders.items():
+            program[idx] = chunk_push(mapping[key])
+
+
+def validate_uor_program(program: List[int],
+                         jump_placeholders: list[tuple[int, str]],
+                         slot_placeholders: dict[str, int]) -> None:
+    """Ensure no unresolved placeholder values remain in the program."""
+
+    unresolved: list[int] = []
+    for idx, _ in jump_placeholders:
+        opcode, operand = parse_opcode_and_operand(program[idx])
+        if opcode != OP_PUSH or operand == 0:
+            unresolved.append(idx)
+
+    for idx in slot_placeholders.values():
+        opcode, operand = parse_opcode_and_operand(program[idx])
+        if opcode != OP_PUSH or operand == 0:
+            unresolved.append(idx)
+
+    if unresolved:
+        raise ValueError(f"Unresolved placeholders at {unresolved}")
+
+def generate_goal_seeker_program(return_debug: bool = False):
     _extend_primes_to(max(35, STUCK_SIGNAL_PRINT_VALUE_IDX, MAX_FAILURES_BEFORE_STUCK_IDX, RANDOM_MAX_EXCLUSIVE_IDX_FOR_OFFSET, ATTEMPT_MODULUS_IDX, MODIFICATION_SLOT_0_ADDR_IDX, MODIFICATION_SLOT_1_ADDR_IDX, UOR_DECISION_BUILD_NOP_IDX) + 10) # Added new constants and a bit more buffer
 
     program_uor = []
@@ -657,12 +699,7 @@ def generate_goal_seeker_program():
     program_uor.append(chunk_push(labels["MAIN_EXECUTION_LOOP_START"]))
     program_uor.append(chunk_jump())
 
-    # --- Fill in JUMP targets (Reflects restored ambitious failure path) ---
-
-    for idx, label in jump_placeholders:
-        if label not in labels:
-            raise KeyError(f"Undefined label {label}")
-        program_uor[idx] = chunk_push(labels[label])
+    # --- Resolve placeholders after program construction ---
 
     program_length = len(program_uor)
     protected_addresses = {0}
@@ -683,15 +720,15 @@ def generate_goal_seeker_program():
     while len(selected_addresses) < 4:
         selected_addresses.append(pointer)
 
-    if slot_placeholders:
-        mapping = {
-            'dynamic_slot_choice': selected_addresses[0],
-            'default_lsc_success': selected_addresses[1],
-            'lsc_carry': selected_addresses[2],
-            'lsc_failure': selected_addresses[3],
-        }
-        for key, idx in slot_placeholders.items():
-            program_uor[idx] = chunk_push(mapping[key])
+    resolve_placeholders(
+        program_uor,
+        labels,
+        jump_placeholders,
+        slot_placeholders,
+        selected_addresses,
+    )
+
+    validate_uor_program(program_uor, jump_placeholders, slot_placeholders)
 
     # ------------------------------------------------------------------
     # Demonstration of operand and control-flow modification utilities
@@ -768,7 +805,13 @@ def generate_goal_seeker_program():
     print(f"DEBUG UOR GEN: chunk_push({target_addr_for_success_path}) should be = {chunk_push(target_addr_for_success_path)}")
     print("--- End Debugging Success Path ---")
 
-    return program_uor
+    metadata = {
+        'labels': labels,
+        'jump_placeholders': jump_placeholders,
+        'slot_placeholders': slot_placeholders,
+        'selected_addresses': selected_addresses,
+    }
+    return (program_uor, metadata) if return_debug else program_uor
 
 if __name__ == '__main__':
     uor_chunks = generate_goal_seeker_program()
