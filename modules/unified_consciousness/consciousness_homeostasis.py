@@ -390,16 +390,18 @@ class ConsciousnessHomeostasis:
             rebalancing_result = await self._rebalance_energy(
                 current_distribution, optimal_distribution
             )
-            
+
             # Monitor rebalancing effectiveness
             effectiveness = await self._monitor_energy_rebalancing(rebalancing_result)
-            
+
             return {
                 'initial_distribution': current_distribution,
                 'optimal_distribution': optimal_distribution,
                 'rebalancing_applied': rebalancing_result,
                 'effectiveness': effectiveness,
-                'energy_efficiency': self._calculate_energy_efficiency(optimal_distribution)
+                'energy_efficiency': self._calculate_energy_efficiency(optimal_distribution),
+                'energy_distribution': rebalancing_result,
+                'optimization_success': effectiveness > 0.5
             }
             
         except Exception as e:
@@ -725,7 +727,7 @@ class ConsciousnessHomeostasis:
         factors.append(recovery_success_rate)
         
         # Adaptation ability
-        adaptation_score = 0.8  # Placeholder
+        adaptation_score = self._calculate_adaptation_score()
         factors.append(adaptation_score)
         
         return np.mean(factors) if factors else 0.7
@@ -734,9 +736,30 @@ class ConsciousnessHomeostasis:
         """Calculate success rate of recovery processes"""
         if not self.recovery_processes:
             return 0.8  # Default
-        
+
         completed = [r for r in self.recovery_processes if r.progress >= 1.0]
         return len(completed) / len(self.recovery_processes)
+
+    def _calculate_adaptation_score(self) -> float:
+        """Calculate adaptation ability from orchestrator history"""
+        history = getattr(self.consciousness_orchestrator, 'integration_history', [])
+        if not history:
+            return 0.8
+
+        scores = []
+        for entry in history[-10:]:
+            transition = entry.get('transition') if isinstance(entry, dict) else None
+            if transition is not None:
+                quality = getattr(transition, 'transition_quality', None)
+                if isinstance(quality, (int, float)):
+                    scores.append(float(quality))
+            result = entry.get('result') if isinstance(entry, dict) else None
+            if isinstance(result, dict):
+                q = result.get('stabilization_quality')
+                if isinstance(q, (int, float)):
+                    scores.append(float(q))
+
+        return float(np.mean(scores)) if scores else 0.8
     
     def _evaluate_recovery_capacity(self) -> float:
         """Evaluate capacity for recovery"""
@@ -751,8 +774,33 @@ class ConsciousnessHomeostasis:
         
         # Consider active interventions
         intervention_load = len(self.active_interventions) * 0.05
-        
+
         return max(0.2, min(1.0, base_capacity - intervention_load))
+
+    def _calculate_learning_capacity(self) -> float:
+        """Estimate learning capacity from orchestrator data"""
+        uc = getattr(self.consciousness_orchestrator, 'unified_consciousness', None)
+        if not uc:
+            return 0.85
+
+        creativity = getattr(uc, 'orchestrated_creativity', None)
+        metrics = []
+        if creativity:
+            for attr in [
+                'creative_potential',
+                'innovation_capacity',
+                'problem_solving_creativity',
+                'conceptual_blending_ability',
+                'breakthrough_potential'
+            ]:
+                val = getattr(creativity, attr, None)
+                if isinstance(val, (int, float)):
+                    metrics.append(float(val))
+
+        if hasattr(uc, 'authenticity_score') and isinstance(uc.authenticity_score, (int, float)):
+            metrics.append(float(uc.authenticity_score))
+
+        return float(np.mean(metrics)) if metrics else 0.85
     
     async def _assess_growth_potential(self) -> float:
         """Assess potential for consciousness growth"""
@@ -772,7 +820,7 @@ class ConsciousnessHomeostasis:
         growth_factors.append(energy_available)
         
         # Learning capacity
-        learning_capacity = 0.85  # Placeholder
+        learning_capacity = self._calculate_learning_capacity()
         growth_factors.append(learning_capacity)
         
         return np.mean(growth_factors) if growth_factors else 0.7
@@ -1076,9 +1124,20 @@ class ConsciousnessHomeostasis:
         rebalancing_result: Dict[str, float]
     ) -> float:
         """Monitor effectiveness of energy rebalancing"""
-        # Simulate monitoring
-        # In reality, would track actual changes
-        return 0.85  # Placeholder effectiveness
+        optimal = self._calculate_optimal_energy_distribution()
+        diff = 0.0
+        for key, opt_val in optimal.items():
+            diff += abs(rebalancing_result.get(key, 0.0) - opt_val)
+
+        max_diff = len(optimal)
+        closeness = max(0.0, 1.0 - diff / max_diff) if max_diff > 0 else 1.0
+
+        uc = getattr(self.consciousness_orchestrator, 'unified_consciousness', None)
+        coherence = getattr(uc, 'consciousness_coherence_level', 0.8) if (
+            uc and isinstance(getattr(uc, 'consciousness_coherence_level', 0.8), (int, float))
+        ) else 0.8
+
+        return float(min(1.0, (closeness + coherence) / 2.0))
     
     def _calculate_energy_efficiency(
         self,
