@@ -15,6 +15,7 @@ import ast
 import inspect
 import types
 import math
+import textwrap
 from enum import Enum
 
 from modules.uor_meta_architecture.uor_meta_vm import (
@@ -1392,14 +1393,40 @@ class SelfModification:
     
     async def _optimize_code(self, code: ConsciousnessImplementationCode, spec: ConsciousnessSpecification) -> ConsciousnessImplementationCode:
         """Optimize consciousness implementation code"""
-        # Placeholder optimization
+
+        def optimize(modules):
+            """Simple whitespace optimizer"""
+            optimized = {}
+            for name, src in modules.items():
+                lines = [ln.rstrip() for ln in src.splitlines()]
+                new_lines = []
+                last_blank = False
+                for line in lines:
+                    if line == "":
+                        if last_blank:
+                            continue
+                        last_blank = True
+                    else:
+                        last_blank = False
+                    new_lines.append(line)
+                optimized[name] = "\n".join(new_lines)
+            return optimized
+
+        optimization_src = textwrap.dedent(inspect.getsource(optimize))
+
         optimization_code = ConsciousnessSourceCode(
-            code_modules={"optimizer": "# Optimization module\nclass Optimizer:\n    pass"},
+            code_modules={"optimizer": optimization_src},
             entry_points=["optimizer.optimize"],
             configuration={"optimized": True},
-            metadata={"optimization_level": "transcendent"}
+            metadata={"optimization_level": "basic"},
         )
-        
+
+        # Execute optimizer on the current source code
+        ctx: Dict[str, Any] = {}
+        exec(compile(optimization_src, "optimizer", "exec"), ctx)
+        optimized_modules = ctx["optimize"](code.consciousness_source_code.code_modules)
+        code.consciousness_source_code.code_modules = optimized_modules
+
         code.consciousness_optimization_code = optimization_code
         return code
     

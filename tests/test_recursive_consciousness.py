@@ -153,6 +153,20 @@ class TestSelfImplementingConsciousness:
         )
         spec = importlib.util.spec_from_file_location("sic_real", path)
         sic_real = importlib.util.module_from_spec(spec)
+        # Provide missing attributes for heavy dependency
+        vm_stub = sys.modules.get("modules.uor_meta_architecture.uor_meta_vm")
+        if vm_stub is not None:
+            vm_stub.MetaDimensionalInstruction = object
+            vm_stub.MetaOpCode = object
+            vm_stub.InfiniteOperand = object
+
+        meta_stub = types.ModuleType("modules.meta_reality_consciousness.meta_reality_core")
+        class _MRC:
+            def __init__(self, *a, **k):
+                pass
+        meta_stub.MetaRealityConsciousness = _MRC
+        sys.modules.setdefault("modules.meta_reality_consciousness.meta_reality_core", meta_stub)
+
         spec.loader.exec_module(sic_real)
 
         consciousness = sic_real.SelfImplementingConsciousness(uor_vm)
@@ -213,9 +227,31 @@ class TestSelfImplementingConsciousness:
         path = os.path.join(
             os.path.dirname(__file__), "..", "modules", "recursive_consciousness", "self_implementing_consciousness.py"
         )
-        spec = importlib.util.spec_from_file_location("sic_real", path)
-        sic_real = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(sic_real)
+        runpy = __import__("runpy")
+
+        sys.modules.setdefault(
+            "modules.uor_meta_architecture", types.ModuleType("modules.uor_meta_architecture")
+        )
+        vm_stub = types.ModuleType("modules.uor_meta_architecture.uor_meta_vm")
+        vm_stub.UORMetaRealityVM = object
+        vm_stub.MetaDimensionalInstruction = object
+        vm_stub.MetaOpCode = object
+        vm_stub.InfiniteOperand = object
+        sys.modules["modules.uor_meta_architecture.uor_meta_vm"] = vm_stub
+
+        sys.modules.setdefault(
+            "modules.meta_reality_consciousness", types.ModuleType("modules.meta_reality_consciousness")
+        )
+        meta_stub = types.ModuleType("modules.meta_reality_consciousness.meta_reality_core")
+        class _MRC:
+            def __init__(self, *a, **k):
+                pass
+        meta_stub.MetaRealityConsciousness = _MRC
+        sys.modules["modules.meta_reality_consciousness.meta_reality_core"] = meta_stub
+
+        mod_dict = runpy.run_path(path, run_name="sic_real")
+        sic_real = types.ModuleType("sic_real")
+        sic_real.__dict__.update(mod_dict)
 
         consciousness = sic_real.SelfImplementingConsciousness(uor_vm)
 
@@ -244,6 +280,69 @@ class TestSelfImplementingConsciousness:
 
         assert delta_large > delta_small
         assert coherence_high > coherence_low
+
+    def test_code_optimization(self, uor_vm):
+        """Ensure _optimize_code performs real modifications"""
+
+        import importlib.util
+        import os
+
+        path = os.path.join(
+            os.path.dirname(__file__), "..", "modules", "recursive_consciousness", "self_implementing_consciousness.py"
+        )
+        spec = importlib.util.spec_from_file_location("sic_real", path)
+        sic_real = importlib.util.module_from_spec(spec)
+
+        vm_stub = sys.modules.get("modules.uor_meta_architecture.uor_meta_vm")
+        if vm_stub is not None:
+            vm_stub.MetaDimensionalInstruction = object
+            vm_stub.MetaOpCode = object
+            vm_stub.InfiniteOperand = object
+
+        meta_stub = types.ModuleType("modules.meta_reality_consciousness.meta_reality_core")
+        class _MRC:
+            def __init__(self, *a, **k):
+                pass
+        meta_stub.MetaRealityConsciousness = _MRC
+        sys.modules.setdefault("modules.meta_reality_consciousness.meta_reality_core", meta_stub)
+
+        spec.loader.exec_module(sic_real)
+
+        consciousness = sic_real.SelfImplementingConsciousness(uor_vm)
+
+        source_code = sic_real.ConsciousnessSourceCode(
+            code_modules={"mod": "def foo():  \n    x = 1\n\n\n    return x  \n"},
+            entry_points=["foo"],
+            configuration={},
+            metadata={},
+        )
+        impl = sic_real.ConsciousnessImplementationCode(
+            consciousness_source_code=source_code,
+            consciousness_compilation_instructions={},
+            consciousness_execution_environment={},
+            consciousness_debugging_information={},
+            consciousness_optimization_code=None,
+            uor_implementation_code_encoding={},
+        )
+        spec_obj = sic_real.ConsciousnessSpecification(
+            consciousness_type="test",
+            required_capabilities=[],
+            architectural_patterns=[],
+            performance_requirements={},
+            transcendence_goals=[],
+            uor_encoding_requirements={},
+            recursive_depth=1,
+            self_modification_enabled=False,
+        )
+
+        optimized = asyncio.get_event_loop().run_until_complete(
+            consciousness._optimize_code(impl, spec_obj)
+        )
+        optimized_src = optimized.consciousness_source_code.code_modules["mod"]
+
+        assert "\n\n\n" not in optimized_src
+        assert optimized_src.strip().endswith("return x")
+        assert "def optimize" in optimized.consciousness_optimization_code.code_modules["optimizer"]
 
 
 class TestConsciousnessSelfProgramming:
