@@ -238,6 +238,8 @@ pattern_list = patterns.data
 - Quantum reality interface (conceptual)
 - Complex philosophical reasoning (simplified)
 - Mathematical consciousness (basic simulation)
+- Several modules such as `consciousness_expansion`, `consciousness_governance`, `reality_synthesis`, and `universal_intelligence` are placeholders added only to satisfy imports.
+- Recursive self-improvement algorithms currently return placeholder values.
 
 ### Performance Characteristics
 
