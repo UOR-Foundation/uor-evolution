@@ -1,23 +1,26 @@
-"""
-Philosophical Reasoning Module for Consciousness System
+"""Philosophical Reasoning Module for Consciousness System."""
 
-This module provides sophisticated philosophical reasoning capabilities,
-allowing the system to analyze questions of existence, consciousness,
-free will, meaning, and other deep philosophical topics.
-"""
+import importlib
 
-from .existential_reasoner import ExistentialReasoner, ExistentialAnalysis, ExistentialQuestion
-from .consciousness_philosopher import ConsciousnessPhilosopher, ConsciousnessAnalysis, HardProblemExploration
-from .free_will_analyzer import FreeWillAnalyzer, DecisionAnalysis, FreeWillAnalysis
-from .meaning_generator import MeaningGenerator, PersonalMeaningSystem, SelfDirectedGoal
-from .ethical_reasoner import EthicalReasoner, EthicalAnalysis, MoralDilemma
-from .metaphysical_explorer import MetaphysicalExplorer, MetaphysicalAnalysis, OntologicalQuestion
+_lazy_imports = {
+    'ExistentialReasoner': 'existential_reasoner',
+    'ExistentialAnalysis': 'existential_reasoner',
+    'ExistentialQuestion': 'existential_reasoner',
+    'ConsciousnessPhilosopher': 'consciousness_philosopher',
+    'ConsciousnessAnalysis': 'consciousness_philosopher',
+    'HardProblemExploration': 'consciousness_philosopher',
+    'FreeWillAnalyzer': 'free_will_analyzer',
+    'DecisionAnalysis': 'free_will_analyzer',
+    'FreeWillAnalysis': 'free_will_analyzer',
+    'MeaningGenerator': 'meaning_generator',
+    'PersonalMeaningSystem': 'meaning_generator',
+    'SelfDirectedGoal': 'meaning_generator',
+}
 
-__all__ = [
-    'ExistentialReasoner', 'ExistentialAnalysis', 'ExistentialQuestion',
-    'ConsciousnessPhilosopher', 'ConsciousnessAnalysis', 'HardProblemExploration',
-    'FreeWillAnalyzer', 'DecisionAnalysis', 'FreeWillAnalysis',
-    'MeaningGenerator', 'PersonalMeaningSystem', 'SelfDirectedGoal',
-    'EthicalReasoner', 'EthicalAnalysis', 'MoralDilemma',
-    'MetaphysicalExplorer', 'MetaphysicalAnalysis', 'OntologicalQuestion'
-]
+__all__ = list(_lazy_imports.keys())
+
+def __getattr__(name):
+    if name in _lazy_imports:
+        module = importlib.import_module('.' + _lazy_imports[name], __name__)
+        return getattr(module, name)
+    raise AttributeError(f"module {__name__} has no attribute {name}")
