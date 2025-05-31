@@ -1,3 +1,4 @@
+debug: false
 vm:
   log_file: vm_events.log
   max_instructions: 1000

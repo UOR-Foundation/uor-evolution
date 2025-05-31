@@ -19,6 +19,27 @@ if PROJECT_ROOT not in sys.path:
 
 CONFIG = load_config(os.path.join(PROJECT_ROOT, "config.yaml"))
 
+
+def _parse_bool(value: object) -> bool:
+    """Return ``True`` if ``value`` is truthy."""
+    if isinstance(value, bool):
+        return value
+    if value is None:
+        return False
+    return str(value).strip().lower() in {"1", "true", "yes", "on", "t"}
+
+
+def get_debug_flag() -> bool:
+    """Return the debug flag from ``APP_DEBUG`` or config."""
+    env_val = os.environ.get("APP_DEBUG")
+    if env_val is not None:
+        return _parse_bool(env_val)
+    cfg_val = get_config_value("debug", False)
+    return _parse_bool(cfg_val)
+
+
+DEBUG_MODE = get_debug_flag()
+
 from phase1_vm_enhancements import (
     vm_execute, # For the main VM
     _PRIMES as VM_PRIMES, _PRIME_IDX as VM_PRIME_IDX, get_prime as vm_get_prime, 
@@ -905,5 +926,5 @@ def api_provide_input():
         return jsonify({"success": False, "error": vm_error, "state": response_state}), 500
 
 if __name__ == '__main__':
-    initialize_vm() # Load program on startup
-    app.run(debug=True, port=5000, use_reloader=False)
+    initialize_vm()  # Load program on startup
+    app.run(debug=DEBUG_MODE, port=5000, use_reloader=False)
