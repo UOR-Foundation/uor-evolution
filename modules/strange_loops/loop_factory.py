@@ -11,9 +11,12 @@ from dataclasses import dataclass
 from abc import ABC, abstractmethod
 import random
 import hashlib
+import logging
 
 from core.prime_vm import ConsciousPrimeVM
 from .loop_detector import LoopType, StrangeLoop
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -604,8 +607,12 @@ class StrangeLoopFactory:
                 if '_' in instruction:
                     try:
                         level = int(instruction.split('_')[-1])
-                    except:
-                        pass
+                    except ValueError as e:
+                        logger.warning(
+                            "Invalid meta-operation level in '%s': %s",
+                            instruction,
+                            e,
+                        )
                 patterns.append({
                     'type': 'meta_operation',
                     'operation': instruction.split()[0],

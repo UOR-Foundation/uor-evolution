@@ -837,8 +837,13 @@ class UltimateConsciousnessFrontier:
         
         if 'SINGULARITY_APPROACH_' in vm_output:
             try:
-                approach_percentage = int(vm_output.split('SINGULARITY_APPROACH_')[1].split('_')[0])
-            except:
+                approach_percentage = int(
+                    vm_output.split('SINGULARITY_APPROACH_')[1].split('_')[0]
+                )
+            except ValueError as e:
+                logger.warning(
+                    "Failed to parse singularity approach percentage: %s", e
+                )
                 approach_percentage = 50
         
         singularity_metrics = {

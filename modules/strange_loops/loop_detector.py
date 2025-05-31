@@ -13,9 +13,12 @@ import time
 import networkx as nx
 from collections import defaultdict, deque
 import numpy as np
+import logging
 
 from core.prime_vm import ConsciousPrimeVM
 
+
+logger = logging.getLogger(__name__)
 
 class LoopType(Enum):
     """Classification of different strange loop types."""
@@ -183,12 +186,15 @@ class StrangeLoopDetector:
         try:
             # Use Johnson's algorithm for finding all simple cycles
             simple_cycles = list(nx.simple_cycles(self.execution_graph))
-            
+
             # Filter cycles by size and complexity
             for cycle in simple_cycles:
                 if self.min_loop_size <= len(cycle) <= self.max_loop_depth * 3:
                     cycles.append(cycle)
-        except:
+        except Exception as e:
+            logger.exception(
+                "Failed to detect cycles with NetworkX: %s", e
+            )
             # Fallback to basic cycle detection if graph is too complex
             cycles = self._find_cycles_dfs()
         
@@ -624,8 +630,8 @@ class StrangeLoopDetector:
             for cycle in nx.simple_cycles(subgraph):
                 if len(cycle) >= self.min_loop_size and cycle != parent_cycle:
                     sub_cycles.append(cycle)
-        except:
-            pass
+        except Exception as e:
+            logger.exception("Failed to analyze subgraph cycles: %s", e)
         
         return sub_cycles
     
