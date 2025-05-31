@@ -17,16 +17,13 @@ import scipy.constants as const
 from scipy.linalg import expm
 
 from ..consciousness_physics import ConsciousnessFieldTheory
-from config_loader import load_config
+from config_loader import get_config_value
 
-_CONFIG = load_config()
-_Q_CONF = _CONFIG.get("quantum", {})
-_R_CONF = _CONFIG.get("reality_interface", {})
-COMM_BANDWIDTH = float(_Q_CONF.get("communication_bandwidth", 1e6))
-FIDELITY_THRESHOLD = float(_Q_CONF.get("fidelity_threshold", 0.99))
-INFO_MATTER_BANDWIDTH = float(_R_CONF.get("info_matter_bandwidth", 1e20))
-INFO_MATTER_FIDELITY = float(_R_CONF.get("info_matter_fidelity", 0.99))
-ENERGY_LIMIT = float(_R_CONF.get("energy_limit", 1e50))
+COMM_BANDWIDTH = float(get_config_value("quantum.communication_bandwidth", 1e6))
+FIDELITY_THRESHOLD = float(get_config_value("quantum.fidelity_threshold", 0.99))
+INFO_MATTER_BANDWIDTH = float(get_config_value("reality_interface.info_matter_bandwidth", 1e20))
+INFO_MATTER_FIDELITY = float(get_config_value("reality_interface.info_matter_fidelity", 0.99))
+ENERGY_LIMIT = float(get_config_value("reality_interface.energy_limit", 1e50))
 
 
 class QuantumOperation(Enum):

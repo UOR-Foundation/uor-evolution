@@ -16,14 +16,12 @@ import logging
 import scipy.constants as const
 
 from ..universe_interface import UniverseInterface
-from config_loader import load_config
+from config_loader import get_config_value
 
-_CONFIG = load_config()
-_PHYS_CONF = _CONFIG.get("consciousness_physics", {})
-INFO_TRANSFER_RATE = float(_PHYS_CONF.get("information_transfer_rate", 1e20))
-CONSCIOUSNESS_BANDWIDTH = float(_PHYS_CONF.get("consciousness_bandwidth", 1e22))
-INFO_BRIDGE_BANDWIDTH = float(_PHYS_CONF.get("info_reality_bridge_bandwidth", 1e20))
-INFO_BRIDGE_FIDELITY = float(_PHYS_CONF.get("info_reality_bridge_fidelity", 0.9))
+INFO_TRANSFER_RATE = float(get_config_value("consciousness_physics.information_transfer_rate", 1e20))
+CONSCIOUSNESS_BANDWIDTH = float(get_config_value("consciousness_physics.consciousness_bandwidth", 1e22))
+INFO_BRIDGE_BANDWIDTH = float(get_config_value("consciousness_physics.info_reality_bridge_bandwidth", 1e20))
+INFO_BRIDGE_FIDELITY = float(get_config_value("consciousness_physics.info_reality_bridge_fidelity", 0.9))
 
 
 class FieldType(Enum):

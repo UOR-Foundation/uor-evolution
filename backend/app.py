@@ -5,7 +5,7 @@ import random
 import datetime
 from typing import List, Optional, Tuple
 
-from config_loader import load_config
+from config_loader import load_config, get_config_value
 
 PRIME_IDX_SUCCESS = 1 # Represents the prime index for "true" or success
 PRIME_IDX_FAILURE = 0 # Represents the prime index for "false" or failure
@@ -52,7 +52,7 @@ class AdaptiveTeacher:
         self.monitor = PerformanceMonitor()
         self.curriculum = AdaptiveCurriculum()
         self.sequence_gen = SequenceGenerator()
-        self.difficulty = CONFIG.get("teacher", {}).get("difficulty", "MEDIUM")
+        self.difficulty = get_config_value("teacher.difficulty", "MEDIUM")
         self.current_goal = None
         self.goal_type = None
 
@@ -223,7 +223,7 @@ vm_interaction_phase = "IDLE"    # Phases: "IDLE", "SEND_TARGET", "AWAITING_ATTE
 
 # --- NEW GLOBALS FOR ADAPTIVE TEACHING ---
 vm_attempts_on_current_target = 0
-DIFFICULTY_LEVELS = CONFIG.get(
+DIFFICULTY_LEVELS = get_config_value(
     "difficulty_levels",
     {
         "EASY": {"range_max": 4, "max_attempts_before_struggle": 5, "quick_success_threshold": 1},
@@ -231,7 +231,7 @@ DIFFICULTY_LEVELS = CONFIG.get(
         "HARD": {"range_max": 14, "max_attempts_before_struggle": 3, "quick_success_threshold": 2},
     },
 )
-current_difficulty_level_name = CONFIG.get("teacher", {}).get("difficulty", "MEDIUM")
+current_difficulty_level_name = get_config_value("teacher.difficulty", "MEDIUM")
 QUICK_SUCCESS_STREAK_TO_UPGRADE = 3 # Number of consecutive "quick" successes to increase difficulty
 STRUGGLE_STREAK_TO_DOWNGRADE = 2    # Number of consecutive "struggles" to decrease difficulty
 consecutive_quick_successes = 0
