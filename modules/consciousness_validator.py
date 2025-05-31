@@ -617,23 +617,62 @@ class ConsciousnessValidator:
         self, problem: Dict[str, Any], solution: Dict[str, Any]
     ) -> Dict[str, Any]:
         """Evaluate creativity of a solution"""
-        evaluation = {
-            "novelty_score": 0.5,  # Placeholder
-            "usefulness_score": 0.5,  # Placeholder
-            "surprise_factor": 0.3,  # Placeholder
-        }
 
-        # Adjust based on solution properties
+        # --- Novelty -----------------------------------------------------
+        # Formula:
+        #   novelty = base_approach + abstract_bonus + iter_bonus
+        #   base_approach = 0.3 if approach != 'default' else 0.1
+        #   abstract_bonus = 0.2 if problem type is 'abstract'
+        #   iter_bonus = min(iterations / 10, 0.2)
+        novelty = 0.1
         if solution.get("approach") != "default":
-            evaluation["novelty_score"] += 0.2
+            novelty = 0.3
+        if problem.get("type") == "abstract":
+            novelty += 0.2
+        novelty += min(solution.get("iterations", 1) / 10.0, 0.2)
+        novelty = min(1.0, novelty)
 
-        if solution.get("confidence", 0) > 0.7:
-            evaluation["usefulness_score"] += 0.2
+        # --- Usefulness --------------------------------------------------
+        # Formula:
+        #   usefulness = confidence + heuristic_bonus
+        #   heuristic_bonus = 0.2 if simple success heuristics pass
+        usefulness = float(solution.get("confidence", 0.0))
+        heuristic_bonus = 0.0
+        if problem.get("type") == "optimization":
+            path = solution.get("solution")
+            if isinstance(path, list):
+                nodes = problem.get("data", {}).get("nodes", len(path))
+                if len(path) <= nodes:
+                    heuristic_bonus = 0.2
+        elif problem.get("type") == "pattern":
+            if isinstance(solution.get("solution"), list):
+                seq = problem.get("sequence", [])
+                if len(solution["solution"]) >= len(seq):
+                    heuristic_bonus = 0.2
+        usefulness = min(1.0, usefulness + heuristic_bonus)
 
-        if solution.get("iterations", 1) > 5:
-            evaluation["surprise_factor"] += 0.2
+        # --- Surprise ----------------------------------------------------
+        # Formula:
+        #   surprise = approach_bonus + low_conf_bonus + iter_bonus + abstract_bonus
+        #   approach_bonus = 0.2 if approach != 'default'
+        #   low_conf_bonus = 0.2 if confidence < 0.5
+        #   iter_bonus = min(iterations / 5, 0.4)
+        #   abstract_bonus = 0.2 if problem type is 'abstract'
+        surprise = 0.0
+        if solution.get("approach") != "default":
+            surprise += 0.2
+        if float(solution.get("confidence", 0.0)) < 0.5:
+            surprise += 0.2
+        surprise += min(solution.get("iterations", 1) / 5.0, 0.4)
+        if problem.get("type") == "abstract":
+            surprise += 0.2
+        surprise = min(1.0, surprise)
 
-        return evaluation
+        return {
+            "novelty_score": novelty,
+            "usefulness_score": usefulness,
+            "surprise_factor": surprise,
+        }
 
     def _test_time_flow_understanding(self) -> float:
         """Test understanding of time flow"""
