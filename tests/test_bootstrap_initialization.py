@@ -1,47 +1,14 @@
 import unittest
-import sys
-
-try:
-    import networkx  # type: ignore
-except Exception:  # pragma: no cover - fallback if dependency missing
-    class _FakeNX:  # minimal stub with DiGraph
-        class DiGraph:
-            def __init__(self, *a, **kw):
-                pass
-
-    networkx = _FakeNX()
-    sys.modules.setdefault("networkx", networkx)
-
-try:
-    import numpy as np  # type: ignore
-except Exception:  # pragma: no cover - fallback if dependency missing
-    class _FakeNP:
-        pass
-
-    np = _FakeNP()
-    sys.modules.setdefault("numpy", np)
+from tests.helpers import stubs
 
 # Provide missing PrimeInstruction for Gödel loop imports if absent
 import core.instruction_set as _instruction_set
 if not hasattr(_instruction_set, "PrimeInstruction"):
-    class PrimeInstruction:  # minimal placeholder
-        pass
-
-    _instruction_set.PrimeInstruction = PrimeInstruction
+    _instruction_set.PrimeInstruction = stubs.PrimeInstruction
 
 import builtins
 if not hasattr(builtins, "StateTransitionManager"):
-    class StateTransitionManager:  # minimal placeholder
-        def __init__(self, *a, **kw):
-            pass
-
-        def get_possible_transitions(self, state):
-            return []
-
-        def execute_transition(self, transition):
-            return None
-
-    builtins.StateTransitionManager = StateTransitionManager
+    builtins.StateTransitionManager = stubs.StateTransitionManager
 
 from core.prime_vm import ConsciousPrimeVM
 from consciousness.consciousness_integration import ConsciousnessIntegrator

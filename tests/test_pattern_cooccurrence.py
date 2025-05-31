@@ -1,14 +1,5 @@
 import unittest
-import sys
-
-try:
-    import numpy  # type: ignore
-except Exception:  # pragma: no cover - fallback if numpy missing
-    class _FakeNP:
-        pass
-
-    numpy = _FakeNP()
-    sys.modules.setdefault("numpy", numpy)
+import numpy
 
 from modules.pattern_analyzer import PatternAnalyzer
 

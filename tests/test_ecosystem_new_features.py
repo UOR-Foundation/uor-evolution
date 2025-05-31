@@ -1,88 +1,25 @@
-import sys
 import asyncio
-
-try:
-    import numpy as np
-except Exception:  # pragma: no cover - allow running without numpy
-    class _FakeRandom:
-        @staticmethod
-        def normal(loc=0.0, scale=1.0):
-            return 0.1
-
-    class _FakeNP:
-        random = _FakeRandom()
-
-        @staticmethod
-        def normal(loc=0.0, scale=1.0):
-            return 0.1
-
-        @staticmethod
-        def log(x):
-            return 0.0
-
-        ndarray = list
-    np = _FakeNP()
-    sys.modules.setdefault("numpy", np)
-
-class _FakeGraph:
-    def __init__(self, nodes=0, edges=0):
-        self._nodes = nodes
-        self._edges = edges
-
-    def number_of_nodes(self):
-        return self._nodes
-
-    def number_of_edges(self):
-        return self._edges
-
-
-class _FakeNX:
-    Graph = _FakeGraph
-
-sys.modules.setdefault("networkx", _FakeNX())
+import numpy as np
+import networkx
+from tests.helpers import stubs
 
 # Provide missing PrimeInstruction for Gödel loop imports if absent
 import core.instruction_set as _instruction_set
 if not hasattr(_instruction_set, "PrimeInstruction"):
-    class PrimeInstruction:  # minimal placeholder
-        pass
-    _instruction_set.PrimeInstruction = PrimeInstruction
+    _instruction_set.PrimeInstruction = stubs.PrimeInstruction
 
 import builtins
 if not hasattr(builtins, "StateTransitionManager"):
-    class StateTransitionManager:  # minimal placeholder
-        def __init__(self, *a, **kw):
-            pass
-        def get_possible_transitions(self, state):
-            return []
-        def execute_transition(self, transition):
-            return None
-    builtins.StateTransitionManager = StateTransitionManager
+    builtins.StateTransitionManager = stubs.StateTransitionManager
 
 
-import types
-import importlib.util
-import os
-
-fake_uc_pkg = types.ModuleType("modules.unified_consciousness")
-class _DummyOrch:
-    pass
-fake_uc_pkg.ConsciousnessOrchestrator = _DummyOrch
-sys.modules.setdefault("modules.unified_consciousness", fake_uc_pkg)
-
-spec = importlib.util.spec_from_file_location(
-    "modules.consciousness_ecosystem.ecosystem_orchestrator",
-    os.path.join(os.path.dirname(__file__), "..", "modules", "consciousness_ecosystem", "ecosystem_orchestrator.py"),
+from modules.consciousness_ecosystem.ecosystem_orchestrator import (
+    ConsciousEntity,
+    ConsciousnessEcosystemOrchestrator,
+    EmergenceMonitor,
+    EvolutionEngine,
+    EmergentPropertyType,
 )
-eco_module = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(eco_module)  # type: ignore
-sys.modules["modules.consciousness_ecosystem.ecosystem_orchestrator"] = eco_module
-
-ConsciousEntity = eco_module.ConsciousEntity
-ConsciousnessEcosystemOrchestrator = eco_module.ConsciousnessEcosystemOrchestrator
-EmergenceMonitor = eco_module.EmergenceMonitor
-EvolutionEngine = eco_module.EvolutionEngine
-EmergentPropertyType = eco_module.EmergentPropertyType
 
 
 def _make_entities(count=3):

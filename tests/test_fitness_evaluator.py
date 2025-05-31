@@ -1,58 +1,7 @@
 import pytest
-
-# Provide minimal numpy/networkx fallbacks if the real packages are unavailable
-try:
-    import numpy as np  # type: ignore
-except Exception:  # pragma: no cover
-    class _FakeNP:
-        @staticmethod
-        def mean(values):
-            return sum(values) / len(values) if values else 0.0
-        @staticmethod
-        def isscalar(val):
-            return isinstance(val, (int, float))
-    np = _FakeNP()
-    import sys
-    sys.modules.setdefault("numpy", np)
-
-try:
-    import networkx  # type: ignore
-except Exception:  # pragma: no cover
-    class _FakeNX:
-        class Graph:
-            def __init__(self, *a, **kw):
-                pass
-    networkx = _FakeNX()
-    import sys
-    sys.modules.setdefault("networkx", networkx)
-
-import sys
-import types
-from dataclasses import dataclass
+import numpy as np
 import importlib.util
 import os
-
-# Create lightweight versions of ecosystem dependencies so the evolution engine
-# can be imported without pulling in heavy modules.
-fake_ecosystem = types.ModuleType("modules.consciousness_ecosystem")
-
-@dataclass
-class _FakeEntity:
-    entity_id: str
-    consciousness_level: float
-    specialization: str
-    cognitive_capabilities: dict
-    connection_capacity: int
-    evolution_rate: float
-    consciousness_state: dict
-
-class _FakeOrchestrator:
-    pass
-
-fake_ecosystem.ConsciousEntity = _FakeEntity
-fake_ecosystem.ConsciousnessEcosystemOrchestrator = _FakeOrchestrator
-sys.modules.setdefault("modules.consciousness_ecosystem", fake_ecosystem)
-sys.modules.setdefault("modules.consciousness_ecosystem.ecosystem_orchestrator", fake_ecosystem)
 
 # Import the module under test with the fake dependencies in place
 spec = importlib.util.spec_from_file_location(

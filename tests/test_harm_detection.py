@@ -1,90 +1,17 @@
 import pytest
-import sys
 import asyncio
-
-try:
-    import numpy  # type: ignore
-except Exception:  # pragma: no cover - fallback if numpy missing
-    class _FakeNP:
-        @staticmethod
-        def mean(values):
-            return sum(values) / len(values) if values else 0.0
-
-        @staticmethod
-        def clip(value, low, high):
-            return max(low, min(high, value))
-
-    numpy = _FakeNP()
-    sys.modules.setdefault("numpy", numpy)
-
-try:
-    import networkx  # type: ignore
-except Exception:  # pragma: no cover - fallback if networkx missing
-    class _FakeNX:
-        class Graph:
-            def __init__(self, *a, **kw):
-                pass
-
-    networkx = _FakeNX()
-    sys.modules.setdefault("networkx", networkx)
+import numpy
+import networkx
+from tests.helpers import stubs
 
 import core.instruction_set as _instruction_set
 if not hasattr(_instruction_set, "PrimeInstruction"):
-    class PrimeInstruction:  # minimal placeholder
-        pass
-
-    _instruction_set.PrimeInstruction = PrimeInstruction
+    _instruction_set.PrimeInstruction = stubs.PrimeInstruction
 
 import builtins
 if not hasattr(builtins, "StateTransitionManager"):
-    class StateTransitionManager:  # minimal placeholder
-        def __init__(self, *a, **kw):
-            pass
+    builtins.StateTransitionManager = stubs.StateTransitionManager
 
-        def get_possible_transitions(self, state):
-            return []
-
-        def execute_transition(self, transition):
-            return None
-
-    builtins.StateTransitionManager = StateTransitionManager
-
-import types
-from dataclasses import dataclass
-
-fake_ecosystem = types.ModuleType("modules.consciousness_ecosystem")
-
-@dataclass
-class _FakeEntity:
-    entity_id: str
-    consciousness_level: float
-    specialization: str
-    cognitive_capabilities: dict
-    connection_capacity: int
-    evolution_rate: float
-    consciousness_state: dict
-
-class _FakeOrchestrator:
-    pass
-
-fake_ecosystem.ConsciousEntity = _FakeEntity
-fake_ecosystem.ConsciousnessEcosystemOrchestrator = _FakeOrchestrator
-sys.modules.setdefault("modules.consciousness_ecosystem", fake_ecosystem)
-sys.modules.setdefault("modules.consciousness_ecosystem.ecosystem_orchestrator", fake_ecosystem)
-
-import importlib.util
-import os
-
-fake_evolution_pkg = types.ModuleType("modules.consciousness_evolution")
-sys.modules.setdefault("modules.consciousness_evolution", fake_evolution_pkg)
-
-spec = importlib.util.spec_from_file_location(
-    "modules.consciousness_evolution.evolution_engine",
-    os.path.join(os.path.dirname(__file__), "..", "modules", "consciousness_evolution", "evolution_engine.py"),
-)
-evo_module = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(evo_module)  # type: ignore
-sys.modules["modules.consciousness_evolution.evolution_engine"] = evo_module
 
 from modules.consciousness_evolution.evolution_engine import (
     HarmDetector,

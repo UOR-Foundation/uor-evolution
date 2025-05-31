@@ -7,55 +7,9 @@ intelligence emergence, and ecosystem-level consciousness capabilities.
 
 import pytest
 import asyncio
-try:
-    import numpy as np
-except Exception:  # pragma: no cover - allow running without numpy
-    import math
-
-    class _FakeNP:
-        @staticmethod
-        def ones(shape):
-            return [[1 for _ in range(shape[1])] for _ in range(shape[0])]
-
-        @staticmethod
-        def log(x):
-            return math.log(x)
-
-        @staticmethod
-        def var(values):
-            mean = sum(values) / len(values) if values else 0.0
-            return sum((v - mean) ** 2 for v in values) / len(values) if values else 0.0
-
-    np = _FakeNP()
-import sys
-sys.modules.setdefault("numpy", np)
-
-class _FakeGraph:
-    def __init__(self, nodes=0, edges=0):
-        self._nodes = nodes
-        self._edges = edges
-
-    def number_of_nodes(self):
-        return self._nodes
-
-    def number_of_edges(self):
-        return self._edges
-
-
-class _FakeNX:
-    Graph = _FakeGraph
-
-    def watts_strogatz_graph(self, n, k, p):
-        return _FakeGraph(n, n * k // 2)
-
-    def barabasi_albert_graph(self, n, m):
-        return _FakeGraph(n, n * m)
-
-    def complete_graph(self, n):
-        return _FakeGraph(n, n * (n - 1) // 2)
-
-
-sys.modules.setdefault("networkx", _FakeNX())
+import numpy as np
+import networkx as nx
+from tests.helpers import stubs
 from unittest.mock import Mock, patch, AsyncMock
 from datetime import datetime
 
