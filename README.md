@@ -157,7 +157,10 @@ The interaction between the UOR program (Learner) and the Flask backend (Teacher
 3.  **Edit Configuration (Optional):**
     Difficulty parameters and the starting level are defined in `config.yaml`.
     Adjust the values under `difficulty_levels` or `teacher.difficulty` to
-    customize how challenging the goals will be.
+    customize how challenging the goals will be. Additional sections such as
+    `consciousness_physics`, `quantum`, and `reality_interface` contain
+    defaults for bandwidth, fidelity, and energy limits used by the more
+    advanced modules.
 4.  **Access the Frontend:**
     Open your web browser and navigate to `http://127.0.0.1:5000/`.
 

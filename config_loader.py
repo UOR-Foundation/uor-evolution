@@ -31,7 +31,14 @@ def load_config(path: str | None = None) -> Dict[str, Any]:
                 indents.append(indent + 2)
             else:
                 value: Any = rest
-                if value.isdigit():
-                    value = int(value)
+                try:
+                    numeric = float(value)
+                    if numeric.is_integer() and not any(c in value for c in [".", "e", "E"]):
+                        value = int(numeric)
+                    else:
+                        value = numeric
+                except ValueError:
+                    if value.isdigit():
+                        value = int(value)
                 stack[-1][key] = value
     return config

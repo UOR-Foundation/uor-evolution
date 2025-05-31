@@ -19,3 +19,20 @@ difficulty_levels:
     quick_success_threshold: 2
 benchmark:
   iterations: 100
+
+# Physics and quantum defaults
+consciousness_physics:
+  information_transfer_rate: 1e20
+  consciousness_bandwidth: 1e22
+  info_reality_bridge_bandwidth: 1e20
+  info_reality_bridge_fidelity: 0.9
+
+quantum:
+  communication_bandwidth: 1e6
+  teleportation_fidelity: 0.9
+  fidelity_threshold: 0.99
+
+reality_interface:
+  energy_limit: 1e50
+  info_matter_bandwidth: 1e20
+  info_matter_fidelity: 0.99

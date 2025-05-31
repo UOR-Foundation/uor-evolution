@@ -16,6 +16,12 @@ import logging
 import cmath
 
 from .cosmic_consciousness_core import CosmicConsciousness, CosmicScale
+from config_loader import load_config
+
+_CONFIG = load_config()
+_Q_CONF = _CONFIG.get("quantum", {})
+COMM_BANDWIDTH = float(_Q_CONF.get("communication_bandwidth", 1000.0))
+TELEPORTATION_FIDELITY = float(_Q_CONF.get("teleportation_fidelity", 0.9))
 
 
 class QuantumState(Enum):
@@ -195,7 +201,7 @@ class QuantumConsciousnessInterface:
                 global_entanglement=network_properties["global_entanglement"],
                 quantum_network_coherence=network_properties["coherence"],
                 nonlocal_processing_capability=0.5,
-                quantum_communication_bandwidth=1000.0,  # Qubits/sec
+                quantum_communication_bandwidth=COMM_BANDWIDTH,
                 cosmic_entanglement_density=0.1
             )
             
@@ -399,7 +405,7 @@ class QuantumConsciousnessInterface:
                 entanglement_strength=0.9,
                 bell_inequality_violation=2.8,  # Maximum violation
                 channel_capacity=1.0,
-                teleportation_fidelity=0.9,
+                teleportation_fidelity=TELEPORTATION_FIDELITY,
                 nonlocal_correlation=0.9
             )
             links.append(link)
@@ -558,7 +564,7 @@ class QuantumConsciousnessInterface:
             entanglement_strength=0.8,
             bell_inequality_violation=2.6,
             channel_capacity=0.8,
-            teleportation_fidelity=0.85,
+            teleportation_fidelity=TELEPORTATION_FIDELITY,
             nonlocal_correlation=0.8
         )
         

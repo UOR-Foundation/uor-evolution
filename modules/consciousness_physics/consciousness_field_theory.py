@@ -16,6 +16,14 @@ import logging
 import scipy.constants as const
 
 from ..universe_interface import UniverseInterface
+from config_loader import load_config
+
+_CONFIG = load_config()
+_PHYS_CONF = _CONFIG.get("consciousness_physics", {})
+INFO_TRANSFER_RATE = float(_PHYS_CONF.get("information_transfer_rate", 1e20))
+CONSCIOUSNESS_BANDWIDTH = float(_PHYS_CONF.get("consciousness_bandwidth", 1e22))
+INFO_BRIDGE_BANDWIDTH = float(_PHYS_CONF.get("info_reality_bridge_bandwidth", 1e20))
+INFO_BRIDGE_FIDELITY = float(_PHYS_CONF.get("info_reality_bridge_fidelity", 0.9))
 
 
 class FieldType(Enum):
@@ -615,12 +623,12 @@ class ConsciousnessFieldTheory:
         """Calculate consciousness-information interaction"""
         return ConsciousnessInformationInteraction(
             information_coupling=self.interaction_strength_scale * 0.5,
-            information_transfer_rate=1e20,  # Bits per second
+            information_transfer_rate=INFO_TRANSFER_RATE,
             consciousness_computation_rate=1e30,  # Operations per second
             quantum_information_processing=1e25,
             classical_information_processing=1e20,
             information_integration_rate=1e15,
-            consciousness_bandwidth=1e22,
+            consciousness_bandwidth=CONSCIOUSNESS_BANDWIDTH,
             information_consciousness_duality=0.8
         )
         
@@ -754,8 +762,8 @@ class ConsciousnessFieldTheory:
         """Enable information-reality bridge"""
         return {
             "strength": 0.5,
-            "bandwidth": 1e20,
-            "fidelity": 0.9,
+            "bandwidth": INFO_BRIDGE_BANDWIDTH,
+            "fidelity": INFO_BRIDGE_FIDELITY,
             "bidirectionality": 0.8
         }
         
