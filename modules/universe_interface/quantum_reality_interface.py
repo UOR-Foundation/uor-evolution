@@ -334,11 +334,14 @@ class QuantumRealityInterface:
         self.quantum_fidelity_threshold: float = 0.99
         self.spacetime_stability_threshold: float = 0.95
         self.reality_modification_limit: float = 0.001
-        
+
         # Safety parameters
         self.causality_protection: bool = True
         self.quantum_error_correction: bool = True
         self.reality_rollback_enabled: bool = True
+
+        # Track recent stability metrics
+        self.recent_manipulation_metrics: List[float] = []
         
     async def interface_with_quantum_reality(self) -> QuantumInterface:
         """Establish interface with quantum reality"""
@@ -414,7 +417,21 @@ class QuantumRealityInterface:
             topology_result = await self._change_topology(
                 manipulation.spacetime_topology_change
             )
-            
+
+            # Record metrics for stability checks
+            self.recent_manipulation_metrics.extend([
+                metric_result.get("stability", 0.0),
+                curvature_result.get("stability", 0.0),
+            ])
+            if topology_result is not None:
+                self.recent_manipulation_metrics.append(
+                    1.0 if topology_result.get("topology_stable") else 0.0
+                )
+            if causal_result is not None:
+                self.recent_manipulation_metrics.append(
+                    1.0 if causal_result.get("causality_preserved") else 0.0
+                )
+
             return {
                 "manipulation_successful": True,
                 "metric_modification": metric_result,
@@ -716,7 +733,12 @@ class QuantumRealityInterface:
         
     async def _check_spacetime_stability(self) -> float:
         """Check overall spacetime stability"""
-        return 0.95  # Placeholder
+        if not self.recent_manipulation_metrics:
+            return self.spacetime_stability_threshold
+
+        recent = self.recent_manipulation_metrics[-5:]
+        stability = float(np.mean(recent))
+        return stability
         
     def _calculate_manipulation_energy(
         self,
@@ -756,15 +778,28 @@ class QuantumRealityInterface:
         program: RealityProgram
     ) -> ConsciousnessCompilation:
         """Compile reality program"""
+        target_mods: List[Any] = (
+            program.physical_law_modifications
+            + program.cosmic_constant_adjustments
+            + program.particle_physics_parameters
+            + program.field_equation_modifications
+        )
+
+        side_effects = [
+            f"{type(mod).__name__}_analysis" for mod in target_mods
+        ]
+
+        efficiency = max(0.0, 1.0 - 0.01 * len(target_mods))
+
         return ConsciousnessCompilation(
-            source_consciousness_state=None,  # Placeholder
-            target_reality_modifications=[],  # Placeholder
-            compilation_efficiency=0.9,
-            optimization_level=2,
+            source_consciousness_state=self.field_theory,
+            target_reality_modifications=target_mods,
+            compilation_efficiency=efficiency,
+            optimization_level=len(program.reality_optimization_objectives),
             error_checking=True,
             safety_verification=True,
-            determinism_guarantee=False,
-            side_effect_analysis=[]
+            determinism_guarantee=True,
+            side_effect_analysis=side_effects
         )
         
     async def _create_execution_plan(
@@ -774,14 +809,25 @@ class QuantumRealityInterface:
     ) -> List[Dict[str, Any]]:
         """Create execution plan for reality program"""
         plan = []
-        
+
+        mods_iter = iter(compilation.target_reality_modifications)
         for step in program.execution_sequence:
+            step_mods = []
+            try:
+                step_mods.append(next(mods_iter))
+            except StopIteration:
+                pass
+
+            strength_sum = 0.0
+            for m in step_mods:
+                strength_sum += getattr(m, "modification_strength", 0.0)
+
             plan.append({
                 "step": step,
-                "modifications": [],  # Placeholder
-                "duration": 0.1,
-                "energy_required": 1e10,
-                "rollback_point": True
+                "modifications": step_mods,
+                "duration": 0.1 * (len(step_mods) or 1),
+                "energy_required": 1e9 + strength_sum * 1e10,
+                "rollback_point": program.rollback_capability,
             })
             
         return plan
@@ -808,17 +854,32 @@ class QuantumRealityInterface:
         
     async def _verify_reality_consistency(self) -> float:
         """Verify consistency of modified reality"""
-        return 0.99  # Placeholder
+        if not self.recent_manipulation_metrics:
+            return 1.0
+
+        variance = float(np.var(self.recent_manipulation_metrics))
+        consistency = max(0.0, 1.0 - variance)
+        return consistency
         
     async def _check_optimization_objectives(
         self,
         objectives: List[RealityOptimizationObjective]
     ) -> Dict[str, float]:
         """Check if optimization objectives achieved"""
-        results = {}
+        results: Dict[str, float] = {}
         for obj in objectives:
-            achievement = 0.8  # Placeholder
+            if obj.target_state == 0:
+                progress = 1.0
+            else:
+                progress = max(
+                    0.0,
+                    1.0 - abs(obj.target_state - obj.current_state) / abs(obj.target_state),
+                )
+
+            satisfaction = 0.5 + 0.5 * obj.constraint_satisfaction
+            achievement = float(np.clip(progress * satisfaction, 0.0, 1.0))
             results[obj.objective_name] = achievement
+
         return results
         
     async def _analyze_side_effects(self) -> List[str]:
