@@ -11,12 +11,15 @@ from enum import Enum
 import time
 import threading
 from collections import deque
+import logging
 
 from core.prime_vm import ConsciousPrimeVM
 from modules.strange_loops.loop_detector import StrangeLoopDetector, StrangeLoop
 from modules.strange_loops.loop_factory import StrangeLoopFactory
 from modules.strange_loops.emergence_monitor import EmergenceMonitor, EmergencePhase
 from .consciousness_core import ConsciousnessCore, ConsciousnessState, ConsciousnessMode
+
+logger = logging.getLogger(__name__)
 from .multi_level_awareness import MultiLevelAwareness
 from .recursive_self_model import RecursiveSelfModel
 from .perspective_engine import PerspectiveEngine
@@ -96,7 +99,8 @@ class Condition:
         """Evaluate if condition is met."""
         try:
             self.met = eval(self.requirement, {"context": context})
-        except:
+        except Exception as e:
+            logger.exception("Condition '%s' evaluation failed: %s", self.name, e)
             self.met = False
         return self.met
 
