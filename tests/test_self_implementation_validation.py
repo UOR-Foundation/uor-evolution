@@ -2,6 +2,7 @@ import sys
 import os
 import types
 import importlib.util
+from tests.helpers import stubs
 
 # Stub heavy dependencies if missing
 try:
@@ -23,29 +24,7 @@ def load_sic():
     spec = importlib.util.spec_from_file_location("sic_real", path)
     sic_real = importlib.util.module_from_spec(spec)
 
-    sys.modules.setdefault(
-        "modules.uor_meta_architecture",
-        types.ModuleType("modules.uor_meta_architecture"),
-    )
-    vm_stub = types.ModuleType("modules.uor_meta_architecture.uor_meta_vm")
-    vm_stub.UORMetaRealityVM = object
-    vm_stub.MetaDimensionalInstruction = object
-    vm_stub.MetaOpCode = object
-    vm_stub.InfiniteOperand = object
-    sys.modules["modules.uor_meta_architecture.uor_meta_vm"] = vm_stub
-
-    sys.modules.setdefault(
-        "modules.meta_reality_consciousness",
-        types.ModuleType("modules.meta_reality_consciousness"),
-    )
-    meta_stub = types.ModuleType("modules.meta_reality_consciousness.meta_reality_core")
-
-    class _MRC:
-        def __init__(self, *a, **k):
-            pass
-
-    meta_stub.MetaRealityConsciousness = _MRC
-    sys.modules["modules.meta_reality_consciousness.meta_reality_core"] = meta_stub
+    stubs.install_recursive_consciousness_stubs()
 
     spec.loader.exec_module(sic_real)
     return sic_real
