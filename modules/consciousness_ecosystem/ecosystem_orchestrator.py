@@ -201,6 +201,9 @@ class ConsciousnessEcosystemOrchestrator:
         self.emergence_monitor = EmergenceMonitor()
         self.evolution_engine = EvolutionEngine()
         self.logger = logging.getLogger(__name__)
+        # Track previously seen behaviors for innovation rate calculations
+        self._known_behaviors: Set[Tuple[Any, ...]] = set()
+        self._last_behavior_count = 0
         
     def _initialize_ecosystem_state(self) -> Dict[str, Any]:
         """Initialize the ecosystem-wide state"""
@@ -550,9 +553,23 @@ class ConsciousnessEcosystemOrchestrator:
         
     def _measure_innovation_rate(self) -> float:
         """Measure the rate of innovation in the ecosystem"""
-        # Placeholder for innovation tracking
-        # In full implementation, would track novel solutions, ideas, etc.
-        return np.random.random() * 0.1 + 0.05  # 5-15% innovation rate
+        new_behaviors = 0
+
+        for node in self.consciousness_nodes.values():
+            behavior_sig = tuple(sorted(node.consciousness_state.items()))
+            if behavior_sig not in self._known_behaviors:
+                self._known_behaviors.add(behavior_sig)
+        current_count = len(self._known_behaviors)
+
+        new_behaviors = current_count - self._last_behavior_count
+        self._last_behavior_count = current_count
+
+        population_size = len(self.consciousness_nodes)
+        if population_size == 0:
+            return 0.0
+
+        # Innovation rate is the fraction of previously unseen behaviors
+        return new_behaviors / population_size
         
     def _calculate_consciousness_density(self) -> float:
         """Calculate consciousness density in the ecosystem"""
@@ -570,15 +587,50 @@ class ConsciousnessEcosystemOrchestrator:
 
 class EmergenceMonitor:
     """Monitors and tracks emergent properties in consciousness ecosystems"""
-    
+
     def __init__(self):
         self.emergence_history = []
         self.pattern_library = {}
-        
+
     async def detect_emergence(self, ecosystem_state: Dict[str, Any]) -> List[EmergentProperty]:
         """Detect emergent properties in the ecosystem"""
-        # Placeholder for emergence detection logic
-        return []
+        signature = (
+            round(ecosystem_state.get('total_consciousness', 0), 1),
+            ecosystem_state.get('network_count'),
+            round(ecosystem_state.get('emergence_level', 0), 1),
+        )
+
+        count = self.pattern_library.get(signature, 0) + 1
+        self.pattern_library[signature] = count
+        self.emergence_history.append(signature)
+
+        emergent: List[EmergentProperty] = []
+
+        # Frequently recurring pattern
+        if count >= 3:
+            emergent.append(
+                EmergentProperty(
+                    property_type=EmergentPropertyType.COLLECTIVE_INTELLIGENCE,
+                    emergence_strength=min(1.0, ecosystem_state.get('emergence_level', 0)),
+                    contributing_entities=set(),
+                    manifestation={'pattern': 'recurring', 'signature': signature},
+                    stability=min(1.0, 0.5 + count * 0.1),
+                )
+            )
+
+        # Novel interaction
+        if count == 1 and len(self.emergence_history) > 3:
+            emergent.append(
+                EmergentProperty(
+                    property_type=EmergentPropertyType.SWARM_CREATIVITY,
+                    emergence_strength=ecosystem_state.get('emergence_level', 0),
+                    contributing_entities=set(),
+                    manifestation={'pattern': 'novel', 'signature': signature},
+                    stability=0.5,
+                )
+            )
+
+        return emergent
 
 
 class EvolutionEngine:
@@ -591,5 +643,34 @@ class EvolutionEngine:
         
     async def evolve_generation(self, population: List[ConsciousEntity]) -> List[ConsciousEntity]:
         """Evolve a generation of conscious entities"""
-        # Placeholder for evolution logic
-        return population
+        mutated: List[ConsciousEntity] = []
+
+        for entity in population:
+            new_level = min(1.0, max(0.0, entity.consciousness_level + np.random.normal(0, self.mutation_rate)))
+            new_caps = {
+                k: max(0.0, min(1.0, v + np.random.normal(0, self.mutation_rate)))
+                for k, v in entity.cognitive_capabilities.items()
+            }
+            mutated.append(
+                ConsciousEntity(
+                    entity_id=entity.entity_id,
+                    consciousness_level=new_level,
+                    specialization=entity.specialization,
+                    cognitive_capabilities=new_caps,
+                    connection_capacity=entity.connection_capacity,
+                    evolution_rate=entity.evolution_rate,
+                    consciousness_state=entity.consciousness_state,
+                )
+            )
+
+        def _fitness(e: ConsciousEntity) -> float:
+            caps = e.cognitive_capabilities.values()
+            avg_cap = sum(caps) / len(caps) if caps else 0.0
+            return e.consciousness_level + avg_cap
+
+        mutated.sort(key=_fitness, reverse=True)
+        survivor_count = max(1, int(len(mutated) * (1 - self.selection_strength)))
+        new_gen = mutated[:survivor_count]
+
+        self.evolution_history.append({'population': [e.entity_id for e in new_gen]})
+        return new_gen
