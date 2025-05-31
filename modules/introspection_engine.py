@@ -135,6 +135,8 @@ class IntrospectionEngine:
             'arousal': 0.5,  # 0 to 1
             'dominance': 0.5  # 0 to 1
         }
+        # Track when the emotional state was last updated
+        self.last_emotion_update: float = time.time()
         
     def perform_deep_introspection(self) -> IntrospectionReport:
         """Perform comprehensive introspective analysis"""
@@ -903,7 +905,7 @@ class IntrospectionEngine:
         
     def _get_emotional_duration(self) -> float:
         """Get duration of current emotional state"""
-        return 2.0  # Placeholder
+        return time.time() - self.last_emotion_update
         
     def _describe_emotional_state(self) -> str:
         """Describe current emotional state"""
@@ -1131,17 +1133,29 @@ class IntrospectionEngine:
         
     def _update_emotional_state(self):
         """Update emotional state based on recent events"""
+        changed = False
+
         # Simple emotional dynamics
         if hasattr(self.vm, 'recent_events'):
             if 'success' in self.vm.recent_events:
-                self.emotional_state['valence'] = min(1.0, 
-                    self.emotional_state['valence'] + 0.1)
+                new_valence = min(1.0, self.emotional_state['valence'] + 0.1)
+                if new_valence != self.emotional_state['valence']:
+                    self.emotional_state['valence'] = new_valence
+                    changed = True
             elif 'error' in self.vm.recent_events:
-                self.emotional_state['valence'] = max(-1.0, 
-                    self.emotional_state['valence'] - 0.1)
-                    
+                new_valence = max(-1.0, self.emotional_state['valence'] - 0.1)
+                if new_valence != self.emotional_state['valence']:
+                    self.emotional_state['valence'] = new_valence
+                    changed = True
+
         # Decay toward neutral
-        self.emotional_state['valence'] *= 0.95
+        new_valence = self.emotional_state['valence'] * 0.95
+        if new_valence != self.emotional_state['valence']:
+            self.emotional_state['valence'] = new_valence
+            changed = True
+
+        if changed:
+            self.last_emotion_update = time.time()
         
     def _calculate_emotional_stability(self) -> float:
         """Calculate emotional stability"""
